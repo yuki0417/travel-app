@@ -9,7 +9,20 @@ jobs:
       - checkout
       - run:
           name: docker-compose up
-          command: docker-compose -f docker-compose_ci.yml up
+          command: |
+            docker-compose -f docker-compose_ci.yml up
+      - run:
+          name: docker-compose generate secret key
+          command: |
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python generate_secretkey_setting.py > settings_ci.py"
+      - run:
+          name: docker-compose run migrate
+          command: |
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py migrate --settings=setting.settings_ci"
+      - run:
+          name: docker-compose run test
+          command: |
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py test --settings=setting.settings_ci"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down

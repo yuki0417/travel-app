@@ -1,9 +1,13 @@
 import os
-from decouple import config
+from decouple import config, UndefinedValueError
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = config('SECRET_KEY')
+try:
+    SECRET_KEY = config('SECRET_KEY')
+except UndefinedValueError:
+    pass
 
 DEBUG = False
 
