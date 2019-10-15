@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
+import decouple
 from setting import settings_dev
 
 urlpatterns = [
@@ -9,8 +10,11 @@ urlpatterns = [
     path('travel/', include('travel.urls')),
 ]
 
-if settings_dev.DEBUG:
-    import debug_toolbar
-    urlpatterns += [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ]
+try:
+    if settings_dev.DEBUG:
+        import debug_toolbar
+        urlpatterns += [
+            path('__debug__/', include(debug_toolbar.urls)),
+        ]
+except decouple.UndefinedValueError:
+    pass
