@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  django:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile_django
+    command: bash -c "
+      cd travel
+      && python manage.py migrate --settings=setting.settings_ci
+      && python manage.py test --settings=setting.settings_ci
+      "
+    volumes:
+      - "staticdata:/opt/static/"
+    # env_file: .env
+    depends_on:
+      - postgres
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile_postgres
+    volumes:
+      - ./pg_scripts/install.sql:/docker-entrypoint-initdb.d/install.sql
+    environment:
+      - POSTGRES_USER=travel_ci
+      - POSTGRES_PASSWORD=travel_ci
+      - POSTGRES_DB=djangodb_ci
+    # ポートは確認用なので開けなくも良い
+    ports:
+      - "5432:5432"

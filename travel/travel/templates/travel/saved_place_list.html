@@ -1,0 +1,125 @@
+{% extends './place_base.html' %}
+{% block content %}
+
+     <!--ページタイトル-->
+     <div class="card mb-3">
+      <div class="card-header">
+         <h3><b>気になる場所リスト</b></h3>
+         </div>
+
+        </div>
+  <!-- jqueryの読み込み -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+
+     <!--ページタイトル-->
+       <div class="card-body">
+         <!-- テーブル表の定義 -->
+         <table id=place_list width="100%" class="table table-striped table-bordered table-hover">
+           　<!-- 表の列の定義-->
+             <thead>
+               <tr>
+                 <th class="text-center">場所名</th>
+                 <th class="text-center">画像</th>
+                 <th class="text-center">説明</th>
+                 <th class="text-center">緯度</th>
+                 <th class="text-center">経度</th>
+                 <th class="text-center">リストの編集</th>
+               </tr>
+             </thead>
+           　<!-- ここまでが表の列の定義-->
+           　<!-- 表のデータ部分の表示-->
+             <tbody>
+               {% for item in object_list %}
+                 <tr id="place" class="odd gradeX text-center">
+                   <td id="name" class="text-center" width="100">{{ item.name }}</td>
+                   <td id="linkurl" class="text-center" width="50"><a href="{{ item.linkUrl }}" target="_blank">
+                     <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a></td>
+                   <td id="extract" class="text-center" width="100">{{ item.extract }}</td>
+                   <td id="latitude" class="text-center" width="100">{{ item.latitude }}</td>
+                   <td id="longtitude" class="text-center" width="140">{{ item.longtitude }}</td>
+                   <td class="text-center" width="140">
+                     <button type="button" class="btnSelect" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button></td>
+                  </tr>
+             {% endfor %}
+             </tbody>
+           　<!-- ここまでが表のデータ部分の表示-->
+           </table>
+           <!-- ここまでがテーブル表の定義 -->
+                   <!-- bootstrapのjavascript読み込み -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+        <!-- DataTablesのjavascript読み込み -->
+        <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
+
+                 <script>
+          // テーブルの機能
+          jQuery(function ($) {
+              // デフォルトの設定を変更
+              $.extend( $.fn.dataTable.defaults, {
+                  language: {
+                      url: "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Japanese.json"
+                  }
+              });
+              $("#place_list").DataTable({
+                  "searching": true, // 検索機能
+                  "padding": true, // ページング機能
+                  "ordering": true, // ソート機能
+                  "lengthChange": true, // 件数切り替え機能
+              }).columns.adjust().draw();
+          });
+
+          // 気になる場所リストのAJAXボタン機能
+                  jQuery(function ($) {
+                    $(function(){
+                      $("#place_list").on('click','.btnSelect',function(){
+                        let currentRow = $(this).closest("tr");
+                        let name = currentRow.find('#name').text();
+                        let saveStatus = currentRow.find('.btnSelect').text();
+                        if (String(saveStatus) === "取り消す") {
+                          ($.post("{% url 'travel:place_delete' %}",
+                          {
+                            'name': name,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                          },
+                          function(){
+                            currentRow.find('.btnSelect').text("追加する");
+                          },
+                          ));
+                        }
+                        if (saveStatus === "追加する") {
+                          let linkurl = currentRow.find('#linkurl a').attr('href');
+                          let imageUrl = currentRow.find('#linkurl img').attr('src');
+                          let extract = currentRow.find('#extract').text();
+                          let latitude = currentRow.find('#latitude').text();
+                          let longtitude = currentRow.find('#longtitude').text();
+                          ($.post("{% url 'travel:place_save' %}",
+                            {
+                              'name': name,
+                              'linkurl': linkurl,
+                              'imageUrl': imageUrl,
+                              'extract': extract,
+                              'latitude': latitude,
+                              'longtitude': longtitude,
+                              'csrfmiddlewaretoken': '{{ csrf_token }}'
+                            },
+                            function(){
+                              currentRow.find('.btnSelect').text("取り消す");
+                            }
+                          ));
+                        }
+                        console.log(
+                          name, linkurl,
+                          currentRow.find('.btnSelect').text()
+                        );
+                      });
+                    });
+                  });
+
+                 </script>
+      </div>
+      </div>
+   </div>
+  </div>
+<hr>
+ 
+{% endblock content %}

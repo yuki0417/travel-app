@@ -1,0 +1,32 @@
+{% block sidebar %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/navbar.css" %}">
+<nav nav class="navbar navbar-dark">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#">周辺スポット検索アプリ</a>
+  
+    <!-- Links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'travel:place_list' %}">周辺を検索</a>
+      </li>
+      <!-- Dropdown -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+          設定の作成＆変更
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'travel:create_setting' %}">新規作成</a>
+          <a class="dropdown-item" href="{% url 'travel:setting_list' %}">変更＆削除</a>
+        </div>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'travel:saved_place' %}">気になる場所リスト</a>
+        </li>  
+      <li class="nav-item">
+          <a class="nav-link" href="#">ログアウト</a>
+        </li>  
+    </ul>
+  </nav>
+
+{% endblock sidebar %}

@@ -1,0 +1,103 @@
+{% block content %}
+     <div class="card mb-3">
+      <div class="card-header">
+         <h3><b>場所一覧</b></h3>
+         </div>
+
+        </div>
+<div class=current_settings>
+    {% if your_location %}
+    <p>
+      あなたの現在地: {{ your_location.0 }}, {{ your_location.1 }}
+    </p>
+    <p>
+      使用した設定: 
+      {{setting_radius_meta}}: {{ radius }}
+      {{setting_max_show_num_meta}}: {{ max_show_num }}
+    </p>
+      {% endif %}
+</div>
+
+         <!-- テーブル表の定義 -->
+              {% for item in place_list %}
+              <div id="place_article" class="card" style="width: 280px;">
+                  <a id="name" href="{{ item.linkUrl }}" target="_blank">
+                      <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a>
+                  <div class="card-body">
+                    <h3 class="card-title" id="name" name="{{ item.name }}">{{ item.name }}</h3>
+                    <p class="card-text" id="extract" name="{{ item.extract }}">{{ item.extract }}</p>
+                    <p class="card-text" id="latitude" name="{{ item.latitude }}" style="display: none;"></p>
+                    <p class="card-text" id="longtitude" name="{{ item.longtitude }}" style="display: none;"></p>
+                    {% if item.saved %}
+                    <button type="button" class="btn btn-danger btn-block" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button>
+                    {% else %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">追加する</button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+        <script>
+          // 気になる場所リストのAJAXボタン機能
+          jQuery(function ($) {
+            $(function(){
+              $(".card-body").on('click', '.btn', function(){
+                console.log("clicked");
+                let placeSelected = $(this).parent("div");
+                let name = placeSelected.find('#name').attr('name');
+                let saveStatus = placeSelected.find('.btn').text();
+                if (String(saveStatus) === "取り消す") {
+                  $(this).toggleClass('btn-danger btn-primary');
+                  ($.post("{% url 'travel:place_delete' %}",
+                  {
+                    'name': name,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  function(){
+                    placeSelected.find('.btn').text("追加する");
+                  },
+                  ));
+                }
+                if (saveStatus === "追加する") {
+                  $(this).toggleClass('btn-primary btn-danger');
+                  let linkurl = placeSelected.parent("div").find("a").attr('href');
+                  let imageUrl = placeSelected.parent("div").find('a img').attr('src');
+                  let extract = placeSelected.find('#extract').attr('name');
+                  let latitude = placeSelected.find('#latitude').attr('name');
+                  let longtitude = placeSelected.find('#longtitude').attr('name');
+                  // FIXME: デバッグ用なので完成時に削除する
+                  console.log(
+                    saveStatus,
+                    name,
+                    linkurl,
+                    imageUrl,
+                    latitude,
+                    longtitude,
+                    extract,
+                  );
+                  ($.post("{% url 'travel:place_save' %}",
+                    {
+                      'name': name,
+                      'linkurl': linkurl,
+                      'imageUrl': imageUrl,
+                      'extract': extract,
+                      'latitude': latitude,
+                      'longtitude': longtitude,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    function(){
+                      placeSelected.find('.btn').text("取り消す");
+                    }
+                  ));
+                }
+              });
+            });
+          });
+
+                 </script>
+      </div>
+      </div>
+   </div>
+  </div>
+<hr>
+ 
+{% endblock content %}
