@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <body>
+    <div class="loginform">
+    {% if errors_message  %}
+    <p>ユーザーID, パスワードが一致しません．</p>
+    {% endif %}  
+    <form method="POST" action="{% url 'accounts:signup' %}">
+      {% csrf_token %}
+      <label>ユーザーID</label>
+      {{ form.username }}
+      {{ form.username.errors }}
+      <label>パスワード</label>
+      {{ form.password }}
+      {{ form.password.errors }}
+      <label>パスワード(確認)</label>
+      {{ form.password_check }}
+      {{ form.password_check.errors }}
+      <button type = "submit">登録</button>
+    </form>
+  </div>
+  </body>
+</html>

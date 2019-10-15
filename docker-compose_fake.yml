@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  django:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile_django
+    expose:
+      - "3031"
+    command: bash -c "
+      cd travel
+      && python manage.py collectstatic --noinput
+      && python manage.py migrate
+      && gunicorn setting.wsgi -b 0.0.0.0:3031
+      "
+    volumes:
+      - "staticdata:/opt/static/"
+    # env_file: .env
+    depends_on:
+      - postgres
+  nginx:
+    restart: always
+    image: nginx
+    depends_on:
+      - django
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/:/etc/nginx/"
+      - "staticdata:/opt/apps/static/"
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile_postgres
+    volumes:
+      - ./pg_scripts/install_fake.sql:/docker-entrypoint-initdb.d/install.sql
+    env_file: ./travel/.env.postgres
+    ports:
+      - "5432:5432"
+
+volumes:
+  # postgres_data:
+  staticdata:

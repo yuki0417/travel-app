@@ -1,0 +1,40 @@
+{% extends './place_base.html' %}
+{% block content %}
+
+<form method="POST" action="">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="field_wrapper">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+    <label>設定名</label>
+    {{ form.user }}
+    {{ form.name }}
+    {{ form.name.errors }}
+    <label>半径</label>
+    {{ form.radius }}
+    {{ form.radius.errors }}
+    <label>最大表示件数</label>
+    {{ form.max_show_num }}
+    {{ form.max_show_num.errors }}
+    <button type = "submit">登録</button>
+  </form>
+
+<!-- ajax用のjqueryの読み込み -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+
+<script>
+  // NOTE: 本来はViewやformでする処理だが、
+  // セッション情報の渡し方がなさそうなためjQueryでフォームにユーザーIDを入れている。
+  // ユーザーIDはuuidのため、他のユーザーから推測される心配はない。
+  jQuery(function ($) {
+    $(function(){
+      $("#id_user").val("{{ user_id }}");
+    });
+  });
+</script>
+
+
+{% endblock content %}

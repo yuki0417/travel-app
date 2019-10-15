@@ -1,0 +1,74 @@
+{% extends './place_base.html' %}
+{% block content %}
+
+      <!-- NOTE: 設定関連のクラス。スマホだとoptionタグ潰れるので、static読み込むcssの設定が必要。 -->
+      <div class="search_setting">
+      <form id="your_location" action="" method="post">
+          {% csrf_token %}
+          <select name="setting_now" class="browser-default custom-select custom-select-lg mb-3">
+              <option selected="true" disabled="disabled">保存した設定から選ぶ</option>
+              {% for setting in object_list %}
+                <option value="{{setting.id}}">
+                  {{setting.name}}: 
+                  {{setting_radius_meta}}: {{setting.radius}}
+                  {{setting_max_show_num_meta}}: {{setting.max_show_num}}
+                </option>
+              {% endfor %}
+            </select>
+            <button type="button" class="btn btn-info" id='location_btn' value="更新" data-toggle="tooltip" data-placement="right"
+            data-html="true">周辺のスポットをさがす</button>  
+        </form>
+
+        <!-- jqueryの読み込み -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+
+        <script>
+          jQuery(function ($) {
+          $(function(){
+            $('#location_btn').click(function(){
+              let getPosition = function (options) {
+                return new Promise(function (resolve, reject) {
+                  navigator.geolocation.getCurrentPosition(resolve, reject, options);
+                });
+              }
+
+              getPosition()
+                .then((position) => {
+                  ($.post("{% url 'travel:place_list' %}",
+                    {
+                      'your_location': [
+                        position.coords.latitude,
+                        position.coords.longitude
+                      ],
+                      'setting_now': $('[name="setting_now"] option:selected').val(),
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    function(data){
+                      $('#current_data').html(data)
+                    }
+                  ));
+                  // FIXME: デバッグ用なので完成時に削除する
+                  console.log(position.coords);
+                  console.log(
+                    $('[name="setting_now"] option:selected').val()
+                  );
+                })
+                .catch((err) => {
+                  console.error(err.message);
+                });
+
+          });
+        });
+      });
+
+</script>
+
+         <div id=current_data>
+      </div>
+      </div>
+   </div>
+  </div>
+<hr>
+ 
+{% endblock content %}
