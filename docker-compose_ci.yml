@@ -11,9 +11,6 @@ services:
       && python manage.py migrate --settings=setting.settings_ci
       && python manage.py test --settings=setting.settings_ci
       "
-    volumes:
-      - "staticdata:/opt/static/"
-    # env_file: .env
     depends_on:
       - postgres
   postgres:
