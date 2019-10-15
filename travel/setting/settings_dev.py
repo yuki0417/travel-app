@@ -2,6 +2,8 @@ from .settings import *
 from decouple import config
 
 
+SECRET_KEY = config('SECRET_KEY')
+
 DEBUG = True
 
 INTERNAL_IPS = ['127.0.0.1']
