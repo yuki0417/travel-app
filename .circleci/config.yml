@@ -10,7 +10,7 @@ jobs:
       - run:
           name: docker-compose up
           command: |
-            docker-compose -f docker-compose_ci.yml up
+            docker-compose -f docker-compose_ci.yml up -d
       - run:
           name: docker-compose generate secret key
           command: |
