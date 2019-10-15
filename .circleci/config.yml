@@ -9,10 +9,10 @@ jobs:
       - checkout
       - run:
           name: docker-compose up
-          command: docker-compose up -d
+          command: docker-compose -f docker-compose_ci.yml up
       - run:
           name: docker-compose down
-          command: docker-compose down
+          command: docker-compose -f docker-compose_ci.yml down
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
