@@ -10,8 +10,7 @@ services:
       - "3031"
     command: bash -c "
       cd travel
-      && python manage.py makemigrations
-      && python manage.py migrate
+      && python manage.py migrate --settings=setting.settings_prod
       && gunicorn setting.wsgi -b 0.0.0.0:3031
       "
     volumes:
