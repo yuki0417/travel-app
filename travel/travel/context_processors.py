@@ -1,7 +1,12 @@
 from django.urls import reverse
 
 from accounts.models import AppUser
-from setting.settings import TEST_USER_INFO
+
+
+TEST_USER_INFO = {
+    "username": "テストユーザー",
+    "password": "test",
+}
 
 
 def common(request, *args, **kwargs):

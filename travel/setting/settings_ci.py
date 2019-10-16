@@ -1,5 +1,7 @@
-from .settings import *
+from .settings_base import *
 
+
+SECRET_KEY = ')0gwbry_12@or-!^_0+vjqsao9(0ht4uo0bq1j!h0+26k^3(4v'
 
 DEBUG = True
 
