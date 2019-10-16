@@ -12,10 +12,6 @@ jobs:
           command: |
             docker-compose -f docker-compose_ci.yml up -d
       - run:
-          name: docker-compose generate secret key
-          command: |
-            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel/setting && python generate_secretkey.py > settings.py"
-      - run:
           name: docker-compose run migrate
           command: |
             docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py migrate --settings=setting.settings_ci"
