@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 import decouple
-from setting import settings_dev
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -11,6 +10,7 @@ urlpatterns = [
 ]
 
 try:
+    from setting import settings_dev
     if settings_dev.DEBUG:
         import debug_toolbar
         urlpatterns += [
