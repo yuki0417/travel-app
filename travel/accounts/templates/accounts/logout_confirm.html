@@ -1,0 +1,20 @@
+{% extends '../travel/place_base.html' %}
+{% block content %}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h3>ログアウト</h3>
+    </div>
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <p>ログアウトしますか？</p>
+
+            <form method="post">
+                <button class="btn btn-danger">ログアウト</button>
+                {% csrf_token %}
+            </form>
+                </div>
+            </div>
+        </div>
+ 
+{% endblock %}

@@ -8,6 +8,11 @@ from django.contrib.auth.hashers import (
 
 from .forms import SignUpForm, LoginForm
 from .models import AppUser
+from .create_testuser import (
+    TEST_USER_INFO,
+    create_test_user,
+    test_user_exists,
+)
 
 
 class SignUpView(CreateView):
@@ -79,3 +84,33 @@ class AccountLoginView(View):
     def get(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
         return render(request, 'accounts/login.html', {'form': form})
+
+
+def logout_confirm(request):
+    if request.method == "POST":
+        request.session.clear()
+        return render(request, 'accounts/logged_out.html')
+    else:
+        return render(request, 'accounts/logout_confirm.html')
+
+
+def logged_out(request):
+    return render(request, 'accounts/logged_out.html')
+
+
+def test_login(request):
+    # ユーザーがない場合はテストユーザーを作成
+    if test_user_exists() is False:
+        test_user = create_test_user()
+        user_id = test_user.id
+    else:
+        user = AppUser.objects.get(
+            username=TEST_USER_INFO["username"])
+        user_id = user.id
+    # セッション情報、ログイン日時を保存
+    request.session['user_id'] = user_id
+    user.last_login = timezone.now()
+    user.save()
+
+    # 場所を探すページに遷移
+    return redirect('/travel/list')
