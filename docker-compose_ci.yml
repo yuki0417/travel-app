@@ -6,11 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_django
-    command: bash -c "
-      cd travel
-      && python manage.py migrate --settings=setting.settings_ci
-      && python manage.py test --settings=setting.settings_ci
-      "
     depends_on:
       - postgres
   postgres:
