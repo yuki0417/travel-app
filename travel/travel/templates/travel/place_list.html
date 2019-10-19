@@ -1,7 +1,8 @@
 {% extends './place_base.html' %}
 {% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/place_list.css" %}">
 
-      <!-- NOTE: 設定関連のクラス。スマホだとoptionタグ潰れるので、static読み込むcssの設定が必要。 -->
       <div class="search_setting">
       <form id="your_location" action="" method="post">
           {% csrf_token %}
@@ -18,53 +19,51 @@
             <button type="button" class="btn btn-info" id='location_btn' value="更新" data-toggle="tooltip" data-placement="right"
             data-html="true">周辺のスポットをさがす</button>  
         </form>
+<div id="loading"><img src="{% static "icon/ajax-loader.gif" %}"></div>
 
         <!-- jqueryの読み込み -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
 
-        <script>
-          jQuery(function ($) {
-          $(function(){
-            $('#location_btn').click(function(){
-              let getPosition = function (options) {
-                return new Promise(function (resolve, reject) {
-                  navigator.geolocation.getCurrentPosition(resolve, reject, options);
-                });
-              }
-
-              getPosition()
-                .then((position) => {
-                  ($.post("{% url 'travel:place_list' %}",
-                    {
-                      'your_location': [
-                        position.coords.latitude,
-                        position.coords.longitude
-                      ],
-                      'setting_now': $('[name="setting_now"] option:selected').val(),
-                      'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    function(data){
-                      $('#current_data').html(data)
-                    }
-                  ));
-                  // FIXME: デバッグ用なので完成時に削除する
-                  console.log(position.coords);
-                  console.log(
-                    $('[name="setting_now"] option:selected').val()
-                  );
-                })
-                .catch((err) => {
-                  console.error(err.message);
-                });
-
-          });
+<script>
+jQuery(function ($) {
+  $(function(){
+    $('#location_btn').on('click', function(){
+      $("#loading").fadeIn(500);
+      let getPosition = function (options) {
+        return new Promise(function (resolve, reject) {
+          navigator.geolocation.getCurrentPosition(resolve, reject, options);
         });
-      });
+    }
+
+getPosition()
+  .then((position) => {
+    ($.post("{% url 'travel:place_list' %}",
+      {
+        'your_location': [
+          position.coords.latitude,
+          position.coords.longitude
+        ],
+        'setting_now': $('[name="setting_now"] option:selected').val(),
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      function(data){
+        $("#loading").fadeOut(500);
+        $('#current_data').html(data)
+      }
+    ));
+    })
+    .catch((err) => {
+      $("#loading").fadeOut(500);
+      console.error(err.message);
+    });
+    });
+  });
+});
 
 </script>
 
-         <div id=current_data>
+         <div id="current_data">
       </div>
       </div>
    </div>
