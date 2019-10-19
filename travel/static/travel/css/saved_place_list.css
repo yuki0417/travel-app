@@ -1,0 +1,15 @@
+.btn-square {
+    width: 100%;
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #17a2b8;
+    color: #FFF;
+    border-bottom: solid 4px #17a3b84f;
+    border-radius: 3px;
+  }
+  .btn-square:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    border-bottom: none;
+  }
