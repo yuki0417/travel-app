@@ -1,5 +1,7 @@
 {% extends './place_base.html' %}
 {% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/saved_place_list.css" %}">
 
      <!--ページタイトル-->
      <div class="card mb-3">
@@ -16,7 +18,7 @@
        <div class="card-body">
          <!-- テーブル表の定義 -->
          <div class="table-responsive">
-         <table id=place_list width="100%" class="table table-striped table-bordered table-hover">
+         <table id="place_list" width="100%" class="table table-striped table-bordered table-hover">
            　<!-- 表の列の定義-->
              <thead>
                <tr>
@@ -35,7 +37,12 @@
                       <a href="{{ item.linkUrl }}" target="_blank">
                           <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a><p id="extract">{{ item.extract }}</p>
                     </class>
-                          <button type="button" class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button>
+                      <class id="changestate">
+                      <button class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button>
+                      </class>
+                      <class id="get_there">
+                      <button class="btn-square">ここにいく</button>
+                      </class>
                    </td>
                    <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
                    <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>
@@ -50,69 +57,84 @@
 <!-- DataTablesのjavascript読み込み -->
 <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
 
-      <script>
-          // テーブルの機能
-          jQuery(function ($) {
-              // デフォルトの設定を変更
-              $.extend( $.fn.dataTable.defaults, {
-                  language: {
-                      url: "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Japanese.json"
-                  }
-              });
-              $("#place_list").DataTable({
-                  "searching": true, // 検索機能
-                  "padding": true, // ページング機能
-                  "ordering": true, // ソート機能
-                  "lengthChange": true, // 件数切り替え機能
-              }).columns.adjust().draw();
-          });
+<script>
+// ここに行くボタンの機能
+jQuery(function ($) {
+  $(function(){
+    $("#get_there button").on('click', function(){
+      console.log("clicked");
+        let currentRow = $(this).closest("tr");
+        let latitude = currentRow.find('#latitude').text();
+        let longtitude = currentRow.find('#longtitude').text();
+        const Url = "https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=&destination=" + latitude + ","+ longtitude;
+        window.open(Url, '_blank');
+    });
+  });
+});
 
-          // 気になる場所リストのAJAXボタン機能
-                  jQuery(function ($) {
-                    $(function(){
-                      $("#place_list").on('click', '.btn', function(){
-                        let currentRow = $(this).closest("tr");
-                        let name = currentRow.find('#name h3').text();
-                        let saveStatus = currentRow.find('.btn').text();
-                        if (String(saveStatus) === "取り消す") {
-                          $(this).toggleClass('btn-secondary btn-warning');
-                          ($.post("{% url 'travel:place_delete' %}",
-                          {
-                            'name': name,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                          },
-                          function(){
-                            currentRow.find('.btn').text("追加する");
-                          },
-                          ));
-                        }
-                        if (saveStatus === "追加する") {
-                          $(this).toggleClass('btn-warning btn-secondary');
-                          let linkurl = currentRow.find('a').attr('href');
-                          let imageUrl = currentRow.find('img').attr('src');
-                          let extract = currentRow.find('#extract').text();
-                          let latitude = currentRow.find('#latitude').text();
-                          let longtitude = currentRow.find('#longtitude').text();
-                          ($.post("{% url 'travel:place_save' %}",
-                            {
-                              'name': name,
-                              'linkurl': linkurl,
-                              'imageUrl': imageUrl,
-                              'extract': extract,
-                              'latitude': latitude,
-                              'longtitude': longtitude,
-                              'csrfmiddlewaretoken': '{{ csrf_token }}'
-                            },
-                            function(){
-                              currentRow.find('.btn').text("取り消す");
-                            }
-                          ));
-                        }
-                      });
-                    });
-                  });
 
-                 </script>
+// テーブルの機能
+jQuery(function ($) {
+  // デフォルトの設定を変更
+  $.extend( $.fn.dataTable.defaults, {
+      language: {
+          url: "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Japanese.json"
+      }
+  });
+  $("#place_list").DataTable({
+      "searching": true, // 検索機能
+      "padding": true, // ページング機能
+      "ordering": true, // ソート機能
+      "lengthChange": true, // 件数切り替え機能
+  }).columns.adjust().draw();
+});
+
+// 気になる場所リストのAJAXボタン機能
+jQuery(function ($) {
+  $(function(){
+    $("#changestate button").on('click', function(){
+      let currentRow = $(this).closest("tr");
+      let name = currentRow.find('#name h3').text();
+      let saveStatus = currentRow.find('.btn').text();
+      if (saveStatus === "取り消す") {
+        $(this).toggleClass('btn-secondary btn-warning');
+        ($.post("{% url 'travel:place_delete' %}",
+        {
+          'name': name,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        function(){
+          currentRow.find('.btn').text("追加する");
+        },
+        ));
+      }
+      if (saveStatus === "追加する") {
+        $(this).toggleClass('btn-warning btn-secondary');
+        let linkurl = currentRow.find('a').attr('href');
+        let imageUrl = currentRow.find('img').attr('src');
+        let extract = currentRow.find('#extract').text();
+        let latitude = currentRow.find('#latitude').text();
+        let longtitude = currentRow.find('#longtitude').text();
+        ($.post("{% url 'travel:place_save' %}",
+          {
+            'name': name,
+            'linkurl': linkurl,
+            'imageUrl': imageUrl,
+            'extract': extract,
+            'latitude': latitude,
+            'longtitude': longtitude,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          function(){
+            currentRow.find('.btn').text("取り消す");
+          }
+        ));
+      }
+    });
+  });
+});
+</script>
+
       </div>
       </div>
    </div>
