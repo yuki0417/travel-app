@@ -16,7 +16,6 @@ services:
       "
     volumes:
       - "staticdata:/opt/static/"
-    # env_file: .env
     depends_on:
       - postgres
   nginx:
@@ -25,7 +24,7 @@ services:
     depends_on:
       - django
     ports:
-      - "80:80"
+      - "443:443"
     volumes:
       - "./nginx/:/etc/nginx/"
       - "staticdata:/opt/apps/static/"
