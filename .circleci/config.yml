@@ -38,7 +38,7 @@ jobs:
           command: docker-compose -f docker-compose_ci.yml down
 
       - store_test_results:
-        path: test-reports
+          path: test-reports
 
       - store_artifacts:
           path: test-reports
