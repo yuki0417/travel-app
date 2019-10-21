@@ -1,0 +1,5 @@
+django-debug-toolbar==2.0
+flake8==3.7.7
+coverage==4.5.4
+unittest-xml-reporting==2.5.1
+junit2html==22

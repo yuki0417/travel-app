@@ -1,9 +1,13 @@
+import os
+
 from .settings_base import *
 
 
 SECRET_KEY = ')0gwbry_12@or-!^_0+vjqsao9(0ht4uo0bq1j!h0+26k^3(4v'
 
 DEBUG = True
+
+ROOT_URLCONF = 'setting.urls'
 
 DATABASES = {
     'default': {
@@ -29,3 +33,7 @@ DATABASES = {
         },
     }
 }
+
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+TEST_OUTPUT_DIR = os.path.join(BASE_DIR, 'test-reports/unittest')
+TEST_OUTPUT_FILE_NAME = 'unittest.xml'
