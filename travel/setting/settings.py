@@ -10,6 +10,8 @@ DEBUG = False
 # TODO: 本番環境用に適切にホストを設定する
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
 
+ROOT_URLCONF = 'setting.urls'
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 

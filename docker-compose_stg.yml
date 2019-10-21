@@ -33,7 +33,7 @@ services:
       context: .
       dockerfile: Dockerfile_postgres
     volumes:
-      - ./pg_scripts/install_fake.sql:/docker-entrypoint-initdb.d/install.sql
+      - ./pg_scripts/install_stg.sql:/docker-entrypoint-initdb.d/install.sql
     env_file: ./travel/.env.postgres
     ports:
       - "5432:5432"
