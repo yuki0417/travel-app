@@ -24,29 +24,29 @@ jobs:
       - run:
           name: docker-compose run test
           command: >
-            docker-compose -f docker-compose_ci.yml run django sh -c
-            "cd travel && coverage run --source='.' manage.py test
-            --settings=setting.settings_ci --keepdb"
+            docker-compose -f docker-compose_ci.yml run django
+            coverage run --source='./travel' travel/manage.py test
+            --settings=setting.settings_ci --keepdb
       - run:
           name: docker-compose make test-html-report
           command: >
-            docker-compose -f docker-compose_ci.yml run django sh -c
-            "cd travel && junit2html test-reports/unittest/unittest.xml
-            test-reports/unittest/unittest.html"
+            docker-compose -f docker-compose_ci.yml run django
+            junit2html travel/test-reports/unittest/unittest.xml
+            travel/test-reports/unittest/unittest.html"
       - run:
           name: docker-compose make coverage-html-report
           command: >
-            docker-compose -f docker-compose_ci.yml run django sh -c
-            "cd travel && coverage html -d test-reports/coverage/"
+            docker-compose -f docker-compose_ci.yml run django
+            coverage html -d travel/test-reports/coverage/"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
 
       - store_test_results:
-          path: test-reports
+          path: travel/test-reports
 
       - store_artifacts:
-          path: test-reports
+          path: trave/test-reports
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
