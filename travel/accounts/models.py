@@ -37,7 +37,6 @@ class AppUser(models.Model):
         unique=True)
     password = models.CharField(
         "パスワード",
-        default=500,
         max_length=255,
         help_text="8~15文字の間")
     last_login = models.DateTimeField(

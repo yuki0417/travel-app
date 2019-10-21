@@ -18,7 +18,7 @@ jobs:
       - run:
           name: docker-compose run test
           command: |
-            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py test --settings=setting.settings_ci"
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py test --settings=setting.settings_ci --keepdb"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
