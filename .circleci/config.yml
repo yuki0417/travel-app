@@ -14,8 +14,8 @@ jobs:
       - run:
           name: install requirements_dev.txt
           command: >
-            docker-compose -f docker-compose_ci.yml run --rm django sh -c
-            "pip install --no-cache-dir -r requirements_dev.txt"
+            docker-compose -f docker-compose_ci.yml run --rm django
+            pip install --no-cache-dir -r travel/requirements_dev.txt
       - run:
           name: docker-compose run migrate
           command: >
@@ -26,7 +26,7 @@ jobs:
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
             "cd travel && coverage run --source='.' manage.py test
-            --settings=setting.settings_dev --keepdb"
+            --settings=setting.settings_ci --keepdb"
       - run:
           name: docker-compose make test-html-report
           command: >
