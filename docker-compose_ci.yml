@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile_postgres
     volumes:
-      - ./pg_scripts/install.sql:/docker-entrypoint-initdb.d/install.sql
+      - ./pg_scripts/install_ci.sql:/docker-entrypoint-initdb.d/install.sql
     environment:
       - POSTGRES_USER=travel_ci
       - POSTGRES_PASSWORD=travel_ci

@@ -16,5 +16,16 @@ DATABASES = {
         'PASSWORD': 'travel_ci',
         'HOST': 'postgres',
         'PORT': '5432',
+        'TEST': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'OPTIONS': {
+                'options': '-c search_path=django'
+                },
+            'NAME': 'djangodb_ci',
+            'USER': 'travel_ci',
+            'PASSWORD': 'travel_ci',
+            'HOST': 'postgres',
+            'PORT': '5432',
+        },
     }
 }
