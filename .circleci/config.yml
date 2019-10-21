@@ -15,29 +15,29 @@ jobs:
           name: install requirements_dev.txt
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
-             "pip install --no-cache-dir -r requirements_dev.txt"
+            "pip install --no-cache-dir -r requirements_dev.txt"
       - run:
           name: docker-compose run migrate
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
-             "cd travel && python manage.py migrate --settings=setting.settings_ci"
+            "cd travel && python manage.py migrate --settings=setting.settings_ci"
       - run:
           name: docker-compose run test
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
-             "cd travel && coverage run --source='.' manage.py test
-              --settings=setting.settings_dev --keepdb"
+            "cd travel && coverage run --source='.' manage.py test
+            --settings=setting.settings_dev --keepdb"
       - run:
           name: docker-compose make test-html-report
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
-             "cd travel && junit2html test-reports/unittest/unittest.xml
-              test-reports/unittest/unittest.html"
+            "cd travel && junit2html test-reports/unittest/unittest.xml
+            test-reports/unittest/unittest.html"
       - run:
           name: docker-compose make coverage-html-report
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django sh -c
-             "cd travel && coverage html -d test-reports/coverage/"
+            "cd travel && coverage html -d test-reports/coverage/"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
