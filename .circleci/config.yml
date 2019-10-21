@@ -13,15 +13,35 @@ jobs:
             docker-compose -f docker-compose_ci.yml up -d
       - run:
           name: docker-compose run migrate
-          command: |
-            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py migrate --settings=setting.settings_ci"
+          command: >
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c
+             "cd travel && python manage.py migrate --settings=setting.settings_ci"
       - run:
           name: docker-compose run test
-          command: |
-            docker-compose -f docker-compose_ci.yml run --rm django sh -c "cd travel && python manage.py test --settings=setting.settings_ci --keepdb"
+          command: >
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c
+             "cd travel && coverage run --source='.' manage.py test
+              --settings=setting.settings_dev --keepdb"
+      - run:
+          name: docker-compose make test-html-report
+          command: >
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c
+             "cd travel && junit2html test-reports/unittest/unittest.xml
+              test-reports/unittest/unittest.html"
+      - run:
+          name: docker-compose make coverage-html-report
+          command: >
+            docker-compose -f docker-compose_ci.yml run --rm django sh -c
+             "cd travel && coverage html -d test-reports/coverage/"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
+
+      - store_test_results:
+        path: test-reports
+
+      - store_artifacts:
+          path: test-reports
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
