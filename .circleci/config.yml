@@ -15,7 +15,7 @@ jobs:
           name: install requirements_dev.txt
           command: >
             docker-compose -f docker-compose_ci.yml run --rm django
-            pip install --no-cache-dir -r travel/requirements_dev.txt
+            pip install --no-cache-dir -r requirements_dev.txt
       - run:
           name: docker-compose run migrate
           command: >
