@@ -42,6 +42,9 @@ jobs:
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
+      - run:
+          name: confirm artifacts
+          command: pwd && ls && ls travel/test-reports/ && travel/test-reports/unittest
 
       - store_test_results:
           path: ./travel/test-reports
