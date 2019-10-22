@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  django:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile_django
+    command: >
+      bash -c "
+      pip install --no-cache-dir -r requirements_dev.txt
+      && cd travel && python manage.py migrate
+      --settings=setting.settings_dev
+      && /bin/bash"
+    tty: true
+    stdin_open: true
+    depends_on:
+      - postgres
+    volumes:
+      - ".:/opt/apps/"
+    ports:
+      - "80:80"
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile_postgres
+    volumes:
+      - ./pg_scripts/install_dev.sql:/docker-entrypoint-initdb.d/install.sql
+    env_file: ./travel/.env.postgres
+    # ポートは確認用なので開けなくも良い
+    ports:
+      - "5432:5432"
+    volumes:
+      - "/tmp/postgres-data:/var/lib/postgresql/data"
