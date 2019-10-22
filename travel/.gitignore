@@ -3,4 +3,4 @@
 session/*
 .env
 .env.postgres
-
+.coverage
