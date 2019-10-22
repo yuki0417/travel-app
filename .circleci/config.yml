@@ -38,7 +38,7 @@ jobs:
           name: docker-compose make coverage-html-report
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "coverage html -d travel/test-reports/coverage/"
+            "cd travel && coverage html -d test-reports/coverage/"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
