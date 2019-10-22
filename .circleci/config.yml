@@ -14,7 +14,7 @@ jobs:
       - run:
           name: docker-compose run test
           command: >
-            docker-compose -f docker-compose_ci.yml run django sh -c
+            docker-compose -f docker-compose_ci.yml exec django sh -c
             "pip install --no-cache-dir -r requirements_dev.txt
             && cd travel && python manage.py migrate --settings=setting.settings_ci
             && coverage run --source='.' manage.py test --settings=setting.settings_ci --keepdb
