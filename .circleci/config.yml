@@ -12,45 +12,42 @@ jobs:
           command: |
             docker-compose -f docker-compose_ci.yml up -d
       - run:
+          name: docker-compose install requirements
+          command: >
+            docker-compose -f docker-compose_ci.yml run django sh -c
+            "pip install --no-cache-dir -r requirements_dev.txt"
+      - run:
+          name: docker-compose run migrate
+          command: >
+            docker-compose -f docker-compose_ci.yml run django sh -c
+            "cd travel && python manage.py migrate
+            --settings=setting.settings_ci"
+      - run:
           name: docker-compose run test
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
-            "pip install --no-cache-dir -r requirements_dev.txt
-            && cd travel && python manage.py migrate --settings=setting.settings_ci
-            && coverage run --source='.' manage.py test --settings=setting.settings_ci --keepdb
-            && junit2html test-reports/unittest/unittest.xml test-reports/unittest/unittest.html
-            && coverage html -d travel/test-reports/coverage/"
-      # - run:
-      #     name: docker-compose run migrate
-      #     command: >
-      #       docker-compose -f docker-compose_ci.yml run django sh -c
-      #       "cd travel && python manage.py migrate --settings=setting.settings_ci"
-      # - run:
-      #     name: docker-compose run test
-      #     command: >
-      #       docker-compose -f docker-compose_ci.yml run django
-      #       coverage run --source='./travel' travel/manage.py test
-      #       --settings=setting.settings_ci --keepdb
-      # - run:
-      #     name: docker-compose make test-html-report
-      #     command: >
-      #       docker-compose -f docker-compose_ci.yml run django
-      #       junit2html travel/test-reports/unittest/unittest.xml
-      #       travel/test-reports/unittest/unittest.html"
-      # - run:
-      #     name: docker-compose make coverage-html-report
-      #     command: >
-      #       docker-compose -f docker-compose_ci.yml run django
-      #       coverage html -d travel/test-reports/coverage/
+            docker-compose -f docker-compose_ci.yml run django sh -c
+            "cd travel && coverage run --source='.' manage.py test
+            --settings=setting.settings_ci --keepdb"
+      - run:
+          name: docker-compose make test-html-report
+          command: >
+            docker-compose -f docker-compose_ci.yml run django sh -c
+            "junit2html travel/test-reports/unittest/unittest.xml
+            travel/test-reports/unittest/unittest.html"
+      - run:
+          name: docker-compose make coverage-html-report
+          command: >
+            docker-compose -f docker-compose_ci.yml run django sh -c
+            "coverage html -d travel/test-reports/coverage/"
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
 
       - store_test_results:
-          path: travel/test-reports
+          path: ./travel/test-reports
 
       - store_artifacts:
-          path: trave/test-reports
+          path: ./trave/test-reports
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
