@@ -24,23 +24,23 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'OPTIONS': {
-            'options': '-c search_path=django'
+            'options': '-c search_path=public'
             },
         'NAME': config('DEV_DB_NAME'),
         'USER': config('DEV_DB_USER'),
         'PASSWORD': config('DEV_DB_PASSWORD'),
-        'HOST': config('DEV_DB_HOST'),
+        'HOST': "postgres",
         'PORT': config('DEV_DB_PORT'),
     },
     'TEST': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'OPTIONS': {
-            'options': '-c search_path=django'
+            'options': '-c search_path=public'
             },
-        'NAME': config('DEV_DB_NAME'),
-        'USER': config('DEV_DB_USER'),
-        'PASSWORD': config('DEV_DB_PASSWORD'),
-        'HOST': config('DEV_DB_HOST'),
+        'NAME': "test_db",
+        'USER': "test_user",
+        'PASSWORD': "test_password",
+        'HOST': "postgres",
         'PORT': config('DEV_DB_PORT'),
     },
 }
