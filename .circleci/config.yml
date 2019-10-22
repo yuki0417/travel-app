@@ -42,15 +42,12 @@ jobs:
       - run:
           name: docker-compose down
           command: docker-compose -f docker-compose_ci.yml down
-      - run:
-          name: confirm artifacts
-          command: pwd && ls && ls travel/test-reports/ && ls travel/test-reports/unittest
 
       - store_test_results:
           path: ./travel/test-reports
 
       - store_artifacts:
-          path: ./trave/test-reports
+          path: ./travel/test-reports
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
