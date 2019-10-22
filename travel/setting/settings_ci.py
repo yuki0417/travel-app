@@ -13,7 +13,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'OPTIONS': {
-            'options': '-c search_path=django_ci'
+            'options': '-c search_path=public'
             },
         'NAME': 'djangodb_ci',
         'USER': 'travel_ci',
@@ -23,7 +23,7 @@ DATABASES = {
         'TEST': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'OPTIONS': {
-                'options': '-c search_path=django_ci'
+                'options': '-c search_path=public'
                 },
             'NAME': 'djangodb_ci',
             'USER': 'travel_ci',
