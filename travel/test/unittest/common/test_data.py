@@ -325,7 +325,7 @@ class SettingCorrectTestData2nd(TestCase):
         Setting.objects.create(
             id=COR_SETTING_DATA_2nd["id"],
             user=AppUser.objects.get(
-                id=COR_SETTING_DATA_2nd["id"]),
+                id=COR_SETTING_DATA_2nd["user"]),
             name=COR_SETTING_DATA_2nd["name"],
             radius=COR_SETTING_DATA_2nd["radius"],
             max_show_num=COR_SETTING_DATA_2nd["max_show_num"],
@@ -343,7 +343,7 @@ class PlaceCorrectTestData1st(TestCase):
         Place.objects.create(
             id=COR_PLACE_DATA_1st["id"],
             user=AppUser.objects.get(
-                gid=COR_PLACE_DATA_1st["user"]),
+                id=COR_PLACE_DATA_1st["user"]),
             name=COR_PLACE_DATA_1st["name"],
             saved_time=COR_PLACE_DATA_1st["saved_time"],
             linkUrl=COR_PLACE_DATA_1st["linkUrl"],
@@ -365,7 +365,7 @@ class PlaceCorrectTestData2nd(TestCase):
         Place.objects.create(
             id=COR_PLACE_DATA_2nd["id"],
             user=AppUser.objects.get(
-                gid=COR_PLACE_DATA_2nd["user"]),
+                id=COR_PLACE_DATA_2nd["user"]),
             name=COR_PLACE_DATA_2nd["name"],
             saved_time=COR_PLACE_DATA_2nd["saved_time"],
             linkUrl=COR_PLACE_DATA_2nd["linkUrl"],
