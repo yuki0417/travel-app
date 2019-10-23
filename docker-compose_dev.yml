@@ -2,7 +2,6 @@ version: '3'
 
 services:
   django:
-    restart: always
     build:
       context: .
       dockerfile: Dockerfile_django
@@ -26,9 +25,8 @@ services:
       dockerfile: Dockerfile_postgres
     volumes:
       - ./pg_scripts/install_dev.sql:/docker-entrypoint-initdb.d/install.sql
+      - "/tmp/postgres-data:/var/lib/postgresql/data"
     env_file: ./travel/.env.postgres
     # ポートは確認用なので開けなくも良い
     ports:
       - "5432:5432"
-    volumes:
-      - "/tmp/postgres-data:/var/lib/postgresql/data"
