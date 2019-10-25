@@ -114,7 +114,7 @@ def search_add_info_from_wiki(page_title):
     if type(page_title) is list:
         page_title = '|'.join(page_title)
 
-    PARAMS = {
+    params = {
         "action": "query",
         "format": "json",
         "titles": page_title,
@@ -124,21 +124,21 @@ def search_add_info_from_wiki(page_title):
         "exchars": 128,
     }
 
-    res = session.get(url=URL, params=PARAMS)
-    DATA = res.json()
-    PAGES = DATA['query']['pages']
-    return PAGES
+    res = session.get(url=URL, params=params)
+    data = res.json()
+    pages = data['query']['pages']
+    return pages
 
 
 def organize_additional_info(namelist):
     """
     追加情報を整理する
     """
-    PAGES = search_add_info_from_wiki(namelist)
+    pages = search_add_info_from_wiki(namelist)
     place_info_list = []
     # pageidの昇順にソートする
-    sorted_PAGES = OrderedDict(sorted(PAGES.items(), key=lambda x: int(x[0])))
-    for k, v in sorted_PAGES.items():
+    sorted_pages = OrderedDict(sorted(pages.items(), key=lambda x: int(x[0])))
+    for k, v in sorted_pages.items():
         place_info = {}
         try:
             place_info["latitude"] = str(v['coordinates'][0]['lat'])
