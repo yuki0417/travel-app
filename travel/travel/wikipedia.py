@@ -10,7 +10,7 @@ def geo_search(latlon, radius, max_show_num):
     # 検索結果が空の場合はNoneを返す
     if places is None:
         return None
-    place_list = orgnize_place_data(places)
+    place_list = make_namelist_and_first_data(places)
     return place_list
 
 
@@ -44,28 +44,36 @@ def search_places_from_wiki(latlon, radius, max_show_num):
     return places
 
 
-def orgnize_place_data(places):
+def make_namelist_and_first_data(places):
     """
-    wikipediaで検索した場所情報を整理する
+    wikipediaで検索したデータから、
+    名前のリストと最初の情報のリストを作成する
     """
     # pageidの昇順にソートする
     sorted_places = OrderedDict(
         sorted(places.items(), key=lambda x: int(x[0])))
-    first_info_list = []
-    namelist = []
+    namelist, first_info_list = [], []
     for k, v in sorted_places.items():
+        namelist.append(str(v['title']))
         place_attr = {}
         place_attr["name"] = str(v['title'])
         place_attr["linkUrl"] = str(v['fullurl'])
-        namelist.append(place_attr["name"])
         try:
             place_attr["imageUrl"] = str(v['thumbnail']['source'])
-        # 画像がない場合は空にする
+        # 画像URLがない場合は空にする
         except KeyError:
             place_attr["imageUrl"] = ""
         first_info_list.append(place_attr)
+    place_list = combine_list_info(namelist, first_info_list)
 
-    add_info_list = get_add_info(namelist)
+    return place_list
+
+
+def combine_list_info(namelist, first_info_list):
+    """
+    初回の情報のリストと追加情報のリストを結合する
+    """
+    add_info_list = make_add_info_list(namelist)
     place_list = []
     for first, addition in zip(first_info_list, add_info_list):
         first.update(addition)
@@ -74,9 +82,9 @@ def orgnize_place_data(places):
     return place_list
 
 
-def get_add_info(namelist):
+def make_add_info_list(namelist):
     """
-    追加情報を整理する
+    追加情報のリストを作成する
     """
     add_info_list = []
     # 要素が２０以上存在する場合は２０ずつのリストに分けて追加情報を取得する
@@ -135,7 +143,7 @@ def organize_additional_info(namelist):
     追加情報を整理する
     """
     pages = search_add_info_from_wiki(namelist)
-    place_info_list = []
+    add_info_list = []
     # pageidの昇順にソートする
     sorted_pages = OrderedDict(sorted(pages.items(), key=lambda x: int(x[0])))
     for k, v in sorted_pages.items():
@@ -144,15 +152,13 @@ def organize_additional_info(namelist):
             place_info["latitude"] = str(v['coordinates'][0]['lat'])
             place_info["longtitude"] = str(v['coordinates'][0]['lon'])
         except KeyError:
-            # 情報を取得しなおす
+            # 情報取得できなかった場合はもう一度取得する
             regained_info = search_add_info_from_wiki(v['title'])
-            for k, v in regained_info.items():
-                place_info["latitude"] = str(v['coordinates'][0]['lat'])
-                place_info["longtitude"] = str(v['coordinates'][0]['lon'])
-        try:
-            place_info["extract"] = str(v['extract'])
-        except KeyError:
-            place_info["extract"] = ""
-        place_info_list.append(place_info)
+            for k, v_2 in regained_info.items():
+                place_info["latitude"] = str(v_2['coordinates'][0]['lat'])
+                place_info["longtitude"] = str(v_2['coordinates'][0]['lon'])
 
-    return place_info_list
+        place_info["extract"] = str(v['extract'])
+        add_info_list.append(place_info)
+
+    return add_info_list
