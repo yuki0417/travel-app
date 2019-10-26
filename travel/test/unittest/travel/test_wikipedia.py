@@ -35,7 +35,6 @@ from test.unittest.common.test_data import (
     WIKI_PAGE_2,
     WIKI_PAGE_3,
     ADD_INFO_LIST_THREE,
-    WIKI_PAGES_NO_LATLON_EXTRACT
 )
 
 
