@@ -1,5 +1,6 @@
 # import sys
 import uuid
+import copy
 from datetime import datetime
 from json import JSONEncoder
 from uuid import UUID
@@ -22,7 +23,7 @@ def list_difference(list1, list2):
     """
     2つのリストの差分を求め、元の順番のまま出力する関数
     """
-    result = list1.copy()
+    result = copy.deepcopy(list1)
     for value in list2:
         if value in result:
             result.remove(value)
@@ -504,9 +505,9 @@ def wiki_page_response(pages):
     return wiki_page
 
 
-PLACE_NAME_1 = '場所タイトル1'
-PLACE_NAME_2 = '場所タイトル2'
-PLACE_NAME_3 = '場所タイトル3'
+PLACE_TITLE_1 = '場所タイトル1'
+PLACE_TITLE_2 = '場所タイトル2'
+PLACE_TITLE_3 = '場所タイトル3'
 PAGEID_1 = 111111
 PAGEID_2 = 222222
 PAGEID_3 = 333333
@@ -519,16 +520,19 @@ PAGE_LATITUDE_3 = 35.333333
 PAGE_LONGTUDE_1 = 139.111111
 PAGE_LONGTUDE_2 = 139.222222
 PAGE_LONGTUDE_3 = 139.333333
-
+LINKURL_1 = 'https://ja.wikipedia.org/wiki/linkUrl_1'
+LINKURL_2 = 'https://ja.wikipedia.org/wiki/linkUrl_2'
+IMAGE_URL_1 = 'https://upload.wikimedia.org/wikipedia/image_1.jpg'
+IMAGE_URL_2 = 'https://upload.wikimedia.org/wikipedia/image_2.jpg'
 
 PLACES = {
     PAGEID_1: {
         'pageid': PAGEID_1,
         'ns': 0,
-        'title': PLACE_NAME_1,
+        'title': PLACE_TITLE_1,
         'index': -1,
         'thumbnail': {
-            'source': 'https://upload.wikimedia.org/image_1.jpg',
+            'source': IMAGE_URL_1,
             'width': 280,
             'height': 158
         },
@@ -539,17 +543,17 @@ PLACES = {
         'touched': '2019-10-03T03:31:15Z',
         'lastrevid': 74480464,
         'length': 14137,
-        'fullurl': 'https://ja.wikipedia.org/wiki/fullurl_1',
+        'fullurl': LINKURL_1,
         'editurl': 'https://ja.wikipedia.org/wiki/editurl_1',
         'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_1',
     },
     PAGEID_2: {
         'pageid': PAGEID_2,
         'ns': 0,
-        'title': PLACE_NAME_2,
+        'title': PLACE_TITLE_2,
         'index': -1,
         'thumbnail': {
-            'source': 'https://upload.wikimedia.org/image_2.jpg',
+            'source': IMAGE_URL_2,
             'width': 280,
             'height': 158
         },
@@ -560,7 +564,42 @@ PLACES = {
         'touched': '2019-10-03T03:31:15Z',
         'lastrevid': 74480464,
         'length': 14137,
-        'fullurl': 'https://ja.wikipedia.org/wiki/fullurl_2',
+        'fullurl': LINKURL_2,
+        'editurl': 'https://ja.wikipedia.org/wiki/editurl_2',
+        'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_2',
+    }
+}
+
+PLACES_NO_IMAGE = {
+    PAGEID_1: {
+        'pageid': PAGEID_1,
+        'ns': 0,
+        'title': PLACE_TITLE_1,
+        'index': -1,
+        'contentmodel': 'wikitext',
+        'pagelanguage': 'ja',
+        'pagelanguagehtmlcode': 'ja',
+        'pagelanguagedir': 'ltr',
+        'touched': '2019-10-03T03:31:15Z',
+        'lastrevid': 74480464,
+        'length': 14137,
+        'fullurl': LINKURL_1,
+        'editurl': 'https://ja.wikipedia.org/wiki/editurl_1',
+        'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_1',
+    },
+    PAGEID_2: {
+        'pageid': PAGEID_2,
+        'ns': 0,
+        'title': PLACE_TITLE_2,
+        'index': -1,
+        'contentmodel': 'wikitext',
+        'pagelanguage': 'ja',
+        'pagelanguagehtmlcode': 'ja',
+        'pagelanguagedir': 'ltr',
+        'touched': '2019-10-03T03:31:15Z',
+        'lastrevid': 74480464,
+        'length': 14137,
+        'fullurl': LINKURL_2,
         'editurl': 'https://ja.wikipedia.org/wiki/editurl_2',
         'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_2',
     }
@@ -569,19 +608,19 @@ PLACES = {
 
 WIKI_PLACE_LIST = [
     {
-        'name': PLACE_NAME_1,
-        'linkUrl': 'https://ja.wikipedia.org/wiki/linkUrl_1',
-        'imageUrl': 'https://upload.wikimedia.org/wikipedia/image_1.jpg',
-        'latitude': '35.11111111',
-        'longtitude': '139.11111111',
+        'name': PLACE_TITLE_1,
+        'linkUrl': LINKURL_1,
+        'imageUrl': IMAGE_URL_1,
+        'latitude': str(PAGE_LATITUDE_1),
+        'longtitude': str(PAGE_LONGTUDE_1),
         'extract': PAGE_EXTRACT_1
     },
     {
-        'name': PLACE_NAME_2,
-        'linkUrl': 'https://ja.wikipedia.org/wiki/linkUrl_2',
-        'imageUrl': 'https://upload.wikimedia.org/wikipedia/image_2.jpg',
-        'latitude': '35.2222222',
-        'longtitude': '139.22222222',
+        'name': PLACE_TITLE_2,
+        'linkUrl': LINKURL_2,
+        'imageUrl': IMAGE_URL_2,
+        'latitude': str(PAGE_LATITUDE_2),
+        'longtitude': str(PAGE_LONGTUDE_2),
         'extract': PAGE_EXTRACT_2
     }
 ]
@@ -595,14 +634,14 @@ WIKI_DATA = {
 
 WIKI_DATA_NONE = {'batchcomplete': ''}
 
-PAGE_TITLES_LIST = [PLACE_NAME_1, PLACE_NAME_2]
+PAGE_TITLES_LIST = [PLACE_TITLE_1, PLACE_TITLE_2]
 PAGE_TITLE_SOLO = '場所'
 
 PAGE_1 = {
     PAGEID_1: {
         "pageid": PAGEID_1,
         "ns": 0,
-        "title": PLACE_NAME_1,
+        "title": PLACE_TITLE_1,
         "coordinates": [
             {
                 "lat": PAGE_LATITUDE_1,
@@ -619,7 +658,7 @@ PAGE_2 = {
     PAGEID_2: {
         "pageid": PAGEID_2,
         "ns": 0,
-        "title": PLACE_NAME_2,
+        "title": PLACE_TITLE_2,
         "coordinates": [
             {
                 "lat": PAGE_LATITUDE_2,
@@ -636,7 +675,7 @@ PAGE_3 = {
     PAGEID_3: {
         "pageid": PAGEID_3,
         "ns": 0,
-        "title": PLACE_NAME_3,
+        "title": PLACE_TITLE_3,
         "coordinates": [
             {
                 "lat": PAGE_LATITUDE_3,
@@ -649,7 +688,7 @@ PAGE_3 = {
     }
 }
 
-PAGES = PAGE_1.copy()
+PAGES = copy.deepcopy(PAGE_1)
 PAGES.update(PAGE_2)
 
 WIKI_PAGE_1 = wiki_page_response(PAGE_1)
@@ -696,7 +735,7 @@ PAGES_NO_LATLON = {
     PAGEID_1: {
         "pageid": PAGEID_1,
         "ns": 0,
-        "title": PLACE_NAME_1,
+        "title": PLACE_TITLE_1,
         "coordinates": [
             {
                 "primary": "",
@@ -708,7 +747,7 @@ PAGES_NO_LATLON = {
     PAGEID_2: {
         "pageid": PAGEID_2,
         "ns": 0,
-        "title": PLACE_NAME_2,
+        "title": PLACE_TITLE_2,
         "coordinates": [
             {
                 "primary": "",
@@ -720,7 +759,7 @@ PAGES_NO_LATLON = {
     PAGEID_3: {
         "pageid": PAGEID_3,
         "ns": 0,
-        "title": PLACE_NAME_3,
+        "title": PLACE_TITLE_3,
         "coordinates": [
             {
                 "primary": "",
@@ -732,3 +771,48 @@ PAGES_NO_LATLON = {
 }
 
 WIKI_PAGES_NO_LATLON = wiki_page_response(PAGES_NO_LATLON)
+
+LIST_1 = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+]
+LIST_2 = [
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+]
+LIST_3 = [
+    21, 22, 22, 24, 25, 26, 27, 28, 29, 30
+]
+
+LIST = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 22, 24, 25, 26, 27, 28, 29, 30
+]
+
+LIST_20 = copy.deepcopy(LIST_1)
+LIST_20.extend(LIST_2)
+
+FIRST_INFO_LIST = [
+    {
+        'name': PLACE_TITLE_1,
+        'linkUrl': LINKURL_1,
+        'imageUrl': IMAGE_URL_1,
+    },
+    {
+        'name': PLACE_TITLE_2,
+        'linkUrl': LINKURL_2,
+        'imageUrl': IMAGE_URL_2,
+    }
+]
+
+FIRST_INFO_LIST_NO_IMAGE = [
+    {
+        'name': PLACE_TITLE_1,
+        'linkUrl': LINKURL_1,
+        'imageUrl': '',
+    },
+    {
+        'name': PLACE_TITLE_2,
+        'linkUrl': LINKURL_2,
+        'imageUrl': '',
+    }
+]
