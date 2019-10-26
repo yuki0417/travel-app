@@ -375,6 +375,7 @@ class PlaceCorrectTestData2nd(TestCase):
             longtitude=COR_PLACE_DATA_2nd["longtitude"],
         )
 
+#######################################################################
 # modeladmin用のテストデータ
 # NOTICE: " *_FIELDS_* " で定義されたmodelのフィールドの指定順序は、
 # テスト時の評価に影響を与えるので変えないこと
@@ -404,7 +405,7 @@ USERGROUPINFO_FIELDS_READONLY = (
 USERGROUPINFO_FIELDS_EDITABLE = list_difference(
     list(USERGROUPINFO_FIELDS_ALL),
     list(USERGROUPINFO_FIELDS_READONLY),
-    )
+)
 
 USERINFO_FIELDS_ALL = (
     'login_id',
@@ -456,7 +457,7 @@ USERINFO_FIELDS_READONLY = (
 USERINFO_FIELDS_EDITABLE = list_difference(
     list(USERINFO_FIELDS_ALL),
     list(USERINFO_FIELDS_READONLY),
-    )
+)
 
 WORKSPACEINFO_FIELDS_ALL = (
     'wid',
@@ -473,7 +474,7 @@ WORKSPACEINFO_FIELDS_READONLY = (
 WORKSPACEINFO_FIELDS_EDITABLE = list_difference(
     list(WORKSPACEINFO_FIELDS_ALL),
     list(WORKSPACEINFO_FIELDS_READONLY),
-    )
+)
 
 OPERARIONLOG_FIELDS_ALL = (
     'operation_date',
@@ -488,3 +489,246 @@ OPERARIONLOG_FIELDS_ALL = (
 
 OPERARIONLOG_FIELDS_READONLY = OPERARIONLOG_FIELDS_ALL
 OPERARIONLOG_FIELDS_EDITABLE = ()
+
+#################################################################
+# wikipediaAPIのテストデータ
+
+
+def wiki_page_response(pages):
+    wiki_page = {
+        "batchcomplete": "",
+        "query": {
+            "pages": pages
+        }
+    }
+    return wiki_page
+
+
+PLACE_NAME_1 = '場所タイトル1'
+PLACE_NAME_2 = '場所タイトル2'
+PLACE_NAME_3 = '場所タイトル3'
+PAGEID_1 = 111111
+PAGEID_2 = 222222
+PAGEID_3 = 333333
+PAGE_EXTRACT_1 = '場所の説明１'
+PAGE_EXTRACT_2 = '場所の説明２'
+PAGE_EXTRACT_3 = '場所の説明３'
+PAGE_LATITUDE_1 = 35.111111
+PAGE_LATITUDE_2 = 35.222222
+PAGE_LATITUDE_3 = 35.333333
+PAGE_LONGTUDE_1 = 139.111111
+PAGE_LONGTUDE_2 = 139.222222
+PAGE_LONGTUDE_3 = 139.333333
+
+
+PLACES = {
+    PAGEID_1: {
+        'pageid': PAGEID_1,
+        'ns': 0,
+        'title': PLACE_NAME_1,
+        'index': -1,
+        'thumbnail': {
+            'source': 'https://upload.wikimedia.org/image_1.jpg',
+            'width': 280,
+            'height': 158
+        },
+        'contentmodel': 'wikitext',
+        'pagelanguage': 'ja',
+        'pagelanguagehtmlcode': 'ja',
+        'pagelanguagedir': 'ltr',
+        'touched': '2019-10-03T03:31:15Z',
+        'lastrevid': 74480464,
+        'length': 14137,
+        'fullurl': 'https://ja.wikipedia.org/wiki/fullurl_1',
+        'editurl': 'https://ja.wikipedia.org/wiki/editurl_1',
+        'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_1',
+    },
+    PAGEID_2: {
+        'pageid': PAGEID_2,
+        'ns': 0,
+        'title': PLACE_NAME_2,
+        'index': -1,
+        'thumbnail': {
+            'source': 'https://upload.wikimedia.org/image_2.jpg',
+            'width': 280,
+            'height': 158
+        },
+        'contentmodel': 'wikitext',
+        'pagelanguage': 'ja',
+        'pagelanguagehtmlcode': 'ja',
+        'pagelanguagedir': 'ltr',
+        'touched': '2019-10-03T03:31:15Z',
+        'lastrevid': 74480464,
+        'length': 14137,
+        'fullurl': 'https://ja.wikipedia.org/wiki/fullurl_2',
+        'editurl': 'https://ja.wikipedia.org/wiki/editurl_2',
+        'canonicalurl': 'https://ja.wikipedia.org/wiki/canonicalurl_2',
+    }
+}
+
+
+WIKI_PLACE_LIST = [
+    {
+        'name': PLACE_NAME_1,
+        'linkUrl': 'https://ja.wikipedia.org/wiki/linkUrl_1',
+        'imageUrl': 'https://upload.wikimedia.org/wikipedia/image_1.jpg',
+        'latitude': '35.11111111',
+        'longtitude': '139.11111111',
+        'extract': PAGE_EXTRACT_1
+    },
+    {
+        'name': PLACE_NAME_2,
+        'linkUrl': 'https://ja.wikipedia.org/wiki/linkUrl_2',
+        'imageUrl': 'https://upload.wikimedia.org/wikipedia/image_2.jpg',
+        'latitude': '35.2222222',
+        'longtitude': '139.22222222',
+        'extract': PAGE_EXTRACT_2
+    }
+]
+
+WIKI_DATA = {
+    'batchcomplete': '',
+    'query': {
+        'pages': PLACES
+    }
+}
+
+WIKI_DATA_NONE = {'batchcomplete': ''}
+
+PAGE_TITLES_LIST = [PLACE_NAME_1, PLACE_NAME_2]
+PAGE_TITLE_SOLO = '場所'
+
+PAGE_1 = {
+    PAGEID_1: {
+        "pageid": PAGEID_1,
+        "ns": 0,
+        "title": PLACE_NAME_1,
+        "coordinates": [
+            {
+                "lat": PAGE_LATITUDE_1,
+                "lon": PAGE_LONGTUDE_1,
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_1
+    },
+}
+
+PAGE_2 = {
+    PAGEID_2: {
+        "pageid": PAGEID_2,
+        "ns": 0,
+        "title": PLACE_NAME_2,
+        "coordinates": [
+            {
+                "lat": PAGE_LATITUDE_2,
+                "lon": PAGE_LONGTUDE_2,
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_2
+    }
+}
+
+PAGE_3 = {
+    PAGEID_3: {
+        "pageid": PAGEID_3,
+        "ns": 0,
+        "title": PLACE_NAME_3,
+        "coordinates": [
+            {
+                "lat": PAGE_LATITUDE_3,
+                "lon": PAGE_LONGTUDE_3,
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_3
+    }
+}
+
+PAGES = PAGE_1.copy()
+PAGES.update(PAGE_2)
+
+WIKI_PAGE_1 = wiki_page_response(PAGE_1)
+WIKI_PAGE_2 = wiki_page_response(PAGE_2)
+WIKI_PAGE_3 = wiki_page_response(PAGE_3)
+
+WIKI_PAGES = wiki_page_response(PAGES)
+
+PAGE_SOLO = PAGE_3
+WIKI_PAGE_SOLO = WIKI_PAGE_3
+
+ADD_INFO_LIST_TWO = [
+    {
+        "latitude": str(PAGE_LATITUDE_1),
+        "longtitude": str(PAGE_LONGTUDE_1),
+        "extract": PAGE_EXTRACT_1
+    },
+    {
+        "latitude": str(PAGE_LATITUDE_2),
+        "longtitude": str(PAGE_LONGTUDE_2),
+        "extract": PAGE_EXTRACT_2
+    }
+]
+
+ADD_INFO_LIST_THREE = [
+    {
+        "latitude": str(PAGE_LATITUDE_1),
+        "longtitude": str(PAGE_LONGTUDE_1),
+        "extract": PAGE_EXTRACT_1
+    },
+    {
+        "latitude": str(PAGE_LATITUDE_2),
+        "longtitude": str(PAGE_LONGTUDE_2),
+        "extract": PAGE_EXTRACT_2
+    },
+    {
+        "latitude": str(PAGE_LATITUDE_3),
+        "longtitude": str(PAGE_LONGTUDE_3),
+        "extract": PAGE_EXTRACT_3
+    }
+]
+
+PAGES_NO_LATLON = {
+    PAGEID_1: {
+        "pageid": PAGEID_1,
+        "ns": 0,
+        "title": PLACE_NAME_1,
+        "coordinates": [
+            {
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_1
+    },
+    PAGEID_2: {
+        "pageid": PAGEID_2,
+        "ns": 0,
+        "title": PLACE_NAME_2,
+        "coordinates": [
+            {
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_2
+    },
+    PAGEID_3: {
+        "pageid": PAGEID_3,
+        "ns": 0,
+        "title": PLACE_NAME_3,
+        "coordinates": [
+            {
+                "primary": "",
+                "globe": "earth"
+            }
+        ],
+        "extract": PAGE_EXTRACT_3
+    }
+}
+
+WIKI_PAGES_NO_LATLON = wiki_page_response(PAGES_NO_LATLON)
