@@ -605,7 +605,6 @@ PLACES_NO_IMAGE = {
     }
 }
 
-
 WIKI_PLACE_LIST = [
     {
         'name': PLACE_TITLE_1,
@@ -814,5 +813,28 @@ FIRST_INFO_LIST_NO_IMAGE = [
         'name': PLACE_TITLE_2,
         'linkUrl': LINKURL_2,
         'imageUrl': '',
+    }
+]
+
+#################################################################
+# travel.viewsのテストデータ
+
+
+WIKI_PLACE_LIST_SAVED_EXIST = [
+    {
+        'name': PLACE_NAME_1,  # NOTE: モデル保存済みの名前にしておく
+        'linkUrl': LINKURL_1,
+        'imageUrl': IMAGE_URL_1,
+        'latitude': str(PAGE_LATITUDE_1),
+        'longtitude': str(PAGE_LONGTUDE_1),
+        'extract': PAGE_EXTRACT_1
+    },
+    {
+        'name': PLACE_TITLE_2,
+        'linkUrl': LINKURL_2,
+        'imageUrl': IMAGE_URL_2,
+        'latitude': str(PAGE_LATITUDE_2),
+        'longtitude': str(PAGE_LONGTUDE_2),
+        'extract': PAGE_EXTRACT_2
     }
 ]
