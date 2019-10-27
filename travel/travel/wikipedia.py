@@ -10,7 +10,8 @@ def geo_search(latlon, radius, max_show_num):
     # 検索結果が空の場合はNoneを返す
     if places is None:
         return None
-    place_list = make_namelist_and_first_data(places)
+    namelist, first_info_list = make_namelist_and_first_data(places)
+    place_list = combine_list_info(namelist, first_info_list)
     return place_list
 
 
@@ -64,9 +65,8 @@ def make_namelist_and_first_data(places):
         except KeyError:
             place_attr["imageUrl"] = ""
         first_info_list.append(place_attr)
-    place_list = combine_list_info(namelist, first_info_list)
 
-    return place_list
+    return namelist, first_info_list
 
 
 def combine_list_info(namelist, first_info_list):
@@ -87,12 +87,13 @@ def make_add_info_list(namelist):
     追加情報のリストを作成する
     """
     add_info_list = []
-    # 要素が２０以上存在する場合は２０ずつのリストに分けて追加情報を取得する
+    # 要素が２１以上存在する場合は２０ずつのリストに分けて追加情報を取得する
     if len(namelist) > 21:
         devided_namelist = devide_list_by_specific_size(namelist, 20)
         for piece_list in devided_namelist:
             add_info_piece = organize_additional_info(piece_list)
             add_info_list.extend(add_info_piece)
+    # 要素が２０以下の場合はそのまま追加情報を取得する
     else:
         add_info_list = organize_additional_info(namelist)
 
