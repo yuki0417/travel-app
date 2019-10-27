@@ -66,9 +66,6 @@ class PlaceListView(ListView):
             'place_list': place_list,
             'radius': radius,
             'max_show_num': max_show_num,
-            'object_list': self.get_queryset(),
-            'setting_radius_meta': self.setting_radius_meta,
-            'setting_max_show_num_meta': self.setting_max_show_num_meta,
         }
         return render(request, 'travel/place_result.html', d)
 
