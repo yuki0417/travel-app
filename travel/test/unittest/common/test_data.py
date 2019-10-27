@@ -838,3 +838,26 @@ WIKI_PLACE_LIST_SAVED_EXIST = [
         'extract': PAGE_EXTRACT_2
     }
 ]
+
+YOUR_LOCATION = ['35.1234567', '139.123456']
+
+PLACE_LIST_SAVED_MARKED = [
+    {
+        'name': PLACE_NAME_1,
+        'linkUrl': LINKURL_1,
+        'imageUrl': IMAGE_URL_1,
+        'latitude': str(PAGE_LATITUDE_1),
+        'longtitude': str(PAGE_LONGTUDE_1),
+        'extract': PAGE_EXTRACT_1,
+        'saved': True
+    },
+    {
+        'name': PLACE_TITLE_2,
+        'linkUrl': LINKURL_2,
+        'imageUrl': IMAGE_URL_2,
+        'latitude': str(PAGE_LATITUDE_2),
+        'longtitude': str(PAGE_LONGTUDE_2),
+        'extract': PAGE_EXTRACT_2,
+        'saved': False
+    }
+]
