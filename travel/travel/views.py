@@ -29,11 +29,13 @@ class PlaceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # import pdb;pdb.set_trace()
         context['setting_radius_meta'] = self.setting_radius_meta
         context['setting_max_show_num_meta'] = self.setting_max_show_num_meta
         return context
 
-    def search_saved_place(self, user, place_raw_list):
+    def mark_saved_place(self, user, place_raw_list):
+        # 保存済みの場所であればフラグを追加する
         place_list = place_raw_list
         saved_places = Place.objects.filter(user=user)
         for place in place_list:
@@ -41,7 +43,7 @@ class PlaceListView(ListView):
                 if saved_places.get(name=place["name"]):
                     place["saved"] = True
             except Place.DoesNotExist:
-                pass
+                place["saved"] = False
         return place_list
 
     def post(self, request, *args, **kwargs):
@@ -49,38 +51,26 @@ class PlaceListView(ListView):
         user = AppUser.objects.get(id=user_id)
         setting_now = request.POST.get('setting_now')
         location = request.POST.getlist('your_location[]')
+        chosen_setting = Setting.objects.get(id=setting_now)
+        radius = chosen_setting.radius
+        max_show_num = chosen_setting.max_show_num
 
-        if location and setting_now:
-            if setting_now:
-                chosenSetting = Setting.objects.get(id=setting_now)
-                radius = chosenSetting.radius
-                max_show_num = chosenSetting.max_show_num
-            else:
-                radius = 1000
-                max_show_num = 3
-
-            # wikipediaAPIから検索
-            place_raw_list = geo_search(location, radius, max_show_num)
-            if place_raw_list is None:
-                return render(request, 'travel/place_not_found.html')
-            place_list = self.search_saved_place(user, place_raw_list)
-            d = {
-                'your_location': location,
-                'place_list': place_list,
-                'radius': radius,
-                'max_show_num': max_show_num,
-                'object_list': self.get_queryset(),
-                'setting_radius_meta': self.setting_radius_meta,
-                'setting_max_show_num_meta': self.setting_max_show_num_meta,
-            }
-            return render(request, 'travel/place_result.html', d)
-        else:
-            d = {
-                'object_list': self.get_queryset(),
-                'setting_radius_meta': self.setting_radius_meta,
-                'setting_max_show_num_meta': self.setting_max_show_num_meta,
-            }
-            return render(request, self.template_name, d)
+        # wikipediaAPIから検索
+        place_raw_list = geo_search(location, radius, max_show_num)
+        if place_raw_list is None:
+            return render(request, 'travel/place_not_found.html')
+        # 保存済みの場所かチェックする
+        place_list = self.mark_saved_place(user, place_raw_list)
+        d = {
+            'your_location': location,
+            'place_list': place_list,
+            'radius': radius,
+            'max_show_num': max_show_num,
+            'object_list': self.get_queryset(),
+            'setting_radius_meta': self.setting_radius_meta,
+            'setting_max_show_num_meta': self.setting_max_show_num_meta,
+        }
+        return render(request, 'travel/place_result.html', d)
 
 
 class SettingCreateView(CreateView):

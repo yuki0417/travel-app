@@ -29,6 +29,10 @@
 jQuery(function ($) {
   $(function(){
     $('#location_btn').on('click', function(){
+      var setting_now = $('[name="setting_now"] option:selected').val()
+      if (setting_now === '保存した設定から選ぶ') {
+        return;
+      }
       $("#loading").fadeIn(500);
       let getPosition = function (options) {
         return new Promise(function (resolve, reject) {
@@ -44,7 +48,7 @@ getPosition()
           position.coords.latitude,
           position.coords.longitude
         ],
-        'setting_now': $('[name="setting_now"] option:selected').val(),
+        'setting_now': setting_now,
         'csrfmiddlewaretoken': '{{ csrf_token }}'
       },
       function(data){
@@ -52,10 +56,6 @@ getPosition()
         $('#current_data').html(data)
       }
     ));
-    })
-    .catch((err) => {
-      $("#loading").fadeOut(500);
-      console.error(err.message);
     });
     });
   });
