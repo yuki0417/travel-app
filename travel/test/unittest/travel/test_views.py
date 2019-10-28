@@ -1,20 +1,12 @@
-import copy
 import re
 from unittest.mock import patch, MagicMock, Mock
-from io import StringIO, BytesIO
+from io import StringIO
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.test import TestCase, TransactionTestCase
-from django.views.generic import (
-    CreateView,
-    ListView,
-    UpdateView,
-    DeleteView,
-)
+from django.test import TestCase
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
-from django.contrib.sessions.backends.file import SessionStore
 from test_plus.test import CBVTestCase
 
 from travel.views import (
@@ -32,21 +24,16 @@ from travel.views import (
 )
 from travel.models import Place, Setting
 from travel.forms import SettingForm
-from travel.wikipedia import geo_search
 from accounts.models import AppUser
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
     COR_SETTING_DATA_1st,
-    COR_SETTING_DATA_2nd,
     COR_PLACE_DATA_1st,
-    COR_PLACE_DATA_2nd,
     AppUserCorrectTestData1st,
     AppUserCorrectTestData2nd,
     SettingCorrectTestData1st,
-    SettingCorrectTestData2nd,
     PlaceCorrectTestData1st,
-    PlaceCorrectTestData2nd,
     WIKI_PLACE_LIST_SAVED_EXIST,
     YOUR_LOCATION,
     WIKI_PLACE_LIST,
@@ -416,3 +403,111 @@ class DeleteDoneTestcase(TestCase):
             remove_csrf(result.content.decode('utf-8')),
             remove_csrf(expect.content.decode('utf-8'))
         )
+
+
+class PlaceSaveTestcase(TestCase):
+    """
+    場所保存リクエストのテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+
+    def test_place_save__with_post_method(self):
+        request = WSGIRequest({
+            'REQUEST_METHOD': 'POST',
+            'wsgi.input': StringIO()})
+        mock_wsgi_session_context()
+        WSGIRequest.POST = Mock()
+        side_effect = [
+            WIKI_PLACE_LIST[0]['name'],
+            WIKI_PLACE_LIST[0]['linkUrl'],
+            WIKI_PLACE_LIST[0]['imageUrl'],
+            WIKI_PLACE_LIST[0]['extract'],
+            WIKI_PLACE_LIST[0]['latitude'],
+            WIKI_PLACE_LIST[0]['longtitude'],
+        ]
+        WSGIRequest.POST.get = MagicMock(
+            side_effect=side_effect)
+
+        expect = render(request, 'travel/place_result.html')
+        result = place_save(request)
+        self.assertEqual(
+            remove_csrf(result.content.decode('utf-8')),
+            remove_csrf(expect.content.decode('utf-8'))
+        )
+
+    def test_place_save__with_no_post_method(self):
+        request = WSGIRequest({
+            'REQUEST_METHOD': 'GET',
+            'wsgi.input': StringIO()})
+        result = place_save(request)
+        self.assertEqual(result, None)
+
+
+class PlaceDeleteTestcase(TestCase):
+    """
+    場所取り消しのテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        PlaceCorrectTestData1st.setUp()
+
+    def test_place_delete__with_post_method(self):
+        request = WSGIRequest({
+            'REQUEST_METHOD': 'POST',
+            'wsgi.input': StringIO()})
+        mock_wsgi_session_context()
+        WSGIRequest.POST = Mock()
+        WSGIRequest.POST.get = MagicMock(
+            return_value=COR_PLACE_DATA_1st['name'])
+
+        expect = render(request, 'travel/place_result.html')
+        result = place_delete(request)
+        self.assertEqual(
+            remove_csrf(result.content.decode('utf-8')),
+            remove_csrf(expect.content.decode('utf-8'))
+        )
+
+    def test_place_delete__with_no_post_method(self):
+        request = WSGIRequest({
+            'REQUEST_METHOD': 'GET',
+            'wsgi.input': StringIO()})
+        result = place_delete(request)
+        self.assertEqual(result, None)
+
+
+class MockSavedPlaceListView(SavedPlaceListView):
+    """
+    ユーザー１のセッションを再現するために、
+    WSGIのモックを含めたSavedPlaceListViewを定義する
+    """
+    request = Mock()
+    request.session.get = MagicMock(
+        return_value=COR_APPUSER_DATA_1st['id'])
+
+
+class SavedPlaceListViewTestcase(TestCase):
+    """
+    場所取り消しのテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        PlaceCorrectTestData1st.setUp()
+
+    def test_class_variable__is_registered_correctly(self):
+        splv = SavedPlaceListView()
+        self.assertEqual(
+            splv.template_name,
+            'travel/saved_place_list.html')
+
+    def test_get_object(self):
+        splv = MockSavedPlaceListView()
+        result = splv.get_queryset()
+        expect = Place.objects.filter(user=COR_APPUSER_DATA_1st['id'])
+        self.assertQuerysetEqual(result, expect, transform=lambda x: x)
