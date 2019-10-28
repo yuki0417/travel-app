@@ -39,5 +39,4 @@ def is_exclude_url(request):
     for url in exclude_url:
         if request.path.startswith(reverse(url)):
             return True
-        else:
-            return False
+    return False
