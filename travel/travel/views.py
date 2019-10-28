@@ -128,11 +128,12 @@ def delete_done(request):
 
 
 def place_save(request):
+    # 場所のお気に入りリスト追加AJAXの機能
     if request.method == 'POST':
         user_id = request.session.get('user_id', False)
         user = AppUser.objects.get(id=user_id)
         name = request.POST.get('name')
-        linkurl = request.POST.get('linkurl')
+        linkUrl = request.POST.get('linkUrl')
         imageUrl = request.POST.get('imageUrl')
         extract = request.POST.get('extract')
         latitude = request.POST.get('latitude')
@@ -140,7 +141,7 @@ def place_save(request):
         Place.objects.create(
             name=name,
             user=user,
-            linkUrl=linkurl,
+            linkUrl=linkUrl,
             imageUrl=imageUrl,
             extract=extract,
             latitude=latitude,
@@ -150,6 +151,7 @@ def place_save(request):
 
 
 def place_delete(request):
+    # 場所のお気に入りリストから取り消しAJAXの機能
     if request.method == 'POST':
         user_id = request.session.get('user_id', False)
         user = AppUser.objects.get(id=user_id)

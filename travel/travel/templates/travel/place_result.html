@@ -118,7 +118,7 @@
                         }
                         if (saveStatus === "気になる") {
                           $(this).toggleClass('btn-warning btn-secondary');
-                          let linkurl = currentRow.find('a').attr('href');
+                          let linkUrl = currentRow.find('a').attr('href');
                           let imageUrl = currentRow.find('img').attr('src');
                           let extract = currentRow.find('#extract').text();
                           let latitude = currentRow.find('#latitude').text();
@@ -126,7 +126,7 @@
                           ($.post("{% url 'travel:place_save' %}",
                             {
                               'name': name,
-                              'linkurl': linkurl,
+                              'linkUrl': linkUrl,
                               'imageUrl': imageUrl,
                               'extract': extract,
                               'latitude': latitude,
