@@ -1,25 +1,40 @@
 {% extends './place_base.html' %}
 {% block content %}
-
-<form method="POST" action="">
-    {% csrf_token %}
-    {% if form.non_field_errors %}
-    <div class="field_wrapper">
-      {{ form.non_field_errors }}
+  <div class="card mb-3">
+      <div class="card-header">
+          <h3>設定の作成</h3>
+      </div>
+        <div class="content-wrapper">
+          <div class="container-fluid">
+            <div class="form-row">
+          <form method="POST" action="">
+              {% csrf_token %}
+              {% if form.non_field_errors %}
+              <div class="field_wrapper">
+                {{ form.non_field_errors }}
+              </div>
+              {% endif %}
+              <label>設定名</label>
+              <div class="col">
+              {{ form.user }}
+              {{ form.name }}
+              {{ form.name.errors }}
+              </div>
+              <label>半径</label>
+              <div class="col">
+              {{ form.radius }}
+              {{ form.radius.errors }}
+              </div>
+              <label>最大表示件数</label>
+              <div class="col">
+              {{ form.max_show_num }}
+              {{ form.max_show_num.errors }}
+              </div>
+              <button class="btn btn-primary" type="submit">登録</button>
+          </form>
+        </div>
     </div>
-    {% endif %}
-    <label>設定名</label>
-    {{ form.user }}
-    {{ form.name }}
-    {{ form.name.errors }}
-    <label>半径</label>
-    {{ form.radius }}
-    {{ form.radius.errors }}
-    <label>最大表示件数</label>
-    {{ form.max_show_num }}
-    {{ form.max_show_num.errors }}
-    <button type = "submit">登録</button>
-  </form>
+</div>
 
 <!-- ajax用のjqueryの読み込み -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

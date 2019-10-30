@@ -4,9 +4,21 @@ from django import forms
 from travel.models import Setting
 from travel.forms import SettingForm
 from test.unittest.common.test_data import (
+    COR_APPUSER_DATA_1st,
+    COR_SETTING_DATA_1st,
     AppUserCorrectTestData1st,
     SettingCorrectTestData1st,
 )
+
+
+class MockSettingForm(SettingForm):
+    """
+    設定フォームのcleaned_dataの値を事前に用意しておく
+    """
+    cleaned_data = {
+        'user': COR_APPUSER_DATA_1st['id'],
+        'name': COR_SETTING_DATA_1st['name'],
+    }
 
 
 class SettingFormTestcase(TestCase):
@@ -26,8 +38,9 @@ class SettingFormTestcase(TestCase):
         self.assertEqual(meta.fields, fields)
         self.assertIsInstance(meta.widgets['user'], forms.HiddenInput)
 
-    def test_init_(self):
-        sf = SettingForm(Setting)
-        result = sf.instance.unique_error_message('any', 'thing')
+    def test_clean(self):
+        msf = MockSettingForm(instance=Setting)
+        msf.clean()
+        result = msf.errors['name'][0]
         expect = '同じ設定名が存在します。違う設定名に変更してください。'
         self.assertEqual(result, expect)
