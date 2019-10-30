@@ -13,7 +13,12 @@ class SettingForm(forms.ModelForm):
             'user': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.instance.unique_error_message = \
-            lambda m, u: u'同じ設定名が存在します。違う設定名に変更してください。'
+    def clean(self):
+        super().clean()
+        user = self.cleaned_data.get('user', None)
+        tmp_setting_name = self.cleaned_data.get('name', None)
+        try:
+            Setting.objects.get(user=user, name=tmp_setting_name)
+            self.add_error('name', '同じ設定名が存在します。違う設定名に変更してください。')
+        except Setting.DoesNotExist:
+            pass
