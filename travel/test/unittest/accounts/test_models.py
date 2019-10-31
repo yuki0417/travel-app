@@ -1,13 +1,37 @@
-from django.test import TransactionTestCase
+from uuid import UUID
+from json import JSONEncoder
+
+from django.test import TestCase, TransactionTestCase
 from django.db.utils import IntegrityError
 from django.db.utils import DataError
-from accounts.models import AppUser
+from accounts.models import AppUser, JSONEncoder_newdefault
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
     AppUserCorrectTestData1st,
     AppUserCorrectTestData2nd,
 )
+
+
+class TestJsonEncoder_newdefault(TestCase):
+    """
+    JsonEncoderのテスト
+    """
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+
+    def test_JSONEncoder_newdefault__with_uuid(self):
+        test_uuid = UUID(COR_APPUSER_DATA_1st['id'])
+
+        result = JSONEncoder_newdefault(JSONEncoder_newdefault, test_uuid)
+        expect = str(test_uuid)
+        self.assertEqual(result, expect)
+
+    def test_JSONEncoder_newdefault__with_no_uuid(self):
+        test_obj = 'this_is_not_uuid'
+
+        result = JSONEncoder_newdefault(JSONEncoder_newdefault, test_obj)
+        self.assertEqual(result, None)
 
 
 class TestAppUser(TransactionTestCase):

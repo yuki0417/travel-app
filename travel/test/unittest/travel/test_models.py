@@ -1,23 +1,46 @@
+from uuid import UUID
+from json import JSONEncoder
+
 from django.test import TestCase, TransactionTestCase
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.db.utils import DataError
 from accounts.models import AppUser
-from travel.models import Setting, Place
+from travel.models import Setting, Place, JSONEncoder_newdefault
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
     COR_SETTING_DATA_1st,
     COR_SETTING_DATA_2nd,
     COR_PLACE_DATA_1st,
-    COR_PLACE_DATA_2nd,
     AppUserCorrectTestData1st,
     AppUserCorrectTestData2nd,
     SettingCorrectTestData1st,
     SettingCorrectTestData2nd,
     PlaceCorrectTestData1st,
-    PlaceCorrectTestData2nd
 )
+
+
+class TestJsonEncoder_newdefault(TestCase):
+    """
+    JsonEncoderのテスト
+    """
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        SettingCorrectTestData1st.setUp()
+
+    def test_JSONEncoder_newdefault__with_uuid(self):
+        test_uuid = UUID(COR_APPUSER_DATA_1st['id'])
+
+        result = JSONEncoder_newdefault(JSONEncoder_newdefault, test_uuid)
+        expect = str(test_uuid)
+        self.assertEqual(result, expect)
+
+    def test_JSONEncoder_newdefault__with_no_uuid(self):
+        test_obj = 'this_is_not_uuid'
+
+        result = JSONEncoder_newdefault(JSONEncoder_newdefault, test_obj)
+        self.assertEqual(result, None)
 
 
 class SettingCorrectTestcase(TransactionTestCase):
