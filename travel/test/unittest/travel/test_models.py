@@ -260,9 +260,28 @@ class PlaceForeignKeyTestcase(TransactionTestCase):
         AppUserCorrectTestData1st.setUp()
         PlaceCorrectTestData1st.setUp()
 
-    def test_setting__foreignkey_on_delete(self):
+    def test_place__foreignkey_on_delete(self):
         appuser_1 = AppUser.objects.get(
             id=COR_APPUSER_DATA_1st["id"])
         appuser_1.delete()
         with self.assertRaises(Place.DoesNotExist):
             Place.objects.get(id=COR_PLACE_DATA_1st["id"])
+
+
+class PlaceStrTestcase(TransactionTestCase):
+    """
+    気になる場所リストの__str__つのテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        PlaceCorrectTestData1st.setUp()
+
+    def test_place_str_(self):
+        test_place_1 = Place.objects.get(
+            id=COR_PLACE_DATA_1st["id"])
+
+        result = str(test_place_1)
+        expect = COR_PLACE_DATA_1st["name"]
+        self.assertEqual(expect, result)
