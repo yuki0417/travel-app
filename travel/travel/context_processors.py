@@ -7,11 +7,11 @@ def common(request, *args, **kwargs):
     """
     セッション情報を使ってユーザーの情報をテンプレートに表示する
     """
-    # 対象外のURLかを判定
+    # 対象外のURLのときはコンテキストは空にする
     if is_exclude_url(request) is True:
         return {}
 
-    # セッションにユーザー情報がある場合
+    # セッションにユーザー情報があるときにコンテキストを返す
     if request.session.get('user_id', False):
         user_id = request.session.get('user_id', False)
         user = AppUser.objects.get(id=user_id)

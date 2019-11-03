@@ -15,7 +15,7 @@ def create_test_user():
     return user
 
 
-def test_user_exists():
+def is_test_user_exists():
     try:
         AppUser.objects.get(
             username=TEST_USER_INFO["username"]
