@@ -9,24 +9,25 @@
             <div class="form-row">
           <form method="POST" action="">
               {% csrf_token %}
-              {% if form.non_field_errors %}
               <div class="field_wrapper">
+              <div class="col">
+              {% if form.non_field_errors %}
                 {{ form.non_field_errors }}
               </div>
               {% endif %}
-              <label>設定名</label>
               <div class="col">
+              <label>設定名</label>
               {{ form.user }}
               {{ form.name }}
               {{ form.name.errors }}
               </div>
-              <label>半径</label>
               <div class="col">
+              <label>半径</label>
               {{ form.radius }}
               {{ form.radius.errors }}
               </div>
-              <label>最大表示件数</label>
               <div class="col">
+              <label>最大表示件数</label>
               {{ form.max_show_num }}
               {{ form.max_show_num.errors }}
               </div>
@@ -35,10 +36,6 @@
         </div>
     </div>
 </div>
-
-<!-- ajax用のjqueryの読み込み -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
 
 <script>
   // NOTE: 本来はViewやformでする処理だが、
