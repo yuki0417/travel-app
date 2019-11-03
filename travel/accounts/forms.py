@@ -13,10 +13,10 @@ class SignUpForm(forms.ModelForm):
         model = AppUser
         fields = ("username", "password")
         widgets = {
-            'password': forms.PasswordInput,
+            'password': forms.PasswordInput(),
         }
     password_check = forms.CharField(
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput())
 
     def clean(self):
         super().clean()
@@ -35,7 +35,7 @@ class LoginForm(forms.Form):
         label='ユーザー名',
         max_length=100)
     password = forms.CharField(
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput())
 
     def clean(self):
         super().clean()
