@@ -31,7 +31,7 @@ class SettingFormTestcase(TestCase):
         AppUserCorrectTestData1st.setUp()
         SettingCorrectTestData1st.setUp()
 
-    def test_class_variable__is_registered_correctly(self):
+    def test_class_meta_variable__is_registered_correctly(self):
         meta = SettingForm(Setting).Meta()
         fields = ('user', 'name', 'radius', 'max_show_num')
         self.assertEqual(meta.model, Setting)
