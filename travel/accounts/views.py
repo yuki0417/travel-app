@@ -28,16 +28,16 @@ class SignUpView(CreateView):
             user.save()
             # userのセッションを保持する
             request.session['user_id'] = user.id
-            return redirect('/travel/list')
+            return redirect('travel:place_list')
         else:
-            return render(request, 'accounts/signup.html', {'form': form})
+            return render(request, self.template_name, {'form': form})
 
     def get(self, request, *args, **kwargs):
         form = SignUpForm(request.POST)
-        return render(request, 'accounts/signup.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
 
 
-class AccountLoginView(View):
+class LoginView(View):
     """
     ログインの画面
     """
@@ -50,16 +50,19 @@ class AccountLoginView(View):
             username = form.data['username']
             user = AppUser.objects.get(username=username)
             request.session['user_id'] = user.id
-            return redirect('/travel/list')
+            return redirect('travel:place_list')
         else:
-            return render(request, 'accounts/login.html', {'form': form})
+            return render(request, self.template_name, {'form': form})
 
     def get(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
-        return render(request, 'accounts/login.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
 
 
 def logout_confirm(request):
+    """
+    ログアウト確認画面
+    """
     if request.method == "POST":
         request.session.clear()
         return render(request, 'accounts/logged_out.html')
@@ -68,10 +71,16 @@ def logout_confirm(request):
 
 
 def logged_out(request):
+    """
+    ログアウト画面
+    """
     return render(request, 'accounts/logged_out.html')
 
 
 def test_login(request):
+    """
+    テストログイン処理
+    """
     # ユーザーがない場合はテストユーザーを作成
     if is_test_user_exists() is False:
         user = create_test_user()
@@ -86,4 +95,4 @@ def test_login(request):
     user.save()
 
     # 場所を探すページに遷移
-    return redirect('/travel/list')
+    return redirect('travel:place_list')
