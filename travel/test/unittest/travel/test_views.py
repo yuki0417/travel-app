@@ -23,7 +23,7 @@ from travel.views import (
     update_done
 )
 from travel.models import Place, Setting
-from travel.forms import SettingForm
+from travel.forms import SettingForm, SettingUpdateForm
 from accounts.models import AppUser
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
@@ -311,7 +311,7 @@ class SettingUpdateViewTestcase(TestCase):
     def test_class_variable__is_registered_correctly(self):
         sdv = SettingUpdateView()
         self.assertEqual(sdv.model, Setting)
-        self.assertEqual(sdv.form_class, SettingForm)
+        self.assertEqual(sdv.form_class, SettingUpdateForm)
         self.assertEqual(
             sdv.success_url,
             reverse_lazy('travel:setting_update_done'))
