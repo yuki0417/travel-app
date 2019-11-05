@@ -22,3 +22,15 @@ class SettingForm(forms.ModelForm):
             self.add_error('name', '同じ設定名が存在します。違う設定名に変更してください。')
         except Setting.DoesNotExist:
             pass
+
+
+class SettingUpdateForm(forms.ModelForm):
+    """
+    設定更新画面用のフォーム
+    """
+    class Meta:
+        model = Setting
+        fields = ('user', 'name', 'radius', 'max_show_num')
+        widgets = {
+            'user': forms.HiddenInput(),
+        }
