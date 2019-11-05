@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 
 from .models import Place, Setting
-from .forms import SettingForm
+from .forms import SettingForm, SettingUpdateForm
 from .wikipedia import geo_search
 from accounts.models import AppUser
 
@@ -29,7 +29,6 @@ class PlaceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # import pdb;pdb.set_trace()
         context['setting_radius_meta'] = self.setting_radius_meta
         context['setting_max_show_num_meta'] = self.setting_max_show_num_meta
         return context
@@ -101,7 +100,7 @@ class SettingUpdateView(UpdateView):
     設定の更新画面
     """
     model = Setting
-    form_class = SettingForm
+    form_class = SettingUpdateForm
     success_url = reverse_lazy('travel:setting_update_done')
 
     def get_object(self):
