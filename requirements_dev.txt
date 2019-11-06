@@ -4,3 +4,4 @@ coverage
 unittest-xml-reporting
 junit2html
 django-test-plus
+Selenium
