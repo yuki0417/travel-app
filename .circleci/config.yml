@@ -32,7 +32,7 @@ jobs:
           name: docker-compose exec unittest
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && coverage run --source='.' manage.py test.unittest
+            "cd travel && coverage run --source='.' manage.py test test.unittest
             --settings=setting.settings_ci --keepdb"
       - run:
           name: docker-compose exec integration test
