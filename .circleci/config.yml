@@ -23,10 +23,16 @@ jobs:
             "cd travel && python manage.py migrate
             --settings=setting.settings_ci"
       - run:
-          name: docker-compose exec test
+          name: docker-compose exec unittest
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && coverage run --source='.' manage.py test
+            "cd travel && coverage run --source='.' manage.py test.unittest
+            --settings=setting.settings_ci --keepdb"
+      - run:
+          name: docker-compose exec integration test
+          command: >
+            docker-compose -f docker-compose_ci.yml exec django sh -c
+            "cd travel && python manage.py test test.integtest.accounts
             --settings=setting.settings_ci --keepdb"
       - run:
           name: docker-compose make test-html-report
