@@ -25,7 +25,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         o.add_argument('--no-sandbox')
         o.add_argument('--window-size=1200x600')
         cls.selenium = webdriver.Chrome(chromedriver_path, options=o)
-        cls.selenium.implicitly_wait(5)
+        cls.selenium.implicitly_wait(15)
 
     @classmethod
     def tearDownClass(cls):
