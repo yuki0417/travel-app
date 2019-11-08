@@ -1,12 +1,13 @@
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from test.unittest.common.test_data import (
     AppUserEncPasswordTestData1st,
     COR_APPUSER_DATA_1st,
 )
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
@@ -37,6 +38,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
         ログイン画面にアクセスし、必要なフォーム入力し、ログインボタンを押す
         """
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
+        sleep(5)
+        # ページソースを確認
+        print(self.selenium.page_source)
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
@@ -44,6 +48,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
         self.selenium.find_element_by_xpath(
             '/html/body/div/div/div/form/div[3]/button').click()
 
+        sleep(5)
+        # ページソースを確認
+        print(self.selenium.page_source)
         result = self.selenium.current_url
         expected = self.live_server_url + '/travel/list/'
 
