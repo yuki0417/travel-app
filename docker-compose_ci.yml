@@ -13,6 +13,8 @@ services:
     stdin_open: true
     volumes:
       - "./travel/test-reports:/opt/apps/travel/test-reports"
+    ports:
+      - "80:80"
   postgres:
     build:
       context: .
