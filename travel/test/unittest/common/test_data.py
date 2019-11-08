@@ -1,17 +1,12 @@
-# import sys
-import uuid
 import copy
 from datetime import datetime
-from json import JSONEncoder
-from uuid import UUID
-
 import pytz
-# sys.path.append('../../../')
+
+from django.contrib.auth.hashers import make_password
+
 from accounts.models import AppUser
 from django.contrib.auth.models import User
-from django.db import models
-from django.test import TestCase, TransactionTestCase
-from django.utils import timezone
+from django.test import TestCase
 from travel.models import Place, Setting
 
 
@@ -294,6 +289,22 @@ class AppUserCorrectTestData2nd(TestCase):
             username=COR_APPUSER_DATA_2nd["username"],
             password=COR_APPUSER_DATA_2nd["password"],
             last_login=COR_APPUSER_DATA_2nd["last_login"],
+        )
+
+
+class AppUserEncPasswordTestData1st(TestCase):
+    """
+    ユーザー情報の正常データのセットアップその２
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        AppUser.objects.create(
+            id=COR_APPUSER_DATA_1st["id"],
+            username=COR_APPUSER_DATA_1st["username"],
+            password=make_password(COR_APPUSER_DATA_1st["password"]),
+            last_login=COR_APPUSER_DATA_1st["last_login"],
         )
 
 

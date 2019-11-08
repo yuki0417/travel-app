@@ -7,7 +7,10 @@ services:
       dockerfile: Dockerfile_django
     depends_on:
       - postgres
-    command: bash -c "/bin/bash"
+    command: >
+     bash -c "
+     apt-get install -y chromium chromium-driver
+     && /bin/bash"
     tty: true
     stdin_open: true
     volumes:
