@@ -15,7 +15,8 @@ jobs:
           name: docker-compose install chromium and driver
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "apt-get install -y chromium chromium-driver"
+            "apt-get -y update
+            && apt-get install -y chromium chromium-driver"
       - run:
           name: docker-compose install requirements
           command: >
