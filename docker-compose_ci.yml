@@ -8,9 +8,7 @@ services:
     depends_on:
       - postgres
     command: >
-     bash -c "
-     apt-get install -y chromium chromium-driver
-     && /bin/bash"
+     bash -c "/bin/bash"
     tty: true
     stdin_open: true
     volumes:
