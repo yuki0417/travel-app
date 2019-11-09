@@ -50,9 +50,10 @@ class SettingFormTestcase(TestCase):
         self.assertEqual(result, expect)
 
 
-class MockSettingUpdateFormWithInstance(SettingForm):
+class MockSettingUpdateFormWithInstance(SettingUpdateForm):
     """
-    設定フォームのcleaned_dataの値を事前に用意しておく
+    設定更新画面用のフォームのcleaned_dataの値と、
+    instanceの値を事前に用意しておく
     """
     cleaned_data = {
         'user': COR_APPUSER_DATA_1st['id'],
@@ -63,9 +64,9 @@ class MockSettingUpdateFormWithInstance(SettingForm):
     instance.name.return_value = COR_SETTING_DATA_2nd['name']
 
 
-class MockSettingUpdateForm(SettingForm):
+class MockSettingUpdateForm(SettingUpdateForm):
     """
-    設定フォームのcleaned_dataの値を事前に用意しておく
+    設定更新画面用のフォームのcleaned_dataの値を事前に用意しておく
     """
     cleaned_data = {
         'user': COR_APPUSER_DATA_1st['id'],
