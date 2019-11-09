@@ -17,7 +17,7 @@
               {% endif %}
               <div class="col">
               <label>設定名</label>
-              {{ form.user }}
+              <input type="hidden" name="user" id="id_user" value={{ user_id }}>
               {{ form.name }}
               {{ form.name.errors }}
               </div>
@@ -36,17 +36,5 @@
         </div>
     </div>
 </div>
-
-<script>
-  // NOTE: 本来はViewやformでする処理だが、
-  // セッション情報の渡し方がなさそうなためjQueryでフォームにユーザーIDを入れている。
-  // ユーザーIDはuuidのため、他のユーザーから推測される心配はない。
-  jQuery(function ($) {
-    $(function(){
-      $("#id_user").val("{{ user_id }}");
-    });
-  });
-</script>
-
 
 {% endblock content %}

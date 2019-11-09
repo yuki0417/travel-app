@@ -34,3 +34,16 @@ class SettingUpdateForm(forms.ModelForm):
         widgets = {
             'user': forms.HiddenInput(),
         }
+
+    def clean(self):
+        super().clean()
+        user = self.cleaned_data.get('user', None)
+        new_setting_name = self.cleaned_data.get('name', None)
+        old_setting_name = self.instance.name
+        # 他の設定に設定名が使われていた場合
+        if not new_setting_name == old_setting_name:
+            try:
+                Setting.objects.get(user=user, name=new_setting_name)
+                self.add_error('name', '同じ設定名が存在します。違う設定名に変更してください。')
+            except Setting.DoesNotExist:
+                pass
