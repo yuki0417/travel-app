@@ -8,14 +8,10 @@ from test.unittest.common.test_data import (
     teardown_data,
     AppUserEncPasswordTestData1st,
     COR_APPUSER_DATA_1st,
-    COR_APPUSER_DATA_2nd,
 )
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
-
-    def setUp(self):
-        AppUserEncPasswordTestData1st.setUp()
 
     @classmethod
     def setUpClass(cls):
@@ -36,30 +32,44 @@ class MySeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def login_with_test_user(self):
+    def test_signup__from_login_page(self):
+        """
+        ログイン画面にアクセスし、新規登録ボタンを押す
+        =>新規登録の画面に遷移する
+        """
+        # ログイン画面にアクセス
         self.selenium.get(
             '%s%s' % (
                 self.live_server_url,
                 str(reverse_lazy('accounts:login'))))
+        # 新規登録ボタンを押す
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/div[1]/div/a').click()
+            '/html/body/div/div/div/div[2]/div/a').click()
 
-    def test_login__when_success(self):
+        result = self.selenium.current_url
+        expected = \
+            self.live_server_url + str(reverse_lazy('accounts:signup'))
+
+        self.assertEqual(result, expected)
+
+    def test_signup__when_success(self):
         """
-        ログイン画面にアクセスし、必要なフォーム入力し、ログインボタンを押す
+        新規登録画面にアクセスし、ユーザー登録を行う
         =>場所一覧の画面に遷移する
         """
-        # ログイン
+        # 新規登録画面にアクセス
         self.selenium.get(
             '%s%s' % (
                 self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
+                str(reverse_lazy('accounts:signup'))))
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
         password_input.send_keys(COR_APPUSER_DATA_1st['password'])
+        password_input = self.selenium.find_element_by_name("password_check")
+        password_input.send_keys(COR_APPUSER_DATA_1st['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[3]/button').click()
+            '/html/body/div/div/div/form/div[4]/button').click()
 
         result = self.selenium.current_url
         expected = \
@@ -67,39 +77,30 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         self.assertEqual(result, expected)
 
-    def test_login__when_failed(self):
+    def test_signup__when_failed(self):
         """
-        ログイン画面にアクセスし、誤ったパスワードを入力し、ログインボタンを押す
-        =>ログイン画面に遷移する
+        新規登録画面にアクセスし、すでに存在するユーザー登録を行う
+        =>新規登録画面のままになる
         """
-        # ログイン
+        # 同一のユーザーを登録しておく
+        AppUserEncPasswordTestData1st.setUp()
+
+        # 新規登録画面にアクセス
         self.selenium.get(
             '%s%s' % (
                 self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
+                str(reverse_lazy('accounts:signup'))))
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
-        # 誤ったパスワードを入力
-        password_input.send_keys(COR_APPUSER_DATA_2nd['password'])
+        password_input.send_keys(COR_APPUSER_DATA_1st['password'])
+        password_input = self.selenium.find_element_by_name("password_check")
+        password_input.send_keys(COR_APPUSER_DATA_1st['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[3]/button').click()
-
-        result = self.selenium.current_url
-        expected = self.live_server_url + str(reverse_lazy('accounts:login'))
-
-        self.assertEqual(result, expected)
-
-    def test_login__when_test_user(self):
-        """
-        ログイン画面にアクセスし、「テストユーザーでログイン」ボタンを押す
-        =>場所一覧の画面に遷移する
-        """
-        # テストユーザーログイン
-        self.login_with_test_user()
+            '/html/body/div/div/div/form/div[4]/button').click()
 
         result = self.selenium.current_url
         expected = \
-            self.live_server_url + str(reverse_lazy('travel:place_list'))
+            self.live_server_url + str(reverse_lazy('accounts:signup'))
 
         self.assertEqual(result, expected)
