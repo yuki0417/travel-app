@@ -25,6 +25,22 @@ def list_difference(list1, list2):
 
     return result
 
+
+def teardown_data():
+    try:
+        AppUser.objects.all().delete()
+    except AppUser.DoesNotExist:
+        pass
+    try:
+        Setting.objects.all().delete()
+    except Setting.DoesNotExist:
+        pass
+    try:
+        Place.objects.all().delete()
+    except Place.DoesNotExist:
+        pass
+
+
 ####################################################################
 
 # テストに用いるデータの定義はここに記述する
@@ -328,8 +344,8 @@ class SettingCorrectTestData1st(TestCase):
 
 class SettingCorrectTestData2ndUser1st(TestCase):
     """
-    設定の正常データのセットアップその１の２
-    ユーザーは上記と同一
+    設定の正常データのセットアップその１
+    ユーザーは上記と同一で、設定はその２を使う
     """
     databases = '__all__'
 
@@ -343,7 +359,6 @@ class SettingCorrectTestData2ndUser1st(TestCase):
             radius=COR_SETTING_DATA_2nd["radius"],
             max_show_num=COR_SETTING_DATA_2nd["max_show_num"],
         )
-
 
 
 class SettingCorrectTestData2nd(TestCase):
