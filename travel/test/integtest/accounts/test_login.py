@@ -1,4 +1,3 @@
-from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -26,7 +25,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         o.add_argument('--no-sandbox')
         o.add_argument('--window-size=1200x600')
         cls.selenium = webdriver.Chrome(chromedriver_path, options=o)
-        cls.selenium.implicitly_wait(15)
+        cls.selenium.implicitly_wait(5)
 
     @classmethod
     def tearDownClass(cls):
@@ -38,7 +37,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         ログイン画面にアクセスし、必要なフォーム入力し、ログインボタンを押す
         """
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
-        sleep(5)
         # ページソースを確認
         print(self.selenium.page_source)
         username_input = self.selenium.find_element_by_name("username")
@@ -48,7 +46,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         self.selenium.find_element_by_xpath(
             '/html/body/div/div/div/form/div[3]/button').click()
 
-        sleep(5)
         # ページソースを確認
         print(self.selenium.page_source)
         result = self.selenium.current_url
