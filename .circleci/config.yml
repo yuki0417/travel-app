@@ -12,6 +12,12 @@ jobs:
           command: |
             docker-compose -f docker-compose_ci.yml up -d
       - run:
+          name: docker-compose install chromium and driver
+          command: >
+            docker-compose -f docker-compose_ci.yml exec django sh -c
+            "apt-get -y update
+            && apt-get install -y chromium chromium-driver"
+      - run:
           name: docker-compose install requirements
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
@@ -23,10 +29,16 @@ jobs:
             "cd travel && python manage.py migrate
             --settings=setting.settings_ci"
       - run:
-          name: docker-compose exec test
+          name: docker-compose exec unittest
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && coverage run --source='.' manage.py test
+            "cd travel && coverage run --source='.' manage.py test test.unittest
+            --settings=setting.settings_ci --keepdb"
+      - run:
+          name: docker-compose exec integration test
+          command: >
+            docker-compose -f docker-compose_ci.yml exec django sh -c
+            "cd travel && python manage.py test test.integtest.accounts
             --settings=setting.settings_ci --keepdb"
       - run:
           name: docker-compose make test-html-report

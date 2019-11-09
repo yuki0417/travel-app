@@ -7,7 +7,9 @@ services:
       dockerfile: Dockerfile_django
     command: >
       bash -c "
-      pip install --no-cache-dir -r requirements_dev.txt
+      apt-get -y update
+      && apt-get install -y chromium chromium-driver
+      && pip install --no-cache-dir -r requirements_dev.txt
       && cd travel && python manage.py migrate
       --settings=setting.settings_dev
       && /bin/bash"
