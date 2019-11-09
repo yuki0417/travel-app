@@ -7,7 +7,8 @@ services:
       dockerfile: Dockerfile_django
     depends_on:
       - postgres
-    command: bash -c "/bin/bash"
+    command: >
+     bash -c "/bin/bash"
     tty: true
     stdin_open: true
     volumes:
