@@ -326,6 +326,26 @@ class SettingCorrectTestData1st(TestCase):
         )
 
 
+class SettingCorrectTestData2ndUser1st(TestCase):
+    """
+    設定の正常データのセットアップその１の２
+    ユーザーは上記と同一
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        Setting.objects.create(
+            id=COR_SETTING_DATA_2nd["id"],
+            user=AppUser.objects.get(
+                id=COR_SETTING_DATA_1st["user"]),
+            name=COR_SETTING_DATA_2nd["name"],
+            radius=COR_SETTING_DATA_2nd["radius"],
+            max_show_num=COR_SETTING_DATA_2nd["max_show_num"],
+        )
+
+
+
 class SettingCorrectTestData2nd(TestCase):
     """
     設定の正常データのセットアップその２
