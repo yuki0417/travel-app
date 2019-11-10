@@ -7,7 +7,7 @@
       <form id="your_location" action="" method="post">
           {% csrf_token %}
           <select name="setting_now" class="browser-default custom-select custom-select-lg mb-3">
-              <option selected="true" disabled="disabled">保存した設定から選ぶ</option>
+              <option selected="true" disabled="disabled">設定を選ぶ (新規作成はメニューから)</option>
               {% for setting in object_list %}
                 <option value="{{setting.id}}">
                   {{setting.name}}: 
@@ -30,7 +30,7 @@ jQuery(function ($) {
   $(function(){
     $('#location_btn').on('click', function(){
       var setting_now = $('[name="setting_now"] option:selected').val()
-      if (setting_now === '保存した設定から選ぶ') {
+      if (setting_now === '設定を選ぶ (新規作成はメニューから)') {
         return;
       }
       $("#loading").fadeIn(500);

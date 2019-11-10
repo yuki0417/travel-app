@@ -7,12 +7,13 @@
 <div class=current_settings>
     {% if your_location %}
     <p>
-      あなたの現在地: {{ your_location.0 }}, {{ your_location.1 }}
+      あなたの現在地: 緯度: {{ your_location.0 }}, 経度: {{ your_location.1 }}
+      <br>
+      半径が {{ radius }}m、
+      最大表示件数を {{ max_show_num }}件 で検索しました。
     </p>
     <p>
-      使用した設定: 
-      {{setting_radius_meta}}: {{ radius }}
-      {{setting_max_show_num_meta}}: {{ max_show_num }}
+      画像をクリックするとwikipediaで詳細を表示します。
     </p>
       {% endif %}
 </div>
