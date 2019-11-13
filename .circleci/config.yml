@@ -32,22 +32,46 @@ jobs:
           name: docker-compose exec unittest
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && coverage run --source='.' manage.py test test.unittest
-            --settings=setting.settings_ci --keepdb"
+            "cd travel
+            && coverage run --source='.'
+            --rcfile='test/setting/.coveragerc'
+            manage.py test test.unittest
+            --settings=setting.settings_ci --keepdb
+            && mv test-reports/test.xml test-reports/unittest/unittest.xml"
       - run:
           name: docker-compose exec integration test
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && python manage.py test test.integtest.accounts
-            --settings=setting.settings_ci --keepdb"
+            "cd travel
+            && python manage.py test test.integtest.accounts
+            --settings=setting.settings_ci --keepdb
+            && mv test-reports/test.xml test-reports/integtest/accounts.xml
+            && python manage.py test test.integtest.travel.test_place_list
+            --settings=setting.settings_ci --keepdb
+            && mv test-reports/test.xml test-reports/integtest/travel_place_list.xml
+            && python manage.py test test.integtest.travel.test_saved_place_list
+            --settings=setting.settings_ci --keepdb
+            && mv test-reports/test.xml test-reports/integtest/travel_saved_place_list.xml
+            && python manage.py test test.integtest.travel.test_setting
+            --settings=setting.settings_ci --keepdb
+            && mv test-reports/test.xml test-reports/integtest/travel_setting.xml"
       - run:
-          name: docker-compose make test-html-report
+          name: docker-compose generate test-html-report
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
-            "junit2html travel/test-reports/unittest/unittest.xml
-            travel/test-reports/unittest/unittest.html"
+            "cd travel
+            && junit2html test-reports/unittest/unittest.xml
+            test-reports/unittest/html/unittest.html
+            && junit2html test-reports/integtest/accounts.xml
+            test-reports/integtest/html/accounts.html
+            && junit2html test-reports/integtest/travel_place_list.xml
+            test-reports/integtest/html/travel_place_list.html
+            && junit2html test-reports/integtest/travel_saved_place_list.xml
+            test-reports/integtest/html/travel_saved_place_list.html
+            && junit2html test-reports/integtest/travel_setting.xml
+            test-reports/integtest/html/travel_setting.html"
       - run:
-          name: docker-compose make coverage-html-report
+          name: docker-compose generate coverage-html-report
           command: >
             docker-compose -f docker-compose_ci.yml exec django sh -c
             "cd travel && coverage html -d test-reports/coverage/"
