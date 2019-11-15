@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse_lazy
 
+from test.setting.selenium_setting import SELENIUM_SETTING
 from test.unittest.common.test_data import (
     teardown_data,
     AppUserEncPasswordTestData1st,
@@ -20,13 +21,13 @@ class MySeleniumTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        chromedriver_path = '/usr/bin/chromedriver'
+        chromedriver_path = SELENIUM_SETTING['chromedriver_path']
         o = Options()
-        o.binary_location = '/usr/bin/chromium'
-        o.add_argument('--headless')
-        o.add_argument('--disable-gpu')
-        o.add_argument('--no-sandbox')
-        o.add_argument('--window-size=1200x600')
+        o.binary_location = SELENIUM_SETTING['binary_location']
+        o.add_argument(SELENIUM_SETTING['headless'])
+        o.add_argument(SELENIUM_SETTING['disable-gpu'])
+        o.add_argument(SELENIUM_SETTING['no-sandbox'])
+        o.add_argument(SELENIUM_SETTING['window-size'])
         cls.selenium = webdriver.Chrome(chromedriver_path, options=o)
         cls.selenium.implicitly_wait(5)
 

@@ -35,5 +35,5 @@ DATABASES = {
 }
 
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
-TEST_OUTPUT_DIR = os.path.join(BASE_DIR, 'test-reports/unittest')
-TEST_OUTPUT_FILE_NAME = 'unittest.xml'
+TEST_OUTPUT_DIR = os.path.join(BASE_DIR, 'test-reports')
+TEST_OUTPUT_FILE_NAME = 'test.xml'

@@ -1,3 +1,4 @@
-unittest/*
 coverage/*
+**/html/*
+test.xml
 !.gitkeep
