@@ -7,9 +7,9 @@ jobs:
       DOCKER_COMPOSE: docker-compose -f docker-compose_ci.yml
       SETTINGS_CI: --settings=setting.settings_ci
       REPORTS_DIR: test-reports
-      TEST_XML: $REPORTS_DIR/test.xml
-      REPORTS_INTEG_DIR: $REPORTS_DIR/integtest
-      REPORTS_UNIT_DIR: $REPORTS_DIR/unittest
+      TEST_XML: test-reports/test.xml
+      REPORTS_INTEG_DIR: test-reports/integtest
+      REPORTS_UNIT_DIR: test-reports/unittest
       MNG_PY: python manage.py
     steps:
 # アプリのビルド、テスト実行
