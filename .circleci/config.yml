@@ -1,89 +1,94 @@
-# circleCIのバージョン指定
 version: 2
 jobs:
   build:
     machine:
       image: circleci/classic:edge
+    environment:
+      DOCKER_COMPOSE: docker-compose -f docker-compose_ci.yml
+      SETTINGS_CI: --settings=setting.settings_ci
+      REPORTS_DIR: test-reports
+      TEST_XML: $REPORTS_DIR/test.xml
+      REPORTS_INTEG_DIR: $REPORTS_DIR/integtest
+      REPORTS_UNIT_DIR: $REPORTS_DIR/unittest
+      MNG_PY: python manage.py
     steps:
-# Djangoのテストを実行
+# アプリのビルド、テスト実行
       - checkout
       - run:
           name: docker-compose up
           command: |
-            docker-compose -f docker-compose_ci.yml up -d
+            $DOCKER_COMPOSE up -d
       - run:
           name: docker-compose install chromium and driver
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
+            $DOCKER_COMPOSE exec django sh -c
             "apt-get -y update
             && apt-get install -y chromium chromium-driver"
       - run:
           name: docker-compose install requirements
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
+            $DOCKER_COMPOSE exec django sh -c
             "pip install --no-cache-dir -r requirements_dev.txt"
       - run:
           name: docker-compose exec migrate
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && python manage.py migrate
-            --settings=setting.settings_ci"
+            $DOCKER_COMPOSE exec django sh -c
+            "cd travel && $MNG_PY migrate $SETTINGS_CI"
       - run:
           name: docker-compose exec unittest
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
+            $DOCKER_COMPOSE exec django sh -c
             "cd travel
             && coverage run --source='.'
             --rcfile='test/setting/.coveragerc'
-            manage.py test test.unittest
-            --settings=setting.settings_ci --keepdb
-            && mv test-reports/test.xml test-reports/unittest/unittest.xml"
+            manage.py test test.unittest $SETTINGS_CI --keepdb
+            && mv $TEST_XML $REPORTS_UNIT_DIR/unittest.xml"
       - run:
           name: docker-compose exec integration test
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
+            $DOCKER_COMPOSE exec django sh -c
             "cd travel
-            && python manage.py test test.integtest.accounts
-            --settings=setting.settings_ci --keepdb
-            && mv test-reports/test.xml test-reports/integtest/accounts.xml
-            && python manage.py test test.integtest.travel.test_place_list
-            --settings=setting.settings_ci --keepdb
-            && mv test-reports/test.xml test-reports/integtest/travel_place_list.xml
-            && python manage.py test test.integtest.travel.test_saved_place_list
-            --settings=setting.settings_ci --keepdb
-            && mv test-reports/test.xml test-reports/integtest/travel_saved_place_list.xml
-            && python manage.py test test.integtest.travel.test_setting
-            --settings=setting.settings_ci --keepdb
-            && mv test-reports/test.xml test-reports/integtest/travel_setting.xml"
+            && $MNG_PY test test.integtest.accounts
+            $SETTINGS_CI --keepdb
+            && mv $TEST_XML $REPORTS_INTEG_DIR/accounts.xml
+            && $MNG_PY test test.integtest.travel.test_place_list
+            $SETTINGS_CI --keepdb
+            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_place_list.xml
+            && $MNG_PY test test.integtest.travel.test_saved_place_list
+            $SETTINGS_CI --keepdb
+            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_saved_place_list.xml
+            && $MNG_PY test test.integtest.travel.test_setting
+            $SETTINGS_CI --keepdb
+            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_setting.xml"
       - run:
           name: docker-compose generate test-html-report
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
+            $DOCKER_COMPOSE exec django sh -c
             "cd travel
-            && junit2html test-reports/unittest/unittest.xml
-            test-reports/unittest/html/unittest.html
-            && junit2html test-reports/integtest/accounts.xml
-            test-reports/integtest/html/accounts.html
-            && junit2html test-reports/integtest/travel_place_list.xml
-            test-reports/integtest/html/travel_place_list.html
-            && junit2html test-reports/integtest/travel_saved_place_list.xml
-            test-reports/integtest/html/travel_saved_place_list.html
-            && junit2html test-reports/integtest/travel_setting.xml
-            test-reports/integtest/html/travel_setting.html"
+            && junit2html $REPORTS_UNIT_DIR/unittest.xml
+            $REPORTS_UNIT_DIR/html/unittest.html
+            && junit2html $REPORTS_INTEG_DIR/accounts.xml
+            $REPORTS_INTEG_DIR/html/accounts.html
+            && junit2html $REPORTS_INTEG_DIR/travel_place_list.xml
+            $REPORTS_INTEG_DIR/html/travel_place_list.html
+            && junit2html $REPORTS_INTEG_DIR/travel_saved_place_list.xml
+            $REPORTS_INTEG_DIR/html/travel_saved_place_list.html
+            && junit2html $REPORTS_INTEG_DIR/travel_setting.xml
+            $REPORTS_INTEG_DIR/html/travel_setting.html"
       - run:
           name: docker-compose generate coverage-html-report
           command: >
-            docker-compose -f docker-compose_ci.yml exec django sh -c
-            "cd travel && coverage html -d test-reports/coverage/"
+            $DOCKER_COMPOSE exec django sh -c
+            "cd travel && coverage html -d $REPORTS_DIR/coverage/"
       - run:
           name: docker-compose down
-          command: docker-compose -f docker-compose_ci.yml down
+          command: $DOCKER_COMPOSE down
 
       - store_test_results:
-          path: ./travel/test-reports
+          path: ./travel/$REPORTS_DIR
 
       - store_artifacts:
-          path: ./travel/test-reports
+          path: ./travel/$REPORTS_DIR
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
