@@ -37,6 +37,19 @@ services:
     env_file: ./travel/.env.postgres
     ports:
       - "5432:5432"
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile_redis
+    env_file: ./travel/.env.redis
+    command: >
+      bash -c "
+      redis-server --requirepass $${REDIS_PASSWORD}
+      && /bin/bash"
+    tty: true
+    stdin_open: true
+    ports:
+      - "6379:6379"
 
 volumes:
   # postgres_data:
