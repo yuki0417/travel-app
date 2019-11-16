@@ -93,6 +93,6 @@ STATIC_ROOT = '/opt/static'
 
 LOGIN_REDIRECT_URL = '/travel/list'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+SESSION_ENGINE = 'redis_sessions.session'
 
 SESSION_FILE_PATH = os.path.join(BASE_DIR, 'session')

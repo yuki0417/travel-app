@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile_django
     depends_on:
       - postgres
+      - redis
     command: >
      bash -c "/bin/bash"
     tty: true
@@ -19,6 +20,17 @@ services:
       dockerfile: Dockerfile_postgres
     volumes:
       - ./pg_scripts/install_ci.sql:/docker-entrypoint-initdb.d/install.sql
-    # ポートは確認用なので開けなくも良い
     ports:
       - "5432:5432"
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile_redis
+    command: >
+      bash -c "
+      redis-server --requirepass password
+      && /bin/bash"
+    tty: true
+    stdin_open: true
+    ports:
+      - "6379:6379"

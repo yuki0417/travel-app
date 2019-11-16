@@ -3,5 +3,6 @@
 session/*
 .env
 .env.postgres
+.env.redis
 .coverage
 !.gitkeep
