@@ -11,13 +11,15 @@ services:
     command: bash -c "
       cd travel
       && python manage.py collectstatic --noinput
-      && python manage.py migrate
+      && python manage.py migrate --settings=setting.settings_stg
       && gunicorn setting.wsgi -b 0.0.0.0:3031
       "
     volumes:
       - "staticdata:/opt/static/"
     depends_on:
       - postgres
+      - redis
+      - nginx
   nginx:
     restart: always
     image: nginx
