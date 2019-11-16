@@ -11,8 +11,8 @@ jobs:
       REPORTS_INTEG_DIR: test-reports/integtest
       REPORTS_UNIT_DIR: test-reports/unittest
       MNG_PY: python manage.py
-    steps:
 # アプリのビルド、テスト実行
+    steps:
       - checkout
       - run:
           name: docker-compose up
@@ -85,10 +85,10 @@ jobs:
           command: $DOCKER_COMPOSE down
 
       - store_test_results:
-          path: ./travel/$REPORTS_DIR
+          path: ./travel/test-reports
 
       - store_artifacts:
-          path: ./travel/$REPORTS_DIR
+          path: ./travel/test-reports
 # EC2にSSH接続し、デプロイを実行
   # deploy:
   #   machine:
