@@ -17,7 +17,7 @@ ROOT_URLCONF = 'setting.urls'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'OPTIONS': {
             'options': '-c search_path=django'
             },
