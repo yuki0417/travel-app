@@ -1,149 +1,149 @@
 {% block content %}
-     <div class="card mb-3">
-      <div class="card-header">
-         <h3><b>場所一覧</b></h3>
-         </div>
-        </div>
+<div class="card mb-3">
+<div class="card-header">
+    <h3><b>場所一覧</b></h3>
+    </div>
+  </div>
 <div class=current_settings>
-    {% if your_location %}
-    <p>
-      あなたの現在地: 緯度: {{ your_location.0 }}, 経度: {{ your_location.1 }}
-      <br>
-      半径が {{ radius }}m、
-      最大表示件数を {{ max_show_num }}件 で検索しました。
-    </p>
-    <p>
-      画像をクリックするとwikipediaで詳細を表示します。
-    </p>
-      {% endif %}
+  {% if your_location %}
+  <p>
+    あなたの現在地: 緯度: {{ your_location.0 }}, 経度: {{ your_location.1 }}
+    <br>
+    半径が {{ radius }}m、
+    最大表示件数を {{ max_show_num }}件 で検索しました。
+  </p>
+  <p>
+    画像をクリックするとwikipediaで詳細を表示します。
+  </p>
+    {% endif %}
 </div>
-         <!-- テーブル表の定義 -->
-         <div class="table-responsive">
-            <table id=place_list width="100%" class="table table-striped table-bordered table-hover">
-              　<!-- 表の列の定義-->
-                <thead>
-                  <tr>
-                    <th class="text-center">場所</th>
-                    <th class="text-center" style="display: none;">緯度</th>
-                    <th class="text-center" style="display: none;">経度</th>
-                  </tr>
-                </thead>
-              　<!-- ここまでが表の列の定義-->
-              　<!-- 表のデータ部分の表示-->
-                <tbody>
-                  {% for item in place_list %}
-                    <tr id="place" class="odd gradeX text-center">
-                      <td id="name" class="text-center"><h3>{{ item.name }}</h3>
-                       <class id="linkUrl">
-                         <a href="{{ item.linkUrl }}" target="_blank">
-                             <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a><p id="extract">{{ item.extract }}</p>
-                       </class>
-                       {% if item.saved %}
-                       <button type="button" class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">追加済み</button>
-                       {% else %}
-                       <button type="button" class="btn btn-warning btn-block" data-toggle="tooltip" data-placement="right" data-html="true">気になる</button>
-                       {% endif %}
-                         </td>
-                      <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
-                      <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>
-                     </tr>
-                {% endfor %}
-                </tbody>
-              　<!-- ここまでが表のデータ部分の表示-->
-              </table>
-              <!-- ここまでがテーブル表の定義 -->
-           <script>
-            // 外部jsファイル読み込みのための関数
-            function include(filename, onload) {
-              var head = document.getElementsByTagName('head')[0];
-              var script = document.createElement('script');
-              script.src = filename;
-              script.type = 'text/javascript';
-              script.onload = script.onreadystatechange = function() {
-                  if (script.readyState) {
-                      if (script.readyState === 'complete' || script.readyState === 'loaded') {
-                          script.onreadystatechange = null;                                                  
-                          onload();
-                      }
-                  } 
-                  else {
-                      onload();          
-                  }
-              };
-              head.appendChild(script);
-            }
+  <!-- テーブル表の定義 -->
+  <div class="table-responsive">
+    <table id=place_list width="100%" class="table table-striped table-bordered table-hover">
+      　<!-- 表の列の定義-->
+        <thead>
+          <tr>
+            <th class="text-center">場所</th>
+            <th class="text-center" style="display: none;">緯度</th>
+            <th class="text-center" style="display: none;">経度</th>
+          </tr>
+        </thead>
+      　<!-- 表のデータ部分の定義-->
+        <tbody>
+          {% for item in place_list %}
+            <tr id="place" class="odd gradeX text-center">
+              <td id="name" class="text-center"><h3>{{ item.name }}</h3>
+                <class id="linkUrl">
+                  <a href="{{ item.linkUrl }}" target="_blank">
+                      <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a><p id="extract">{{ item.extract }}</p>
+                </class>
+                {% if item.saved %}
+                <button type="button" class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">追加済み</button>
+                {% else %}
+                <button type="button" class="btn btn-warning btn-block" data-toggle="tooltip" data-placement="right" data-html="true">気になる</button>
+                {% endif %}
+                  </td>
+              <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
+              <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      　<!-- ここまでが表のデータ部分の表示-->
+    </table>
+    <!-- ここまでがテーブル表の定義 -->
+<script>
+// 外部jsファイル読み込みのための関数
+function include(filename, onload) {
+  var head = document.getElementsByTagName('head')[0];
+  var script = document.createElement('script');
+  script.src = filename;
+  script.type = 'text/javascript';
+  script.onload = script.onreadystatechange = function() {
+      if (script.readyState) {
+          if (script.readyState === 'complete' || script.readyState === 'loaded') {
+              script.onreadystatechange = null;                                                  
+              onload();
+          }
+      } 
+      else {
+          onload();          
+      }
+  };
+  head.appendChild(script);
+}
 
-      // テーブルの機能
-      include('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js', function() {
-        $(document).ready(function() {
-          include('https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js', function() {
-            $(document).ready(function() {
+// テーブルの機能
+include('https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js', function() {
+  $(document).ready(function() {
+    include('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js', function() {
+      $(document).ready(function() {
 
-              jQuery(function ($) {
-                  // デフォルトの設定を変更
-                  $.extend( $.fn.dataTable.defaults, {
-                      language: {
-                        url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Japanese.json"
-                      }
-                  });
-                  $("#place_list").DataTable({
-                      "searching": true, // 検索機能
-                      "padding": true, // ページング機能
-                      "ordering": true, // ソート機能
-                      "lengthChange": true, // 件数切り替え機能
-                  }).columns.adjust().draw();
-                });
-              });
-            });
+        jQuery(function ($) {
+          // デフォルトの設定を変更
+          $.extend( $.fn.dataTable.defaults, {
+              language: {
+                url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Japanese.json"
+              }
           });
+          $("#place_list").DataTable({
+              "searching": true, // 検索機能
+              "padding": true, // ページング機能
+              "ordering": true, // ソート機能
+              "lengthChange": true, // 件数切り替え機能
+          }).columns.adjust().draw();
         });
+      });
+    });
+  });
+});
 
-              // 気になる場所リストのAJAXボタン機能
-              jQuery(function ($) {
-                    $(function(){
-                      $("#place_list").on('click', '.btn', function(){
-                        let currentRow = $(this).closest("tr");
-                        let name = currentRow.find('#name h3').text();
-                        let saveStatus = currentRow.find('.btn').text();
-                        if (String(saveStatus) === "追加済み") {
-                          $(this).toggleClass('btn-secondary btn-warning');
-                          ($.post("{% url 'travel:place_delete' %}",
-                          {
-                            'name': name,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                          },
-                          function(){
-                            currentRow.find('.btn').text("気になる");
-                          },
-                          ));
-                        }
-                        if (saveStatus === "気になる") {
-                          $(this).toggleClass('btn-warning btn-secondary');
-                          let linkUrl = currentRow.find('a').attr('href');
-                          let imageUrl = currentRow.find('img').attr('src');
-                          let extract = currentRow.find('#extract').text();
-                          let latitude = currentRow.find('#latitude').text();
-                          let longtitude = currentRow.find('#longtitude').text();
-                          ($.post("{% url 'travel:place_save' %}",
-                            {
-                              'name': name,
-                              'linkUrl': linkUrl,
-                              'imageUrl': imageUrl,
-                              'extract': extract,
-                              'latitude': latitude,
-                              'longtitude': longtitude,
-                              'csrfmiddlewaretoken': '{{ csrf_token }}'
-                            },
-                            function(){
-                              currentRow.find('.btn').text("追加済み");
-                            }
-                          ));
-                        }
-                      });
-                    });
-                  });
 
-                 </script>
+// 気になる場所リストのAJAXボタン機能
+jQuery(function ($) {
+  $(function(){
+    $("#place_list").on('click', '.btn', function(){
+      let currentRow = $(this).closest("tr");
+      let name = currentRow.find('#name h3').text();
+      let saveStatus = currentRow.find('.btn').text();
+      if (String(saveStatus) === "追加済み") {
+        $(this).toggleClass('btn-secondary btn-warning');
+        ($.post("{% url 'travel:place_delete' %}",
+        {
+          'name': name,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        function(){
+          currentRow.find('.btn').text("気になる");
+        },
+        ));
+      }
+      if (saveStatus === "気になる") {
+        $(this).toggleClass('btn-warning btn-secondary');
+        let linkUrl = currentRow.find('a').attr('href');
+        let imageUrl = currentRow.find('img').attr('src');
+        let extract = currentRow.find('#extract').text();
+        let latitude = currentRow.find('#latitude').text();
+        let longtitude = currentRow.find('#longtitude').text();
+        ($.post("{% url 'travel:place_save' %}",
+          {
+            'name': name,
+            'linkUrl': linkUrl,
+            'imageUrl': imageUrl,
+            'extract': extract,
+            'latitude': latitude,
+            'longtitude': longtitude,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          function(){
+            currentRow.find('.btn').text("追加済み");
+          }
+        ));
+      }
+    });
+  });
+});
+
+</script>
       </div>
       </div>
    </div>
