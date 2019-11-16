@@ -4,7 +4,7 @@ from decouple import config
 from .settings_base import *
 
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('DEV_SECRET_KEY')
 
 DEBUG = True
 
