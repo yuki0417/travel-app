@@ -11,7 +11,7 @@ ROOT_URLCONF = 'setting.urls'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'OPTIONS': {
             'options': '-c search_path=public'
             },
@@ -21,7 +21,7 @@ DATABASES = {
         'HOST': 'postgres',
         'PORT': '5432',
         'TEST': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'OPTIONS': {
                 'options': '-c search_path=public'
                 },
