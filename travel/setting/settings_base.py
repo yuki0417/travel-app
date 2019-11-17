@@ -93,6 +93,9 @@ STATIC_ROOT = '/opt/static'
 
 LOGIN_REDIRECT_URL = '/travel/list'
 
-SESSION_ENGINE = 'redis_sessions.session'
+# TODO: カスタマイズしたdjango-redis-sessionモジュールを使うが、
+# できれば環境ごとに共通化したいのでテスト等実装して自分のモジュールとする
+# SESSION_ENGINE = 'redis_sessions.session'
+SESSION_ENGINE = 'setting.redis_sessions.session'
 
 SESSION_FILE_PATH = os.path.join(BASE_DIR, 'session')
