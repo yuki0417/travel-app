@@ -12,8 +12,7 @@ ALLOWED_HOSTS = [config('STG_ALLOWED_HOSTS')]
 
 ROOT_URLCONF = 'setting.urls'
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+SESSION_ENGINE = 'redis_sessions.session'
 
 DATABASES = {
     'default': {
