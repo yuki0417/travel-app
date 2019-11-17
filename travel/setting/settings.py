@@ -30,12 +30,12 @@ DATABASES = {
 }
 
 # TODO: 本番環境のElastiCache設定を行う
-# SESSION_REDIS = {
-#     'host': 'ElastiCacheのURL?',
-#     'port': 6379,
-#     'db': 0,
-#     'password': config('REDIS_PASSWORD'),
-#     'prefix': 'session',
-#     'socket_timeout': 3,
-#     'retry_on_timeout': False
-# }
+SESSION_REDIS = {
+    'host': 'ElastiCacheのエントリーポイント名',
+    'port': 6379,
+    'db': 0,
+    'password': config('REDIS_PASSWORD'),
+    'prefix': 'session',
+    'socket_timeout': 3,
+    'retry_on_timeout': False
+}
