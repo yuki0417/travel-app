@@ -9,6 +9,8 @@ DEBUG = True
 
 ROOT_URLCONF = 'setting.urls'
 
+SESSION_ENGINE = 'redis_sessions.session'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
