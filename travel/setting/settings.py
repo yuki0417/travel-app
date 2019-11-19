@@ -15,23 +15,24 @@ ROOT_URLCONF = 'setting.urls'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# TODO: 本番環境のRDS設定を行う
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'OPTIONS': {
-            'options': '-c search_path=django'
+            'options': '-c search_path=django,public',
             },
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
+#        'HOST': 'RDSのエンドポイント名を入れる',
         'PORT': config('DB_PORT'),
     }
 }
 
 # TODO: 本番環境のElastiCache設定を行う
 SESSION_REDIS = {
-    'host': 'ElastiCacheのエントリーポイント名',
+#    'host': 'ElastiCacheのエンドポイント名を入れる'',
     'port': 6379,
     'db': 0,
     'password': config('REDIS_PASSWORD'),
