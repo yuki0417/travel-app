@@ -27,7 +27,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - "./nginx/:/etc/nginx/"
+      - "./nginx_setting/staging/nginx/:/etc/nginx/"
       - "staticdata:/opt/apps/static/"
   postgres:
     build:
