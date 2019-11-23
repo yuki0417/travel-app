@@ -22,9 +22,9 @@ services:
     depends_on:
       - django
     ports:
-      - "443:443"
+      - "80:80"
     volumes:
-      - "./nginx/:/etc/nginx/"
+      - "./nginx_setting/product/nginx/:/etc/nginx/"
       - "staticdata:/opt/apps/static/"
 
 volumes:
