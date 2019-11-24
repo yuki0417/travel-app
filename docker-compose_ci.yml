@@ -9,7 +9,7 @@ services:
       - postgres
       - redis
     command: >
-     bash -c "/bin/bash"
+     sh -c "sh"
     tty: true
     stdin_open: true
     volumes:

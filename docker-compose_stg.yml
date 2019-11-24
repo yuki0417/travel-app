@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile_django
     expose:
       - "3031"
-    command: bash -c "
+    command: sh -c "
       cd travel
       && python manage.py collectstatic --noinput --settings=setting.settings_stg
       && python manage.py migrate --settings=setting.settings_stg
@@ -27,7 +27,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - "./nginx/:/etc/nginx/"
+      - "./nginx_setting/staging/nginx/:/etc/nginx/"
       - "staticdata:/opt/apps/static/"
   postgres:
     build:
