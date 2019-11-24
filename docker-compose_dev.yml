@@ -6,13 +6,13 @@ services:
       context: .
       dockerfile: Dockerfile_django
     command: >
-      bash -c "
-      apt-get -y update
-      && apt-get install -y chromium chromium-driver
+      sh -c "
+      apk update
+      && apk add chromium chromium-chromedriver
       && pip install --no-cache-dir -r requirements_dev.txt
       && cd travel && python manage.py migrate
       --settings=setting.settings_dev
-      && /bin/bash"
+      && sh"
     tty: true
     stdin_open: true
     depends_on:

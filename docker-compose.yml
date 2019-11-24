@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile_django
     expose:
       - "3031"
-    command: bash -c "
+    command: sh -c "
       cd travel
       && python manage.py collectstatic --noinput
       && python manage.py migrate
@@ -22,9 +22,9 @@ services:
     depends_on:
       - django
     ports:
-      - "443:443"
+      - "80:80"
     volumes:
-      - "./nginx/:/etc/nginx/"
+      - "./nginx_setting/product/nginx/:/etc/nginx/"
       - "staticdata:/opt/apps/static/"
 
 volumes:
