@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
+    'storages',
     'travel',
 ]
 
@@ -97,5 +98,3 @@ LOGIN_REDIRECT_URL = '/travel/list'
 # できれば環境ごとに共通化したいのでテスト等実装して自分のモジュールとする
 # SESSION_ENGINE = 'redis_sessions.session'
 SESSION_ENGINE = 'setting.redis_sessions.session'
-
-SESSION_FILE_PATH = os.path.join(BASE_DIR, 'session')

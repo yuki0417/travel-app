@@ -14,8 +14,6 @@ services:
       && python manage.py migrate
       && gunicorn setting.wsgi -b 0.0.0.0:3031
       "
-    volumes:
-      - "staticdata:/opt/static/"
   nginx:
     restart: always
     image: nginx
@@ -23,9 +21,3 @@ services:
       - django
     ports:
       - "80:80"
-    volumes:
-      - "./nginx_setting/product/nginx/:/etc/nginx/"
-      - "staticdata:/opt/apps/static/"
-
-volumes:
-  staticdata:
