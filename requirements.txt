@@ -11,3 +11,5 @@ sqlparse==0.3.0
 urllib3==1.25.6
 redis
 django-redis-sessions
+boto3
+django-storages
