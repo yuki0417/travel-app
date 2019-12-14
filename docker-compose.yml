@@ -16,7 +16,9 @@ services:
       "
   nginx:
     restart: always
-    image: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile_nginx
     depends_on:
       - django
     ports:
