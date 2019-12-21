@@ -2,12 +2,9 @@ version: '3'
 
 services:
   django:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile_django
-    expose:
-      - "3031"
+    image: 213569582190.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-repo:latest
+    ports:
+      - "3031:3031"
     command: sh -c "
       cd travel
       && python manage.py collectstatic --noinput
@@ -15,11 +12,8 @@ services:
       && gunicorn setting.wsgi -b 0.0.0.0:3031
       "
   nginx:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile_nginx
-    depends_on:
-      - django
+    image: 213569582190.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-nginx:latest
     ports:
       - "80:80"
+    command: sh -c "
+      nginx -g 'daemon off;'"

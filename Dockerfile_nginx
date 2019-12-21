@@ -1,3 +1,4 @@
 FROM nginx:alpine
 
+RUN rm -rf /etc/nginx/*
 COPY ./nginx_setting/product/nginx/ /etc/nginx/
