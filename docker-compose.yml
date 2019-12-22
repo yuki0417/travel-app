@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  django:
+    image: $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-django:latest
+    ports:
+      - "3031:3031"
+    command: sh -c "
+      cd travel
+      && python manage.py collectstatic --noinput
+      && python manage.py migrate
+      && gunicorn setting.wsgi -b 0.0.0.0:3031
+      "
+  nginx:
+    image: $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-nginx:latest
+    ports:
+      - "80:80"
+    command: sh -c "
+      nginx -g 'daemon off;'"
