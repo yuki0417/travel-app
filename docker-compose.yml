@@ -2,7 +2,7 @@ version: '3'
 
 services:
   django:
-    image: $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-django:latest
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_RESOURCE_NAME_PREFIX_DJANGO:$CIRCLE_SHA1
     ports:
       - "3031:3031"
     command: sh -c "
@@ -12,7 +12,7 @@ services:
       && gunicorn setting.wsgi -b 0.0.0.0:3031
       "
   nginx:
-    image: $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com/travel-app-nginx:latest
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_RESOURCE_NAME_PREFIX_NGINX:$CIRCLE_SHA1
     ports:
       - "80:80"
     command: sh -c "
