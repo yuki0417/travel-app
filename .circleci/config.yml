@@ -142,13 +142,22 @@ jobs:
             --launch-type FARGATE
 
 # EC2にSSH接続し、検証環境にデプロイを実行
-  # testing-deploy:
-  #     executor: default
-  #   steps:
-  #     - checkout
-  #     # CircleCIに登録した秘密鍵を呼び出す
-  #     - add_ssh_keys:
-  #     - run: ssh ${USER_NAME}@${HOST_NAME} 'cd todoList && git pull && docker-compose run python ./manage.py migrate'
+  testing-deploy:
+      executor: default
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "8f:d7:82:ae:32:24:b9:90:34:78:46:35:c1:bb:66:2d"
+      - run:
+          name: deploy to testing environment
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME}
+            'cd /home/ec2-user/aws_setting && git pull
+            && sh ec2_env_set.sh
+            && cd /home/ec2-user/travel-app && git pull
+            && docker rm -f $(docker ps -aq) || true && docker rmi -f `docker images -q` || true && docker system prune -f
+            && docker-compose -f docker-compose_stg.yml up'
 
 # テストが成功した場合のみ、deployを実行するようにする
 workflows:
@@ -156,6 +165,12 @@ workflows:
   build_and_deploy:
     jobs:
       - build
+      - testing-deploy:
+          requires:
+            - build
+          # filters:
+          #   branches:
+          #     only: testing
       - deploy:
           requires:
             - build
