@@ -169,9 +169,9 @@ workflows:
       - testing-deploy:
           requires:
             - build
-          # filters:
-          #   branches:
-          #     only: testing
+          filters:
+            branches:
+              only: testing
       - deploy:
           requires:
             - build
