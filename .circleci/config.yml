@@ -1,8 +1,16 @@
-version: 2
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@6.5.0
+
+executors:
+  default:
+    machine:
+      image: 'circleci/classic:edge'
+
 jobs:
   build:
-    machine:
-      image: circleci/classic:edge
+    executor: default
     environment:
       DOCKER_COMPOSE: docker-compose -f docker-compose_ci.yml
       SETTINGS_CI: --settings=setting.settings_ci
@@ -89,26 +97,84 @@ jobs:
 
       - store_artifacts:
           path: ./travel/test-reports
-# EC2にSSH接続し、デプロイを実行
-  # deploy:
-  #   machine:
-  #     image: circleci/classic:edge
-  #   steps:
-  #     - checkout
-  #     # CircleCIに登録した秘密鍵を呼び出す
-  #     - add_ssh_keys:
-  #     - run: ssh ${USER_NAME}@${HOST_NAME} 'cd todoList && git pull && docker-compose run python ./manage.py migrate'
+
+  deploy:
+    executor: default
+    steps:
+      - checkout
+      - add_ssh_keys
+      - run:
+          name: bring env file
+          command: >
+            echo "HostName github.com" >> ~/.ssh/config
+            && echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            && pushd ../
+            && git clone git@github.com-a:yuki0417/aws_setting.git
+            && cp aws_setting/.env project/travel/.env
+            && popd
+      # Djangoイメージのプッシュ
+      - aws-ecr/build-and-push-image:
+          dockerfile: Dockerfile_django
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: "${AWS_RESOURCE_NAME_PREFIX_DJANGO}"
+          region: AWS_DEFAULT_REGION
+          tag: "${CIRCLE_SHA1}"
+      # Nginxイメージのプッシュ
+      - aws-ecr/build-and-push-image:
+          dockerfile: Dockerfile_nginx
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: "${AWS_RESOURCE_NAME_PREFIX_NGINX}"
+          region: AWS_DEFAULT_REGION
+          tag: "${CIRCLE_SHA1}"
+      # ECSのタスク実行
+      - run:
+          name: setup ecs-cli
+          command: >
+            sudo curl -o /usr/local/bin/ecs-cli
+            https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest
+            && sudo chmod +x /usr/local/bin/ecs-cli
+      - run:
+          name: deploy to ECS
+          command: >
+            ecs-cli compose --file docker-compose.yml
+            --ecs-params ecs-params.yml up
+            --cluster travel-app-cluster --region ap-northeast-1
+            --launch-type FARGATE
+
+# EC2にSSH接続し、検証環境にデプロイを実行
+  testing-deploy:
+    executor: default
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "8f:d7:82:ae:32:24:b9:90:34:78:46:35:c1:bb:66:2d"
+      - run:
+          name: deploy to testing environment
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME}
+            -o StrictHostKeyChecking=no
+            'cd /home/ec2-user/aws_setting && git pull
+            && sh ec2_env_set.sh
+            && cd /home/ec2-user/travel-app && git pull
+            && docker rm -f $(docker ps -aq) || true && docker rmi -f `docker images -q` || true && docker system prune -f
+            && docker-compose -f docker-compose_stg.yml up -d'
 
 # テストが成功した場合のみ、deployを実行するようにする
-# workflows:
-#   version: 2
-#   build_and_deploy:
-#     jobs:
-#       - build
-#       - deploy:
-#           requires:
-#             - build
-#           # masterブランチがpushされた場合のみdeployするようにする
-#           filters:
-#             branches:
-#               only: master
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - testing-deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: testing
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
