@@ -153,6 +153,7 @@ jobs:
           name: deploy to testing environment
           command: >
             ssh ${USER_NAME}@${HOST_NAME}
+            -o StrictHostKeyChecking=no
             'cd /home/ec2-user/aws_setting && git pull
             && sh ec2_env_set.sh
             && cd /home/ec2-user/travel-app && git pull
