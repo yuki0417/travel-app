@@ -158,8 +158,7 @@ jobs:
             && sh ec2_env_set.sh
             && cd /home/ec2-user/travel-app && git pull
             && docker rm -f $(docker ps -aq) || true && docker rmi -f `docker images -q` || true && docker system prune -f
-            && docker-compose -f docker-compose_stg.yml up
-            > /dev/null &'
+            && docker-compose -f docker-compose_stg.yml up -d'
 
 # テストが成功した場合のみ、deployを実行するようにする
 workflows:
