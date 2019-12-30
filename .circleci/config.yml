@@ -150,17 +150,64 @@ jobs:
           fingerprints:
             - "8f:d7:82:ae:32:24:b9:90:34:78:46:35:c1:bb:66:2d"
       - run:
+          name: pass the private key pairs of github deploy (public) keys
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            "echo -e $AWS_SETTING_PRIVATE_KEY > ~/.ssh/aws_setting_repo
+            && echo -e $TRAVEL_APP_PRIVATE_KEY > ~/.ssh/travel_app_repo"
+      - run:
+          name: install git
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'sudo yum reinstall glibc-common -y
+            && sudo yum update -y
+            && sudo yum install git -y'
+      - run:
+          name: set up git ssh environment
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'echo -e "Host github-aws-setting\n
+             User git\n  Port 22\n  HostName github.com\n
+             IdentityFile ~/.ssh/aws_setting_repo\n
+             TCPKeepAlive yes\n  IdentitiesOnly yes\n
+             StrictHostKeyChecking no\n\nHost github-travel-app\n
+             User git\n  Port 22\n  HostName github.com\n
+             IdentityFile ~/.ssh/travel_app_repo\n  TCPKeepAlive yes\n
+             IdentitiesOnly yes\n  StrictHostKeyChecking no" > ~/.ssh/config'
+      - run:
+          name: chmod 600 to the keys
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'cd ~/.ssh
+            && chmod 600 config aws_setting_repo travel_app_repo'
+      - run:
+          name: git clone sorces
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'cd ~
+            && rm -rf aws_setting travel-app
+            && git clone git@github-aws-setting:yuki0417/aws_setting.git
+            && git clone git@github-travel-app:yuki0417/travel-app.git
+            && cd travel-app
+            && git checkout -b testing origin/testing'
+      - run:
+          name: set up deploy environment
+          command: >
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'cd ~/aws_setting
+            && sudo sh ec2_setup.sh'
+      - run:
           name: deploy to testing environment
           command: >
-            ssh ${USER_NAME}@${HOST_NAME}
-            -o StrictHostKeyChecking=no
-            'cd /home/ec2-user/aws_setting && git pull
-            && sh ec2_env_set.sh
-            && cd /home/ec2-user/travel-app && git pull
-            && docker rm -f $(docker ps -aq) || true && docker rmi -f `docker images -q` || true && docker system prune -f
+            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            'cd ~/aws_setting
+            && sudo sh ec2_env_set.sh
+            && cd ~/travel-app
+            && docker rm -f $(docker ps -aq) || true
+            && docker rmi -f `docker images -q` || true
+            && docker system prune -f
             && docker-compose -f docker-compose_stg.yml up -d'
 
-# テストが成功した場合のみ、deployを実行するようにする
 workflows:
   version: 2
   build_and_deploy:
