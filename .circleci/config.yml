@@ -144,15 +144,13 @@ jobs:
 # EC2にSSH接続し、検証環境にデプロイを実行
   testing-deploy:
     executor: default
-    # environment:
-    #   SSH_COMMAND: ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
             - "8f:d7:82:ae:32:24:b9:90:34:78:46:35:c1:bb:66:2d"
       - run:
-          name: pass the private keys of github deploy keys
+          name: pass the private key pairs of github deploy (public) keys
           command: >
             ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
             "echo -e $AWS_SETTING_PRIVATE_KEY > ~/.ssh/aws_setting_repo
@@ -210,21 +208,20 @@ jobs:
             && docker system prune -f
             && docker-compose -f docker-compose_stg.yml up -d'
 
-# テストが成功した場合のみ、deployを実行するようにする
 workflows:
   version: 2
   build_and_deploy:
     jobs:
-      # - build
-      - testing-deploy
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only: testing
-      # - deploy:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only: master
+      - build
+      - testing-deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: testing
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
