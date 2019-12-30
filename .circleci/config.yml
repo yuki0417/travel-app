@@ -14,6 +14,7 @@ jobs:
     environment:
       DOCKER_COMPOSE: docker-compose -f docker-compose_ci.yml
       SETTINGS_CI: --settings=setting.settings_ci
+      TEST_SETTINGS: --settings=setting.settings_ci --keepdb
       REPORTS_DIR: test-reports
       TEST_XML: test-reports/test.xml
       REPORTS_INTEG_DIR: test-reports/integtest
@@ -49,7 +50,7 @@ jobs:
             "cd travel
             && coverage run --source='.'
             --rcfile='test/setting/.coveragerc'
-            manage.py test test.unittest $SETTINGS_CI --keepdb
+            manage.py test test.unittest $TEST_SETTINGS
             && mv $TEST_XML $REPORTS_UNIT_DIR/unittest.xml"
       - run:
           name: docker-compose exec integration test
@@ -57,16 +58,16 @@ jobs:
             $DOCKER_COMPOSE exec django sh -c
             "cd travel
             && $MNG_PY test test.integtest.accounts
-            $SETTINGS_CI --keepdb
+            $TEST_SETTINGS
             && mv $TEST_XML $REPORTS_INTEG_DIR/accounts.xml
             && $MNG_PY test test.integtest.travel.test_place_list
-            $SETTINGS_CI --keepdb
+            $TEST_SETTINGS
             && mv $TEST_XML $REPORTS_INTEG_DIR/travel_place_list.xml
             && $MNG_PY test test.integtest.travel.test_saved_place_list
-            $SETTINGS_CI --keepdb
+            $TEST_SETTINGS
             && mv $TEST_XML $REPORTS_INTEG_DIR/travel_saved_place_list.xml
             && $MNG_PY test test.integtest.travel.test_setting
-            $SETTINGS_CI --keepdb
+            $TEST_SETTINGS
             && mv $TEST_XML $REPORTS_INTEG_DIR/travel_setting.xml"
       - run:
           name: docker-compose generate test-html-report
@@ -144,28 +145,29 @@ jobs:
 # EC2にSSH接続し、検証環境にデプロイを実行
   testing-deploy:
     executor: default
+    environment:
+      SSH_OPTIONS: -o StrictHostKeyChecking=no
     steps:
-      - checkout
       - add_ssh_keys:
           fingerprints:
             - "8f:d7:82:ae:32:24:b9:90:34:78:46:35:c1:bb:66:2d"
       - run:
           name: pass the private key pairs of github deploy (public) keys
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             "echo -e $AWS_SETTING_PRIVATE_KEY > ~/.ssh/aws_setting_repo
             && echo -e $TRAVEL_APP_PRIVATE_KEY > ~/.ssh/travel_app_repo"
       - run:
           name: install git
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'sudo yum reinstall glibc-common -y
             && sudo yum update -y
             && sudo yum install git -y'
       - run:
           name: set up git ssh environment
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'echo -e "Host github-aws-setting\n
              User git\n  Port 22\n  HostName github.com\n
              IdentityFile ~/.ssh/aws_setting_repo\n
@@ -177,13 +179,13 @@ jobs:
       - run:
           name: chmod 600 to the keys
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'cd ~/.ssh
             && chmod 600 config aws_setting_repo travel_app_repo'
       - run:
           name: git clone sorces
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'cd ~
             && rm -rf aws_setting travel-app
             && git clone git@github-aws-setting:yuki0417/aws_setting.git
@@ -193,13 +195,13 @@ jobs:
       - run:
           name: set up deploy environment
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'cd ~/aws_setting
             && sudo sh ec2_setup.sh'
       - run:
           name: deploy to testing environment
           command: >
-            ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
+            ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'cd ~/aws_setting
             && sudo sh ec2_env_set.sh
             && cd ~/travel-app
