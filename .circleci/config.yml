@@ -197,13 +197,13 @@ jobs:
           command: >
             ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
             'cd ~/aws_setting
-            && sh ec2_setup.sh'
+            && sudo sh ec2_setup.sh'
       - run:
           name: deploy to testing environment
           command: >
             ssh ${USER_NAME}@${HOST_NAME} -o StrictHostKeyChecking=no
             'cd ~/aws_setting
-            && sh ec2_env_set.sh
+            && sudo sh ec2_env_set.sh
             && cd ~/travel-app
             && docker rm -f $(docker ps -aq) || true
             && docker rmi -f `docker images -q` || true
