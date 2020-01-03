@@ -103,7 +103,9 @@ jobs:
     executor: default
     steps:
       - checkout
-      - add_ssh_keys
+      - add_ssh_keys:
+          fingerprints:
+            -cb:4c:1c:96:4e:34:b4:6d:06:d2:6f:eb:86:ee:59:2f
       - run:
           name: bring env file
           command: >
