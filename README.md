@@ -1,5 +1,6 @@
 ## 開発環境
-Vagrant上のCentOS7に作成したDockerコンテナを使用。
+VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシンで作成したDockerコンテナを使用。
+※利用したVagrantfileはソースに含めていない。
 
 ## 開発言語とフレームワーク
 - PythonのDjangoフレームワーク
@@ -7,9 +8,9 @@ Vagrant上のCentOS7に作成したDockerコンテナを使用。
 
 ## インフラ
 - 本番環境
-- - ECS、ECR、RDS、ElastiCache、S3、ALB
+    - ECS、Fargate、ECR、RDS、ElastiCache、S3、ALB、Route53
 - 検証環境
-- - EC2に、使用するミドルウェア（Django、Nginx、PostgreSQL、Redis）をDockerで構築
+    - EC2に、使用するミドルウェア（Django、Nginx、PostgreSQL、Redis）をDockerで構築
 
 詳細はリポジトリの system_architecture.png を参照。
 
@@ -30,15 +31,15 @@ Vagrant上のCentOS7に作成したDockerコンテナを使用。
 
 ## テストツール
 - 単体テスト
-- - Django標準のユニットテスト機能
+    - Django標準のユニットテスト機能
 - 統合テスト
-- - Selenium (Chromeドライバを使用)
+    - Selenium (Chromeドライバを使用)
 
-## その他ミドルウェア
+## その他のミドルウェア
 - 本番環境
-requirements.txt を参照。
+    - requirements.txt を参照。
 - 開発環境
-requirements_dev.txt を参照。
+    - requirements_dev.txt を参照。
 
 ## 心がけたこと
 - 本番環境と開発環境の差異をDockerコンテナ技術により少なくする
