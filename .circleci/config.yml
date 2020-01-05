@@ -102,13 +102,13 @@ jobs:
           command: $DOCKER_COMPOSE down
 
       - codecov/upload:
-          file: ./travel/$REPORTS_COVERAGE_XML
+          file: ./travel/test-reports/coverage/xml/coverage.xml
 
       - store_test_results:
-          path: ./travel/$REPORTS_DIR
+          path: ./travel/test-reports
 
       - store_artifacts:
-          path: ./travel/$REPORTS_DIR
+          path: ./travel/test-reports
 
   deploy:
     executor: default
