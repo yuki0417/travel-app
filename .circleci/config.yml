@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@6.5.0
+  codecov: codecov/codecov@1.0.2
 
 executors:
   default:
@@ -15,10 +16,12 @@ jobs:
       DOCKER_COMPOSE: docker-compose -f docker-compose_ci.yml
       SETTINGS_CI: --settings=setting.settings_ci
       TEST_SETTINGS: --settings=setting.settings_ci --keepdb
-      REPORTS_DIR: test-reports
       TEST_XML: test-reports/test.xml
+      REPORTS_DIR: test-reports
       REPORTS_INTEG_DIR: test-reports/integtest
       REPORTS_UNIT_DIR: test-reports/unittest
+      REPORTS_COVERAGE_DIR: test-reports/coverage
+      REPORTS_COVERAGE_XML: test-reports/coverage/xml/coverage.xml
       MNG_PY: python manage.py
 # アプリのビルド、テスト実行
     steps:
@@ -85,19 +88,27 @@ jobs:
             && junit2html $REPORTS_INTEG_DIR/travel_setting.xml
             $REPORTS_INTEG_DIR/html/travel_setting.html"
       - run:
+          name: docker-compose generate coverage-xml-report
+          command: >
+            $DOCKER_COMPOSE exec django sh -c
+            "cd travel && coverage xml -o $REPORTS_COVERAGE_XML"
+      - run:
           name: docker-compose generate coverage-html-report
           command: >
             $DOCKER_COMPOSE exec django sh -c
-            "cd travel && coverage html -d $REPORTS_DIR/coverage/"
+            "cd travel && coverage html -d $REPORTS_COVERAGE_DIR/html"
       - run:
           name: docker-compose down
           command: $DOCKER_COMPOSE down
 
+      - codecov/upload:
+          file: ./travel/$REPORTS_COVERAGE_XML
+
       - store_test_results:
-          path: ./travel/test-reports
+          path: ./travel/$REPORTS_DIR
 
       - store_artifacts:
-          path: ./travel/test-reports
+          path: ./travel/$REPORTS_DIR
 
   deploy:
     executor: default
@@ -198,7 +209,7 @@ jobs:
             'cd ~/.ssh
             && chmod 600 config aws_setting_repo travel_app_repo'
       - run:
-          name: git clone sorces
+          name: git clone sources
           command: >
             ssh ${USER_NAME}@${HOST_NAME} $SSH_OPTIONS
             'cd ~

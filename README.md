@@ -1,5 +1,8 @@
+[![codecov](https://codecov.io/gh/yuki0417/travel-app/branch/staging/graph/badge.svg)](https://codecov.io/gh/yuki0417/travel-app)
+
 ## 開発環境
 VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシンで作成したDockerコンテナを使用。
+<br>
 ※利用したVagrantfileはソースに含めていない。
 
 ## 開発言語とフレームワーク
@@ -35,6 +38,8 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
 - 統合テスト
     - Selenium (Chromeドライバを使用)
 
+html形式のテストレポートとカバレッジレポートがCircleCI上で確認可能。
+
 ## その他のミドルウェア
 - 本番環境
     - requirements.txt を参照。
@@ -45,4 +50,3 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
 - 本番環境と開発環境の差異をDockerコンテナ技術により少なくする
 - インフラのコード化
 - 機能拡張を意識したコーディング、テスト実装
-- Gitのブランチの使い分け、コミット単位の調整、プルリクエストの活用
