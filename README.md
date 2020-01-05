@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/yuki0417/travel-app/branch/staging/graph/badge.svg)](https://codecov.io/gh/yuki0417/travel-app)
+[![codecov](https://codecov.io/gh/yuki0417/travel-app/branch/master/graph/badge.svg)](https://codecov.io/gh/yuki0417/travel-app)
 
 ## 開発環境
 VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシンで作成したDockerコンテナを使用。
@@ -22,15 +22,24 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
 
 ## CI/CDツール
 - CircleCI
+- Codecov
 
-## リバースプロキシ
+## 使用しているミドルウェア
+
+### リバースプロキシ
 - Nginx
 
-## データベース
+### データベース
 - PostgreSQL
 
-## セッション管理
+### セッション管理
 - Redis
+
+### その他のミドルウェア
+- 本番環境
+    - requirements.txt を参照。
+- 開発環境
+    - requirements_dev.txt を参照。
 
 ## テストツール
 - 単体テスト
@@ -39,12 +48,6 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
     - Selenium (Chromeドライバを使用)
 
 html形式のテストレポートとカバレッジレポートがCircleCI上で確認可能。
-
-## その他のミドルウェア
-- 本番環境
-    - requirements.txt を参照。
-- 開発環境
-    - requirements_dev.txt を参照。
 
 ## 心がけたこと
 - 本番環境と開発環境の差異をDockerコンテナ技術により少なくする
