@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<!-- {# Bootstrap4を使う} -->
-<!-- linkタグでbootstrapのcssファイルを読み込む-->
+<link rel="stylesheet" href="{% static "accounts/css/login.css" %}">
+<!-- bootstrapのcssファイルを読み込む-->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -12,22 +13,23 @@
 <title>周辺のスポットを探してみよう</title>
 <body>
   <div class="loginform">
+    <div class="title">周りのスポットを探してみましょう</div>
     <div class="form-row">
       <div class="field_wrapper">
         <form method="POST" action="{% url 'accounts:login' %}">
           {% csrf_token %}
           <div class="col">
-            <label>ユーザーID</label>
+            <label>ユーザーID</label><br>
             {{ form.username }}
             {{ form.username.errors }}
           </div>
           <div class="col">
-            <label>パスワード</label>
+            <label>パスワード</label><br>
             {{ form.password }}
             {{ form.password.errors }}
           </div>
           <div class="col">
-            <button class="btn btn-info" type = "submit">ログイン</button>
+            <button class="btn btn-info" type="submit">ログイン</button>
           </div>
         </form>
         <div class="col">

@@ -15,7 +15,7 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
 - 検証環境
     - EC2に、使用するミドルウェア（Django、Nginx、PostgreSQL、Redis）をDockerで構築
 
-詳細はリポジトリの system_architecture.png を参照。
+![system_architecture.png](https://github.com/yuki0417/travel-app/blob/master/system_architecture.png?raw=true)
 
 ## コード管理ツール
 - GitHub
@@ -53,3 +53,4 @@ html形式のテストレポートとカバレッジレポートがCircleCI上�
 - 本番環境と開発環境の差異をDockerコンテナ技術により少なくする
 - インフラのコード化
 - 機能拡張を意識したコーディング、テスト実装
+- レスポンシブデザイン

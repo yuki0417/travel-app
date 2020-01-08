@@ -33,7 +33,7 @@ class SignUpView(CreateView):
             return render(request, self.template_name, {'form': form})
 
     def get(self, request, *args, **kwargs):
-        form = SignUpForm(request.POST)
+        form = SignUpForm()
         return render(request, self.template_name, {'form': form})
 
 
@@ -55,7 +55,7 @@ class LoginView(View):
             return render(request, self.template_name, {'form': form})
 
     def get(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
+        form = LoginForm()
         return render(request, self.template_name, {'form': form})
 
 
