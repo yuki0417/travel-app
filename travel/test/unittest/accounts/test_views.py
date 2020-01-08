@@ -107,7 +107,7 @@ class SignUpViewTestcase(TestCase):
         expect = render(
             request,
             'accounts/signup.html',
-            {'form': SignUpForm(request.POST)}
+            {'form': SignUpForm()}
         )
         result = suv.get(request)
         self.assertEqual(
@@ -185,7 +185,7 @@ class LoginViewTestcase(TestCase):
         expect = render(
             request,
             'accounts/login.html',
-            {'form': LoginForm(request.POST)}
+            {'form': LoginForm()}
         )
         result = lv.get(request)
         self.assertEqual(
