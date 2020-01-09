@@ -1,0 +1,27 @@
+.label {
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.col {
+  padding-top: 0.5em;
+  padding-left: 0.5em;
+}
+
+.help-text {
+  font-weight: lighter;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  padding-left: 0.5em;
+}
+
+input {
+  border: 2px solid rgb(0, 167, 170);
+  border-radius: 0.65em;
+  padding: 0.5em;
+  background-color: snow;
+}
+
+button {
+  padding: 10px;
+}
