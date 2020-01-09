@@ -1,5 +1,7 @@
 {% extends './place_base.html' %}
 {% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/setting_form.css" %}">
   <div class="card mb-3">
     <div class="card-header">
         <h3>設定の作成</h3>
@@ -16,20 +18,35 @@
             </div>
             {% endif %}
             <div class="col">
-            <label>設定名</label>
+            <div class="label">
+              <label>{{ form.name.label }}</label>
+            </div>
             <input type="hidden" name="user" id="id_user" value={{ user_id }}>
             {{ form.name }}
             {{ form.name.errors }}
+              <div class="help-text">
+                {{ form.name.help_text }}
+              </div>
             </div>
             <div class="col">
-            <label>半径</label>
+            <div class="label">
+              <label>{{ form.radius.label }}</label>
+            </div>
             {{ form.radius }}
             {{ form.radius.errors }}
+              <div class="help-text">
+                {{ form.radius.help_text }}
+              </div>
             </div>
             <div class="col">
-            <label>最大表示件数</label>
+            <div class="label">
+              <label>{{ form.max_show_num.label }}</label>
+            </div>
             {{ form.max_show_num }}
             {{ form.max_show_num.errors }}
+              <div class="help-text">
+                {{ form.max_show_num.help_text }}
+              </div>
             </div>
             <button class="btn btn-primary" type="submit">登録</button>
         </form>

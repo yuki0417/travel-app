@@ -39,15 +39,15 @@ class Setting(models.Model):
         max_length=20,
         help_text="設定の名称")
     radius = models.IntegerField(
-        "半径",
+        "半径 (m)",
         default=500,
         validators=[MinValueValidator(10), MaxValueValidator(10000)],
-        help_text="現在地からの半径をm単位で指定する。10~10000の間で指定。")
+        help_text="現在地からの半径をm単位で指定します。10~10000の間が設定できます。")
     max_show_num = models.IntegerField(
         "最大表示件数",
         default=5,
         validators=[MaxValueValidator(500)],
-        help_text="最大で表示する件数。最大値は500。")
+        help_text="最大で表示できる件数です。最大値は500です。")
 
     class Meta:
         verbose_name = '設定'
