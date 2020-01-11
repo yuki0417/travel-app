@@ -71,7 +71,10 @@ jobs:
             && mv $TEST_XML $REPORTS_INTEG_DIR/travel_saved_place_list.xml
             && $MNG_PY test test.integtest.travel.test_setting
             $TEST_SETTINGS
-            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_setting.xml"
+            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_setting.xml
+            && $MNG_PY test test.integtest.travel.test_navbar
+            $TEST_SETTINGS
+            && mv $TEST_XML $REPORTS_INTEG_DIR/travel_navbar.xml"
       - run:
           name: docker-compose generate test-html-report
           command: >
@@ -86,7 +89,9 @@ jobs:
             && junit2html $REPORTS_INTEG_DIR/travel_saved_place_list.xml
             $REPORTS_INTEG_DIR/html/travel_saved_place_list.html
             && junit2html $REPORTS_INTEG_DIR/travel_setting.xml
-            $REPORTS_INTEG_DIR/html/travel_setting.html"
+            $REPORTS_INTEG_DIR/html/travel_setting.html
+            && junit2html $REPORTS_INTEG_DIR/travel_navbar.xml
+            $REPORTS_INTEG_DIR/html/travel_navbar.html"
       - run:
           name: docker-compose generate coverage-xml-report
           command: >

@@ -12,7 +12,9 @@ from test.unittest.common.test_data import (
     COR_APPUSER_DATA_2nd,
 )
 from test.integtest.test_common import (
-    login_form
+    login_form,
+    login_with_test_user,
+    open_login_page
 )
 
 
@@ -40,24 +42,14 @@ class LoginTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def login_with_test_user(self):
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
-        self.selenium.find_element_by_xpath(
-            login_form["test_login_btn"]).click()
-
     def test_login__when_success(self):
         """
         ログイン画面にアクセスし、必要なフォーム入力し、ログインボタンを押す
         =>場所一覧の画面に遷移する
         """
         # ログイン
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
+        open_login_page(self)
+
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
@@ -66,8 +58,10 @@ class LoginTests(StaticLiveServerTestCase):
             login_form["login_btn"]).click()
 
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('travel:place_list'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:place_list'))
+        )
 
         self.assertEqual(result, expected)
 
@@ -77,10 +71,8 @@ class LoginTests(StaticLiveServerTestCase):
         =>ログイン画面に遷移する
         """
         # ログイン
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
+        open_login_page(self)
+
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
@@ -90,7 +82,10 @@ class LoginTests(StaticLiveServerTestCase):
             login_form["login_btn"]).click()
 
         result = self.selenium.current_url
-        expected = self.live_server_url + str(reverse_lazy('accounts:login'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('accounts:login'))
+        )
 
         self.assertEqual(result, expected)
 
@@ -100,11 +95,13 @@ class LoginTests(StaticLiveServerTestCase):
         =>場所一覧の画面に遷移する
         """
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('travel:place_list'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:place_list'))
+        )
 
         self.assertEqual(result, expected)
 
@@ -114,16 +111,16 @@ class LoginTests(StaticLiveServerTestCase):
         =>新規登録の画面に遷移する
         """
         # ログイン画面
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
+        open_login_page(self)
+
         # 新規登録するボタンを押す
         self.selenium.find_element_by_xpath(
             login_form["signup_btn"]).click()
 
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('accounts:signup'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('accounts:signup'))
+        )
 
         self.assertEqual(result, expected)
