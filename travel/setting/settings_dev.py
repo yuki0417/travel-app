@@ -8,6 +8,11 @@ SECRET_KEY = config('DEV_SECRET_KEY')
 
 DEBUG = True
 
+ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS += [
+    '192.168.{}.{}'.format(i, j) for i in range(256) for j in range(256)]
+
+
 ROOT_URLCONF = 'setting.urls_dev'
 
 INTERNAL_IPS = ['127.0.0.1']

@@ -1,5 +1,10 @@
+.search_setting {
+  padding-bottom: 1em;
+}
+
 #loading {
   display: none;
   text-align: center;
   border-style: none;
+  padding-top: 1em;
 }

@@ -16,10 +16,11 @@
         </option>
       {% endfor %}
     </select>
-    <button type="button" class="btn btn-info" id='location_btn' value="更新" data-toggle="tooltip" data-placement="right"
-      data-html="true">周辺のスポットをさがす</button>
 </form>
+<button type="button" class="btn btn-info" id='location_btn' value="更新"
+  data-toggle="tooltip" data-placement="right" data-html="true">周辺のスポットをさがす</button>
 <div id="loading"><img src="{% static "icon/ajax-loader.gif" %}"></div>
+</div>
 
 <!-- jqueryの読み込み -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -29,34 +30,35 @@
 jQuery(function ($) {
   $(function(){
     $('#location_btn').on('click', function(){
-      var setting_now = $('[name="setting_now"] option:selected').val()
+      const setting_now = $('[name="setting_now"] option:selected').val()
       if (setting_now === '設定を選ぶ (新規作成はメニューから)') {
         return;
       }
       $("#loading").fadeIn(500);
-      let getPosition = function (options) {
+      const getPosition = function (options) {
         return new Promise(function (resolve, reject) {
           navigator.geolocation.getCurrentPosition(resolve, reject, options);
         });
     }
 
-getPosition()
-  .then((position) => {
-    ($.post("{% url 'travel:place_list' %}",
-      {
-        'your_location': [
-          position.coords.latitude,
-          position.coords.longitude
-        ],
-        'setting_now': setting_now,
-        'csrfmiddlewaretoken': '{{ csrf_token }}'
-      },
-      function(data){
-        $("#loading").fadeOut(500);
-        $('#current_data').html(data)
-      }
-    ));
-    });
+    // 現在地を取得後、ViewにPOSTリクエストを送る
+    getPosition()
+      .then((position) => {
+        ($.post("{% url 'travel:place_list' %}",
+          {
+            'your_location': [
+              position.coords.latitude,
+              position.coords.longitude
+            ],
+            'setting_now': setting_now,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          function(data){
+            $("#loading").fadeOut(500);
+            $('#current_data').html(data)
+          }
+        ));
+      });
     });
   });
 });

@@ -1,0 +1,57 @@
+{% extends './place_base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/setting_form.css" %}">
+  <div class="card mb-3">
+    <div class="card-header">
+        <h3>設定の編集</h3>
+    </div>
+      <div class="content-wrapper">
+        <div class="container-fluid">
+          <div class="form-row">
+        <form method="POST" action="">
+          {% csrf_token %}
+            <div class="field_wrapper">
+            <div class="col">
+            {% if form.non_field_errors %}
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            <div class="col">
+            <div class="label">
+              <label>{{ form.name.label }}</label>
+            </div>
+            <input type="hidden" name="user" id="id_user" value={{ user_id }}>
+            {{ form.name }}
+            {{ form.name.errors }}
+              <div class="help-text">
+                {{ form.name.help_text }}
+              </div>
+            </div>
+            <div class="col">
+            <div class="label">
+              <label>{{ form.radius.label }}</label>
+            </div>
+            {{ form.radius }}
+            {{ form.radius.errors }}
+              <div class="help-text">
+                {{ form.radius.help_text }}
+              </div>
+            </div>
+            <div class="col">
+            <div class="label">
+              <label>{{ form.max_show_num.label }}</label>
+            </div>
+            {{ form.max_show_num }}
+            {{ form.max_show_num.errors }}
+              <div class="help-text">
+                {{ form.max_show_num.help_text }}
+              </div>
+            </div>
+            <button class="btn btn-primary" type="submit">更新</button>
+        </form>
+      </div>
+  </div>
+</div>
+
+{% endblock content %}

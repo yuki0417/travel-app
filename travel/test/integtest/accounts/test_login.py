@@ -11,9 +11,12 @@ from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
 )
+from test.integtest.test_common import (
+    login_form
+)
 
 
-class MySeleniumTests(StaticLiveServerTestCase):
+class LoginTests(StaticLiveServerTestCase):
 
     def setUp(self):
         AppUserEncPasswordTestData1st.setUp()
@@ -43,7 +46,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
                 self.live_server_url,
                 str(reverse_lazy('accounts:login'))))
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/div[1]/div/a').click()
+            login_form["test_login_btn"]).click()
 
     def test_login__when_success(self):
         """
@@ -60,7 +63,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         password_input = self.selenium.find_element_by_name("password")
         password_input.send_keys(COR_APPUSER_DATA_1st['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[3]/button').click()
+            login_form["login_btn"]).click()
 
         result = self.selenium.current_url
         expected = \
@@ -84,7 +87,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # 誤ったパスワードを入力
         password_input.send_keys(COR_APPUSER_DATA_2nd['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[3]/button').click()
+            login_form["login_btn"]).click()
 
         result = self.selenium.current_url
         expected = self.live_server_url + str(reverse_lazy('accounts:login'))
@@ -102,5 +105,25 @@ class MySeleniumTests(StaticLiveServerTestCase):
         result = self.selenium.current_url
         expected = \
             self.live_server_url + str(reverse_lazy('travel:place_list'))
+
+        self.assertEqual(result, expected)
+
+    def test_login__go_to_signup_form(self):
+        """
+        ログイン画面にアクセスし、新規登録ボタンを押す
+        =>新規登録の画面に遷移する
+        """
+        # ログイン画面
+        self.selenium.get(
+            '%s%s' % (
+                self.live_server_url,
+                str(reverse_lazy('accounts:login'))))
+        # 新規登録するボタンを押す
+        self.selenium.find_element_by_xpath(
+            login_form["signup_btn"]).click()
+
+        result = self.selenium.current_url
+        expected = \
+            self.live_server_url + str(reverse_lazy('accounts:signup'))
 
         self.assertEqual(result, expected)

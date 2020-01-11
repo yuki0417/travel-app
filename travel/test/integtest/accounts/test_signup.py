@@ -10,6 +10,9 @@ from test.unittest.common.test_data import (
     AppUserEncPasswordTestData1st,
     COR_APPUSER_DATA_1st,
 )
+from test.integtest.test_common import (
+    signup_form,
+)
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
@@ -33,26 +36,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_signup__from_login_page(self):
-        """
-        ログイン画面にアクセスし、新規登録ボタンを押す
-        =>新規登録の画面に遷移する
-        """
-        # ログイン画面にアクセス
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
-        # 新規登録ボタンを押す
-        self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/div[2]/div/a').click()
-
-        result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('accounts:signup'))
-
-        self.assertEqual(result, expected)
-
     def test_signup__when_success(self):
         """
         新規登録画面にアクセスし、ユーザー登録を行う
@@ -70,7 +53,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         password_input = self.selenium.find_element_by_name("password_check")
         password_input.send_keys(COR_APPUSER_DATA_1st['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[4]/button').click()
+            signup_form["register_btn"]).click()
 
         result = self.selenium.current_url
         expected = \
@@ -98,7 +81,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         password_input = self.selenium.find_element_by_name("password_check")
         password_input.send_keys(COR_APPUSER_DATA_1st['password'])
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/form/div[4]/button').click()
+            signup_form["register_btn"]).click()
 
         result = self.selenium.current_url
         expected = \

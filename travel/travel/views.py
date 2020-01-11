@@ -101,6 +101,7 @@ class SettingUpdateView(UpdateView):
     """
     model = Setting
     form_class = SettingUpdateForm
+    template_name = 'travel/setting_update_form.html'
     success_url = reverse_lazy('travel:setting_update_done')
 
     def get_object(self):
