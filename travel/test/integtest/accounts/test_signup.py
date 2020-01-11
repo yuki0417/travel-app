@@ -12,10 +12,11 @@ from test.unittest.common.test_data import (
 )
 from test.integtest.test_common import (
     signup_form,
+    open_signup_page
 )
 
 
-class MySeleniumTests(StaticLiveServerTestCase):
+class SignupTests(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -42,10 +43,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
         =>場所一覧の画面に遷移する
         """
         # 新規登録画面にアクセス
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:signup'))))
+        open_signup_page(self)
+
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
@@ -56,8 +55,10 @@ class MySeleniumTests(StaticLiveServerTestCase):
             signup_form["register_btn"]).click()
 
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('travel:place_list'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:place_list'))
+        )
 
         self.assertEqual(result, expected)
 
@@ -70,10 +71,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
         AppUserEncPasswordTestData1st.setUp()
 
         # 新規登録画面にアクセス
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:signup'))))
+        open_signup_page(self)
+
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys(COR_APPUSER_DATA_1st['username'])
         password_input = self.selenium.find_element_by_name("password")
@@ -84,7 +83,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
             signup_form["register_btn"]).click()
 
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('accounts:signup'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('accounts:signup'))
+        )
 
         self.assertEqual(result, expected)

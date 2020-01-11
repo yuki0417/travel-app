@@ -17,15 +17,16 @@ from test.unittest.common.test_data import (
     COR_SETTING_DATA_2nd,
 )
 from test.integtest.test_common import (
-    login_form,
-    nav_bar,
     setting_create_form,
     setting_edit,
-    setting_update_form
+    setting_update_form,
+    login_with_test_user,
+    open_create_setting_page,
+    open_setting_list_page
 )
 
 
-class MySeleniumTests(StaticLiveServerTestCase):
+class SettingTests(StaticLiveServerTestCase):
 
     def setUp(self):
         AppUserEncPasswordTestData1st.setUp()
@@ -49,30 +50,19 @@ class MySeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def login_with_test_user(self):
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
-        self.selenium.find_element_by_xpath(
-            login_form["test_login_btn"]).click()
-
     def test_create_setting__success(self):
         """
         「テストユーザーでログイン」し、設定の新規作成のリンクを開き、新規に設定を作成する。
         =>設定名が重複せず、作成できる
         """
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
 
         # 新規作成を開く
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_change"]).click()
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_create"]).click()
+        open_create_setting_page(self)
 
         # 設定名を入力する。半径、最大表示件数はデフォルトのままにする。
         name_input = self.selenium.find_element_by_name("name")
@@ -83,8 +73,10 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 設定作成完了画面に遷移する
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('travel:done_setting'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:done_setting'))
+        )
         self.assertEqual(result, expected)
 
         # 設定が作成されている
@@ -100,15 +92,12 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # あらかじめ設定を作成しておく
         self.test_create_setting__success()
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
         # 新規作成を開く
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_change"]).click()
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_create"]).click()
+        open_create_setting_page(self)
 
         # 設定名を入力する。
         name_input = self.selenium.find_element_by_name("name")
@@ -119,8 +108,10 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 重複エラーになり、ページ遷移しない
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(reverse_lazy('travel:create_setting'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:create_setting'))
+        )
 
         self.assertEqual(result, expected)
 
@@ -132,15 +123,12 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # あらかじめ設定を作成しておく
         self.test_create_setting__success()
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
         # 変更＆削除を開く
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_change"]).click()
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_edit"]).click()
+        open_setting_list_page(self)
 
         # 削除するボタンをクリックする
         self.selenium.find_element_by_xpath(
@@ -151,10 +139,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
             setting_edit["delete_conf_btn"]).click()
 
         # 変更＆削除を開く
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('travel:setting_list'))))
+        open_setting_list_page(self)
 
         # 設定画面に何も表示されていないので削除ボタンを押せない
         with self.assertRaises(NoSuchElementException):
@@ -169,7 +154,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # あらかじめ設定を作成しておく
         self.test_create_setting__success()
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         # 設定のオブジェクトのIDを最後の確認のため取得しておく
         test_setting = Setting.objects.get(name=COR_SETTING_DATA_1st['name'])
@@ -178,10 +163,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
         # 変更＆削除を開く
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_change"]).click()
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_edit"]).click()
+        open_setting_list_page(self)
 
         # 編集するボタンをクリックする
         self.selenium.find_element_by_xpath(
@@ -197,9 +179,10 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 設定変更完了画面に遷移する
         result = self.selenium.current_url
-        expected = \
-            self.live_server_url + str(
-                reverse_lazy('travel:setting_update_done'))
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:setting_update_done'))
+        )
         self.assertEqual(result, expected)
 
         # 設定名が変更されている
@@ -212,7 +195,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         =>「設定2」が重複するため、設定名が変更できない
         """
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
         # 設定2のuserをユニットテストユーザーからテストユーザーに変更しておく
         SettingCorrectTestData2ndUser1st.setUp()
         test_setting_2nd = Setting.objects.get(id=COR_SETTING_DATA_2nd["id"])
@@ -225,10 +208,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
         # 変更＆削除を開く
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_change"]).click()
-        self.selenium.find_element_by_xpath(
-            nav_bar["setting_edit"]).click()
+        open_setting_list_page(self)
 
         # 編集するボタンをクリックする
         self.selenium.find_element_by_xpath(

@@ -4,7 +4,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse_lazy
 
 from test.setting.selenium_setting import SELENIUM_SETTING
 from accounts.models import AppUser
@@ -19,7 +18,9 @@ from test.unittest.common.test_data import (
 from test.integtest.test_common import (
     place_table,
     dummy_get_position,
-    login_form
+    login_with_test_user,
+    search_place_to_list,
+    add_place_to_list
 )
 
 
@@ -47,66 +48,13 @@ class PlaceListTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def login_with_test_user(self):
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
-        self.selenium.find_element_by_xpath(
-            login_form["test_login_btn"]).click()
-
-    def search_place_to_list(self):
-        """
-        「テストユーザーでログイン」し、場所を検索する
-        """
-        # テストユーザーログイン
-        self.login_with_test_user()
-
-        # 設定2のuserをユニットテストユーザーからテストユーザーに変更しておく
-        SettingCorrectTestData2ndUser1st.setUp()
-        test_setting_2nd = Setting.objects.get(id=COR_SETTING_DATA_2nd["id"])
-        test_setting_2nd.user = \
-            AppUser.objects.get(username=TEST_USER_INFO['username'])
-        test_setting_2nd.save()
-
-        # 設定表示のためページ読み直し
-        self.selenium.refresh()
-
-        # 位置情報の戻り値を固定させる
-        self.selenium.execute_script(dummy_get_position)
-
-        # 設定２を選択し、周辺のスポットをさがすボタンを押す
-        select_setting = Select(
-            self.selenium.find_element_by_name("setting_now"))
-        select_setting.select_by_index(1)
-
-        self.selenium.find_element_by_xpath(
-            place_table["search_button"]).click()
-
-        # wikipediaAPI待機のため10秒待つ
-        sleep(10)
-
-    def add_place_to_list(self):
-        """
-        「テストユーザーでログイン」し、場所を検索し、気になるリスト追加を行う
-        """
-        self.search_place_to_list()
-        # それぞれ気になるリストに追加するボタンを押す
-        self.selenium.find_element_by_xpath(
-            place_table["fav_button_first"]).click()
-        self.selenium.find_element_by_xpath(
-            place_table["fav_button_second"]).click()
-
-        # 気になるリスト追加処理のため3秒待つ
-        sleep(3)
-
     def test_place_list__add_place_to_list(self):
         """
         「テストユーザーでログイン」し、場所を検索し、気になるリスト追加を行う
         =>気になるリストに場所を追加できる
         """
         # 「テストユーザーでログイン」し、場所を検索する
-        self.search_place_to_list()
+        search_place_to_list(self)
         # 上から１つめと２つめのタイトルを変数に入れておく
         place_1_title = self.selenium.find_element_by_xpath(
             place_table["title_first"]).text
@@ -136,7 +84,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         =>「お近くの施設や記事は見つかりませんでした。」のテンプレートが返る
         """
         # テストユーザーログイン
-        self.login_with_test_user()
+        login_with_test_user(self)
 
         # 設定2のuserをユニットテストユーザーからテストユーザーに変更しておく
         # 同時に範囲を狭くしておく
@@ -176,7 +124,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         =>wikipediaに移動する
         """
         # 場所を検索した状態にする
-        self.add_place_to_list()
+        add_place_to_list(self)
 
         # 上から１つめのタイトルを変数に入れておく
         place_title = self.selenium.find_element_by_xpath(
@@ -205,7 +153,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         """
 
         # 場所表示し、気になるボタンを押した状態にする
-        self.add_place_to_list()
+        add_place_to_list(self)
 
         # 上から１つめと２つめのタイトルを変数に入れておく
         place_1_title = self.selenium.find_element_by_xpath(

@@ -28,16 +28,16 @@
         {% for item in object_list %}
           <tr id="place" class="odd gradeX text-center">
             <td id="name" class="text-center"><h3>{{ item.name }}</h3>
-            <class id="linkUrl">
+            <div id="linkUrl">
               <a href="{{ item.linkUrl }}" target="_blank">
                   <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a><p id="extract">{{ item.extract }}</p>
-            </class>
-              <class id="changestate">
+            </div>
+              <div id="changestate">
               <button class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button>
-              </class>
-              <class id="get_there">
+              </div>
+              <div id="get_there">
               <button class="btn-square">ここにいく</button>
-              </class>
+              </div>
             </td>
             <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
             <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>

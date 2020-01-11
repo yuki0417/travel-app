@@ -1,27 +1,19 @@
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.select import Select
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse_lazy
 
 from test.setting.selenium_setting import SELENIUM_SETTING
-from accounts.models import AppUser
-from accounts.create_testuser import TEST_USER_INFO
-from travel.models import Setting, Place
+from travel.models import Place
 from test.unittest.common.test_data import (
     teardown_data,
     AppUserEncPasswordTestData1st,
-    SettingCorrectTestData2ndUser1st,
-    COR_SETTING_DATA_2nd,
 )
 from test.integtest.test_common import (
-    login_form,
-    place_table,
-    dummy_get_position,
-    nav_bar,
     saved_place_table,
+    add_place_to_list,
+    open_saved_place_page
 )
 
 
@@ -49,59 +41,6 @@ class SavedPlaceListTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def login_with_test_user(self):
-        self.selenium.get(
-            '%s%s' % (
-                self.live_server_url,
-                str(reverse_lazy('accounts:login'))))
-        self.selenium.find_element_by_xpath(
-            login_form["test_login_btn"]).click()
-
-    def search_place_to_list(self):
-        """
-        「テストユーザーでログイン」し、場所を検索する
-        """
-        # テストユーザーログイン
-        self.login_with_test_user()
-
-        # 設定2のuserをユニットテストユーザーからテストユーザーに変更しておく
-        SettingCorrectTestData2ndUser1st.setUp()
-        test_setting_2nd = Setting.objects.get(id=COR_SETTING_DATA_2nd["id"])
-        test_setting_2nd.user = \
-            AppUser.objects.get(username=TEST_USER_INFO['username'])
-        test_setting_2nd.save()
-
-        # 設定表示のためページ読み直し
-        self.selenium.refresh()
-
-        # 位置情報の戻り値を固定させる
-        self.selenium.execute_script(dummy_get_position)
-
-        # 設定２を選択し、周辺のスポットをさがすボタンを押す
-        select_setting = Select(
-            self.selenium.find_element_by_name("setting_now"))
-        select_setting.select_by_index(1)
-
-        self.selenium.find_element_by_xpath(
-            place_table["search_button"]).click()
-
-        # wikipediaAPI待機のため5秒待つ
-        sleep(5)
-
-    def add_place_to_list(self):
-        """
-        「テストユーザーでログイン」し、場所を検索し、気になるリスト追加を行う
-        """
-        self.search_place_to_list()
-        # それぞれ気になるリストに追加するボタンを押す
-        self.selenium.find_element_by_xpath(
-            place_table["fav_button_first"]).click()
-        self.selenium.find_element_by_xpath(
-            place_table["fav_button_second"]).click()
-
-        # 気になるリスト追加処理のため3秒待つ
-        sleep(3)
-
     def test_saved_place_list__remove_place_from_list(self):
         """
         「テストユーザーでログイン」し、場所を検索し、気になるリスト追加の後、
@@ -110,11 +49,10 @@ class SavedPlaceListTests(StaticLiveServerTestCase):
         """
 
         # 場所表示し、気になるボタンを押した状態にする
-        self.add_place_to_list()
+        add_place_to_list(self)
 
         # 気になる場所リストに移動する
-        self.selenium.find_element_by_xpath(
-            nav_bar["saved_place_list"]).click()
+        open_saved_place_page(self)
 
         # 上から１つめと２つめのタイトルを変数に入れておく
         place_1_title = self.selenium.find_element_by_xpath(
@@ -175,11 +113,11 @@ class SavedPlaceListTests(StaticLiveServerTestCase):
         =>wikipediaに移動する
         """
         # 場所表示し、気になるボタンを押した状態にする
-        self.add_place_to_list()
+        add_place_to_list(self)
 
         # 気になる場所リストに移動する
-        self.selenium.find_element_by_xpath(
-            nav_bar["saved_place_list"]).click()
+        open_saved_place_page(self)
+
         # ページ遷移の処理のため5秒待つ
         sleep(5)
         # 上から１つめのタイトルを変数に入れておく
@@ -207,11 +145,10 @@ class SavedPlaceListTests(StaticLiveServerTestCase):
         =>googlemapに移動する
         """
         # 場所表示し、気になるボタンを押した状態にする
-        self.add_place_to_list()
+        add_place_to_list(self)
 
         # 気になる場所リストに移動する
-        self.selenium.find_element_by_xpath(
-            nav_bar["saved_place_list"]).click()
+        open_saved_place_page(self)
 
         # 上から１つめのタイトルを変数に入れておく
         place_title = self.selenium.find_element_by_xpath(

@@ -4,22 +4,23 @@
 <link rel="stylesheet" href="{% static "travel/css/place_list.css" %}">
 
 <div class="search_setting">
-<form id="your_location" action="" method="post">
-  {% csrf_token %}
-    <select name="setting_now" class="browser-default custom-select custom-select-lg mb-3">
-      <option selected="true" disabled="disabled">設定を選ぶ (新規作成はメニューから)</option>
-      {% for setting in object_list %}
-        <option value="{{setting.id}}">
-          {{setting.name}}: 
-          {{setting_radius_meta}}: {{setting.radius}}
-          {{setting_max_show_num_meta}}: {{setting.max_show_num}}
-        </option>
-      {% endfor %}
-    </select>
-</form>
-<button type="button" class="btn btn-info" id='location_btn' value="更新"
-  data-toggle="tooltip" data-placement="right" data-html="true">周辺のスポットをさがす</button>
-<div id="loading"><img src="{% static "icon/ajax-loader.gif" %}"></div>
+  <form id="your_location" action="" method="post">
+    {% csrf_token %}
+      <select name="setting_now" class="browser-default custom-select custom-select-lg mb-3">
+        <option selected="true" disabled="disabled">設定を選ぶ (新規作成はメニューから)</option>
+        {% for setting in object_list %}
+          <option value="{{setting.id}}">
+            {{setting.name}}: 
+            {{setting_radius_meta}}: {{setting.radius}}
+            {{setting_max_show_num_meta}}: {{setting.max_show_num}}
+          </option>
+        {% endfor %}
+      </select>
+  </form>
+  <button type="button" class="btn btn-info" id='location_btn' value="更新"
+    data-toggle="tooltip" data-placement="right" data-html="true">周辺のスポットをさがす</button>
+  <div id="loading"><img src="{% static "icon/ajax-loader.gif" %}"></div>
+  <div id="current_data"></div>
 </div>
 
 <!-- jqueryの読み込み -->
@@ -64,12 +65,5 @@ jQuery(function ($) {
 });
 
 </script>
-
-         <div id="current_data">
-      </div>
-      </div>
-   </div>
-  </div>
-<hr>
  
 {% endblock content %}
