@@ -61,7 +61,7 @@ class NavBarTests(StaticLiveServerTestCase):
     def test_open_setting_create_page(self):
         """
         「テストユーザーでログイン」し、
-        ナビゲーションバーの気になる場所リストのリンクを開く
+        ナビゲーションバーの設定の新規作成のリンクを開く
         """
         open_hamb_menu(self)
 
@@ -80,7 +80,7 @@ class NavBarTests(StaticLiveServerTestCase):
     def test_open_setting_list_page(self):
         """
         「テストユーザーでログイン」し、
-        ナビゲーションバーの気になる場所リストのリンクを開く
+        ナビゲーションバーの設定の変更＆削除のリンクを開く
         """
         open_hamb_menu(self)
 
@@ -100,7 +100,7 @@ class NavBarTests(StaticLiveServerTestCase):
     def test_open_logout_page(self):
         """
         「テストユーザーでログイン」し、
-        ナビゲーションバーの気になる場所リストのリンクを開く
+        ナビゲーションバーのログアウトのリンクを開く
         """
         open_hamb_menu(self)
 
