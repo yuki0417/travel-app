@@ -34,7 +34,7 @@ ul {
     padding-left: 0;
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 600px) {
     body {
       background-image: url("../img/background.jpg");
     }
