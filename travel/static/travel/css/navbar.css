@@ -1,10 +1,19 @@
 #wrapper {
-    padding-bottom: 6em;
+    padding-bottom: 5em;
+}
+
+#wrapper #title h4{
+    padding-top: 0.7em;
+    padding-left: 0.5em;
+    position: fixed;
+    z-index: 9997;
+    color: white;
 }
 
 #global-navi {
-    background:#333;
-    z-index: 9999;
+    text-align: right;
+    background: #333;
+    z-index: 9996;
     position: fixed;
     top: 0;
     right: 0px;
@@ -26,9 +35,16 @@
 /*スマホ画面*/
 @media screen and (max-width: 600px) {
     #wrapper {
-        padding-bottom: 4.5em;
+        padding-bottom: 1em;
         background-color: black;
     }
+    #wrapper #title h4{
+        padding-top: 1em;
+        padding-left: 0.5em;
+        position: relative;
+        z-index: 1;
+        color: white;
+    }    
     #wrapper nav {
         position: fixed;
         z-index: 9999;
@@ -58,6 +74,7 @@
         right: 20px;
         width: 30px;
         height: 24px;
+        margin-top: 0.4em;
         z-index: 3;
         box-sizing: border-box;
         cursor: pointer;
