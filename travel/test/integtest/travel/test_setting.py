@@ -16,6 +16,13 @@ from test.unittest.common.test_data import (
     COR_SETTING_DATA_1st,
     COR_SETTING_DATA_2nd,
 )
+from test.integtest.test_common import (
+    login_form,
+    nav_bar,
+    setting_create_form,
+    setting_edit,
+    setting_update_form
+)
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
@@ -48,7 +55,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
                 self.live_server_url,
                 str(reverse_lazy('accounts:login'))))
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/div[1]/div/a').click()
+            login_form["test_login_btn"]).click()
 
     def test_create_setting__success(self):
         """
@@ -60,18 +67,19 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
-        self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/a').click()
+
         # 新規作成を開く
         self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/div/a[1]').click()
+            nav_bar["setting_change"]).click()
+        self.selenium.find_element_by_xpath(
+            nav_bar["setting_create"]).click()
 
         # 設定名を入力する。半径、最大表示件数はデフォルトのままにする。
-        setting_name_input = self.selenium.find_element_by_name("name")
-        setting_name_input.send_keys(COR_SETTING_DATA_1st['name'])
-
+        name_input = self.selenium.find_element_by_name("name")
+        name_input.send_keys(COR_SETTING_DATA_1st['name'])
+        # 登録
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/div/form/div/div/button').click()
+            setting_create_form["create_btn"]).click()
 
         # 設定作成完了画面に遷移する
         result = self.selenium.current_url
@@ -96,18 +104,18 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
-        self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/a').click()
         # 新規作成を開く
         self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/div/a[1]').click()
+            nav_bar["setting_change"]).click()
+        self.selenium.find_element_by_xpath(
+            nav_bar["setting_create"]).click()
 
         # 設定名を入力する。
-        setting_name_input = self.selenium.find_element_by_name("name")
-        setting_name_input.send_keys(COR_SETTING_DATA_1st['name'])
+        name_input = self.selenium.find_element_by_name("name")
+        name_input.send_keys(COR_SETTING_DATA_1st['name'])
 
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/div/form/div/div/button').click()
+            setting_create_form["create_btn"]).click()
 
         # 重複エラーになり、ページ遷移しない
         result = self.selenium.current_url
@@ -121,8 +129,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         「テストユーザーでログイン」し、設定の変更＆削除のリンクを開き、設定を削除する。
         =>設定名が削除されている。
         """
-        delete_button = \
-            '/html/body/div[2]/div[2]/div/table/tbody/tr[1]/td[4]/a[2]'
         # あらかじめ設定を作成しておく
         self.test_create_setting__success()
         # テストユーザーログイン
@@ -130,19 +136,19 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
-        self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/a').click()
         # 変更＆削除を開く
         self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/div/a[2]').click()
+            nav_bar["setting_change"]).click()
+        self.selenium.find_element_by_xpath(
+            nav_bar["setting_edit"]).click()
 
         # 削除するボタンをクリックする
-        self.selenium.find_element_by_xpath(delete_button).click()
+        self.selenium.find_element_by_xpath(
+            setting_edit["delete_btn"]).click()
 
         # 確認画面でも続けて削除するボタンをクリックする
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/form/button'
-            ).click()
+            setting_edit["delete_conf_btn"]).click()
 
         # 変更＆削除を開く
         self.selenium.get(
@@ -152,7 +158,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 設定画面に何も表示されていないので削除ボタンを押せない
         with self.assertRaises(NoSuchElementException):
-            self.selenium.find_element_by_xpath(delete_button).click()
+            self.selenium.find_element_by_xpath(
+                setting_edit["delete_btn"]).click()
 
     def test_update_setting__success(self):
         """
@@ -170,24 +177,23 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
-        self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/a').click()
         # 変更＆削除を開く
         self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/div/a[2]').click()
+            nav_bar["setting_change"]).click()
+        self.selenium.find_element_by_xpath(
+            nav_bar["setting_edit"]).click()
 
         # 編集するボタンをクリックする
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/table/tbody/tr[1]/td[4]/a[1]'
-            ).click()
+            setting_edit["edit_btn"]).click()
 
         # 設定名を変更する
-        setting_name_input = self.selenium.find_element_by_name("name")
-        setting_name_input.clear()
-        setting_name_input.send_keys(COR_SETTING_DATA_2nd['name'])
+        name_input = self.selenium.find_element_by_name("name")
+        name_input.clear()
+        name_input.send_keys(COR_SETTING_DATA_2nd['name'])
 
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/div/form/div/div/button').click()
+            setting_update_form["update_btn"]).click()
 
         # 設定変更完了画面に遷移する
         result = self.selenium.current_url
@@ -218,28 +224,26 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # 「周辺を検索」の画面
         self.selenium.implicitly_wait(5)
-        self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/a').click()
         # 変更＆削除を開く
         self.selenium.find_element_by_xpath(
-            '/html/body/nav/ul/li[2]/div/a[2]').click()
+            nav_bar["setting_change"]).click()
+        self.selenium.find_element_by_xpath(
+            nav_bar["setting_edit"]).click()
 
         # 編集するボタンをクリックする
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/table/tbody/tr[1]/td[4]/a[1]'
-            ).click()
+            setting_edit["edit_btn"]).click()
 
         # 設定名を変更する
-        setting_name_input = self.selenium.find_element_by_name("name")
-        setting_name_input.clear()
-        setting_name_input.send_keys(COR_SETTING_DATA_2nd['name'])
+        name_input = self.selenium.find_element_by_name("name")
+        name_input.clear()
+        name_input.send_keys(COR_SETTING_DATA_2nd['name'])
 
         # 最後の比較のためURLを記録しておく
         current_url = self.selenium.current_url
-        # import pdb;pdb.set_trace()
 
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/div[2]/div/div/form/div/div/button').click()
+            setting_update_form["update_btn"]).click()
 
         # 設定変更画面のままになる
         result = self.selenium.current_url

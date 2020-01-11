@@ -8,6 +8,8 @@ SECRET_KEY = config('DEV_SECRET_KEY')
 
 DEBUG = True
 
+ALLOWED_HOSTS = ['192.168.2.102', 'localhost']
+
 ROOT_URLCONF = 'setting.urls_dev'
 
 INTERNAL_IPS = ['127.0.0.1']

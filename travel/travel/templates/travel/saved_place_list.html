@@ -9,11 +9,10 @@
     <h3><b>気になる場所リスト</b></h3>
   </div>
 </div>
-
+<div><p>ここにいくボタンで目的地まで道案内します。</p></div>
 <!--ページタイトル-->
 <div class="card-body">
   <!-- テーブル表の定義 -->
-  <div class="table-responsive">
     <table id="place_list" width="100%" class="table table-striped table-bordered table-hover">
     　<!-- 表の列の定義-->
       <thead>
@@ -45,9 +44,9 @@
           </tr>
       {% endfor %}
       </tbody>
-    　<!-- ここまでが表のデータ部分の表示-->
     </table>
-    <!-- ここまでがテーブル表の定義 -->
+</div>
+
 <!-- DataTablesのjavascript読み込み -->
 <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
 
@@ -57,9 +56,9 @@ jQuery(function ($) {
   $(function(){
     $("#get_there button").on('click', function(){
       console.log("clicked");
-        let currentRow = $(this).closest("tr");
-        let latitude = currentRow.find('#latitude').text();
-        let longtitude = currentRow.find('#longtitude').text();
+        const currentRow = $(this).closest("tr");
+        const latitude = currentRow.find('#latitude').text();
+        const longtitude = currentRow.find('#longtitude').text();
         const Url = "https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=&destination=" + latitude + ","+ longtitude;
         window.open(Url, '_blank');
     });
@@ -86,11 +85,13 @@ jQuery(function ($) {
 jQuery(function ($) {
   $(function(){
     $("#changestate button").on('click', function(){
-      let currentRow = $(this).closest("tr");
-      let name = currentRow.find('#name h3').text();
-      let saveStatus = currentRow.find('.btn').text();
+      const currentRow = $(this).closest("tr"),
+            name = currentRow.find('#name h3').text(),
+            saveStatus = currentRow.find('.btn').text();
+
       if (saveStatus === "取り消す") {
         $(this).toggleClass('btn-secondary btn-warning');
+
         ($.post("{% url 'travel:place_delete' %}",
         {
           'name': name,
@@ -102,12 +103,14 @@ jQuery(function ($) {
         ));
       }
       if (saveStatus === "追加する") {
+        const linkUrl = currentRow.find('a').attr('href'),
+              imageUrl = currentRow.find('img').attr('src'),
+              extract = currentRow.find('#extract').text(),
+              latitude = currentRow.find('#latitude').text(),
+              longtitude = currentRow.find('#longtitude').text();
+
         $(this).toggleClass('btn-warning btn-secondary');
-        let linkUrl = currentRow.find('a').attr('href');
-        let imageUrl = currentRow.find('img').attr('src');
-        let extract = currentRow.find('#extract').text();
-        let latitude = currentRow.find('#latitude').text();
-        let longtitude = currentRow.find('#longtitude').text();
+
         ($.post("{% url 'travel:place_save' %}",
           {
             'name': name,
@@ -127,11 +130,5 @@ jQuery(function ($) {
   });
 });
 </script>
-
-      </div>
-      </div>
-   </div>
-  </div>
-<hr>
  
 {% endblock content %}

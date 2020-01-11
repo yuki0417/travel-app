@@ -16,15 +16,10 @@ from test.unittest.common.test_data import (
     SettingCorrectTestData2ndUser1st,
     COR_SETTING_DATA_2nd,
 )
-
-
-# htmlのテーブルのパス
-place_table = (
-    '/html/body/div[2]/div[2]/div[3]/div/div[2]/div/table/tbody/'
-)
-
-saved_place_table = (
-    '/html/body/div[3]/div/div/div[2]/div/table/tbody/'
+from test.integtest.test_common import (
+    place_table,
+    dummy_get_position,
+    login_form
 )
 
 
@@ -58,7 +53,7 @@ class PlaceListTests(StaticLiveServerTestCase):
                 self.live_server_url,
                 str(reverse_lazy('accounts:login'))))
         self.selenium.find_element_by_xpath(
-            '/html/body/div/div/div/div[1]/div/a').click()
+            login_form["test_login_btn"]).click()
 
     def search_place_to_list(self):
         """
@@ -78,13 +73,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         self.selenium.refresh()
 
         # 位置情報の戻り値を固定させる
-        self.selenium.execute_script(
-            "window.navigator.geolocation.getCurrentPosition="
-            "function(success){"
-            "var position = "
-            "{\"coords\" : {"
-            "\"latitude\": \"35.55555\",\"longitude\": \"139.55555\"}};"
-            "success(position);}")
+        self.selenium.execute_script(dummy_get_position)
 
         # 設定２を選択し、周辺のスポットをさがすボタンを押す
         select_setting = Select(
@@ -92,7 +81,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         select_setting.select_by_index(1)
 
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/form/button').click()
+            place_table["search_button"]).click()
 
         # wikipediaAPI待機のため10秒待つ
         sleep(10)
@@ -104,9 +93,9 @@ class PlaceListTests(StaticLiveServerTestCase):
         self.search_place_to_list()
         # それぞれ気になるリストに追加するボタンを押す
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/button').click()
+            place_table["fav_button_first"]).click()
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[2]/td[1]/button').click()
+            place_table["fav_button_second"]).click()
 
         # 気になるリスト追加処理のため3秒待つ
         sleep(3)
@@ -120,15 +109,15 @@ class PlaceListTests(StaticLiveServerTestCase):
         self.search_place_to_list()
         # 上から１つめと２つめのタイトルを変数に入れておく
         place_1_title = self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/h3').text
+            place_table["title_first"]).text
         place_2_title = self.selenium.find_element_by_xpath(
-            place_table + 'tr[2]/td[1]/h3').text
+            place_table["title_second"]).text
 
         # それぞれ気になるリストに追加するボタンを押す
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/button').click()
+            place_table["fav_button_first"]).click()
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[2]/td[1]/button').click()
+            place_table["fav_button_second"]).click()
 
         # 気になるリスト追加処理のため3秒待つ
         sleep(3)
@@ -162,13 +151,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         self.selenium.refresh()
 
         # 位置情報の戻り値を固定させる
-        self.selenium.execute_script(
-            "window.navigator.geolocation.getCurrentPosition="
-            "function(success){"
-            "var position = "
-            "{\"coords\" : {"
-            "\"latitude\": \"35.55555\",\"longitude\": \"139.55555\"}};"
-            "success(position);}")
+        self.selenium.execute_script(dummy_get_position)
 
         # 設定２を選択し、周辺のスポットをさがすボタンを押す
         select_setting = Select(
@@ -176,7 +159,7 @@ class PlaceListTests(StaticLiveServerTestCase):
         select_setting.select_by_index(1)
 
         self.selenium.find_element_by_xpath(
-            '/html/body/div[2]/form/button').click()
+            place_table["search_button"]).click()
 
         # wikipediaAPI待機のため5秒待つ
         sleep(5)
@@ -197,11 +180,11 @@ class PlaceListTests(StaticLiveServerTestCase):
 
         # 上から１つめのタイトルを変数に入れておく
         place_title = self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/h3').text
+            place_table["title_first"]).text
 
         # 画像をクリックする
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/class/a/img').click()
+            place_table["img_first"]).click()
 
         # ページ開く処理のため3秒待つ
         sleep(3)
@@ -226,15 +209,15 @@ class PlaceListTests(StaticLiveServerTestCase):
 
         # 上から１つめと２つめのタイトルを変数に入れておく
         place_1_title = self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/h3').text
+            place_table["title_first"]).text
         place_2_title = self.selenium.find_element_by_xpath(
-            place_table + 'tr[2]/td[1]/h3').text
+            place_table["title_second"]).text
 
         # それぞれ気になるリストから取り消すボタンを押す
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[1]/td[1]/button').click()
+            place_table["fav_button_first"]).click()
         self.selenium.find_element_by_xpath(
-            place_table + 'tr[2]/td[1]/button').click()
+            place_table["fav_button_second"]).click()
 
         # 気になるリスト削除処理のため3秒待つ
         sleep(3)
