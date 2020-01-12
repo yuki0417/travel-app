@@ -20,7 +20,7 @@ from travel.views import (
     delete_done,
     place_save,
     place_delete,
-    update_done
+    setting_update_done
 )
 from travel.models import Place, Setting
 from travel.forms import SettingForm, SettingUpdateForm
@@ -333,7 +333,7 @@ class UpdateDoneTestcase(TestCase):
         AppUserCorrectTestData1st.setUp()
         SettingCorrectTestData1st.setUp()
 
-    def test_update_done(self):
+    def test_setting_update_done(self):
         request = WSGIRequest({
             'REQUEST_METHOD': 'GET',
             'PATH_INFO': 'travel:done_setting',
@@ -341,7 +341,7 @@ class UpdateDoneTestcase(TestCase):
         mock_wsgi_session_context()
 
         expect = render(request, 'travel/setting_update_done.html')
-        result = update_done(request)
+        result = setting_update_done(request)
         self.assertEqual(
             remove_csrf(result.content.decode('utf-8')),
             remove_csrf(expect.content.decode('utf-8'))

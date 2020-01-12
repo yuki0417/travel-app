@@ -3,12 +3,24 @@ from django.views.generic import (
     ListView,
     UpdateView,
     DeleteView,
+    View,
+    FormView
 )
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
-from .models import Place, Setting
-from .forms import SettingForm, SettingUpdateForm
+from .models import (
+    Place,
+    Setting,
+    Comment,
+    SharedPlace,
+    PlaceComment
+)
+from .forms import (
+    SettingForm,
+    SettingUpdateForm,
+    CommentForm
+)
 from .wikipedia import geo_search
 from accounts.models import AppUser
 
@@ -108,7 +120,7 @@ class SettingUpdateView(UpdateView):
         return Setting.objects.get(id=self.kwargs['id'])
 
 
-def update_done(request):
+def setting_update_done(request):
     return render(request, 'travel/setting_update_done.html')
 
 
@@ -169,3 +181,100 @@ class SavedPlaceListView(ListView):
     def get_queryset(self):
         user_id = self.request.session.get('user_id', False)
         return Place.objects.filter(user=user_id)
+
+
+class SharePlaceView(FormView):
+    """
+    場所のシェア画面
+    """
+    model = Comment
+    form_class = CommentForm
+    template_name = 'travel/comment_form.html'
+
+    def get_object(self):
+        return Place.objects.get(id=self.kwargs['id'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["place"] = self.get_object()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        comment = {
+            "user": request.POST["user"],
+            "comment": request.POST["comment"],
+            "pub_date": request.POST["pub_date"],
+        }
+        # コメントを保存
+        com_obj = self.save_comment(comment)
+        place = {
+            "name": request.POST["place_name"],
+            "linkUrl": request.POST["linkUrl"],
+            "imageUrl": request.POST["imageUrl"],
+            "extract": request.POST["extract"],
+            "latitude": request.POST["latitude"],
+            "longtitude": request.POST["longtitude"],
+        }
+        # 場所テーブルに追記
+        self.add_to_sharedplace(place)
+        # コメントと場所をむすびつける
+        self.connect_comment_place(place, com_obj)
+
+        return render(request, 'travel/share_place_done.html')
+
+    def save_comment(self, comment):
+        com_obj = Comment.objects.create(
+            user=AppUser.objects.get(id=comment["user"]),
+            comment=comment["comment"],
+            pub_date=comment["pub_date"],
+        )
+        com_obj.save()
+        return com_obj
+
+    def add_to_sharedplace(self, place):
+        # すでに登録されているか確認
+        try:
+            SharedPlace.objects.get(name=place["name"])
+        except SharedPlace.DoesNotExist:
+            SharedPlace.objects.create(
+                name=place["name"],
+                linkUrl=place["linkUrl"],
+                imageUrl=place["imageUrl"],
+                extract=place["extract"],
+                latitude=place["latitude"],
+                longtitude=place["longtitude"],
+            )
+
+    def connect_comment_place(self, place, com_obj):
+        PlaceComment.objects.create(
+            share_place=place["name"],
+            comment=Comment.objects.get(id=com_obj.pk),
+        )
+
+
+class SharedPlaceListView(ListView):
+    """
+    シェアされた場所の一覧画面
+    """
+    template_name = 'travel/shared_place_list.html'
+
+    def queryset(self):
+        place_list = self.get_place_comment_list()
+        return place_list
+
+    def get_place_comment_list(self):
+        place_comment_list = []
+        for obj in SharedPlace.objects.all():
+            place_comment = {
+                'name': obj.name,
+                'linkUrl': obj.linkUrl,
+                'imageUrl': obj.imageUrl,
+                'extract': obj.extract,
+                'latitude': obj.latitude,
+                'longtitude': obj.longtitude,
+            }
+            comment = PlaceComment.objects.filter(share_place=obj.name)
+            place_comment['comment'] = comment
+            place_comment_list.append(place_comment)
+
+        return place_comment_list

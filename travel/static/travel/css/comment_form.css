@@ -1,0 +1,40 @@
+.label {
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.col {
+  padding-top: 0.5em;
+  padding-left: 0.5em;
+}
+
+.help-text {
+  font-weight: lighter;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  padding-left: 0.5em;
+}
+
+.field_wrapper {
+  text-align: center;
+}
+
+.field_wrapper p {
+  border: 2px solid rgb(252, 246, 75);
+  border-radius: 0.65em;
+  padding: 1em;
+  margin-top: 1em;
+  background-color: snow;
+}
+
+.field_wrapper textarea {
+  border: 2px solid rgb(75, 252, 249);
+  border-radius: 0.65em;
+  margin-top: 1em;
+  background-color: snow;
+}
+
+button {
+  padding: 10px;
+  position: center;
+}

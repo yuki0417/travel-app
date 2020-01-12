@@ -30,16 +30,18 @@ signup_form = {
 hamb_menu = '/html/body/div[1]/p'
 nav_bar_path = '/html/body/div[1]/nav/'
 nav_bar = {
-    # 気になる場所リストのリンク
+    # 気になった場所のリンク
     "saved_place_list": nav_bar_path + 'ul/li[3]/a',
-    # 設定の作成＆変更のリンク
+    # 検索設定のリンク
     "setting_change": nav_bar_path + 'ul/li[2]/a',
     # 設定の新規作成のリンク
     "setting_create": nav_bar_path + 'ul/li[2]/div/a[1]',
     # 設定の変更＆削除のリンク
     "setting_edit": nav_bar_path + 'ul/li[2]/div/a[2]',
+    # おすすめの場所のリンク
+    "shared_place": nav_bar_path + 'ul/li[4]/a',
     # ログアウトのリンク
-    "logout": nav_bar_path + 'ul/li[4]/a',
+    "logout": nav_bar_path + 'ul/li[5]/a',
 }
 
 # 場所一覧画面

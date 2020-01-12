@@ -17,14 +17,15 @@
       <li><a href="{% url 'travel:place_list' %}">周辺を検索</a></li>
       <li class="nav-item dropdown">
         <a class="dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-          設定の作成＆変更
+          検索設定
         </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'travel:create_setting' %}">新規作成</a>
           <a class="dropdown-item" href="{% url 'travel:setting_list' %}">変更＆削除</a>
         </div>
       </li>
-      <li><a href="{% url 'travel:saved_place' %}">気になる場所リスト</a></li>
+      <li><a href="{% url 'travel:saved_place' %}">気になった場所</a></li>
+      <li><a href="{% url 'travel:shared_place_list' %}">おすすめの場所</a></li>
       <li><a href="{% url 'accounts:logout_confirm' %}">ログアウト</a></li>
     </ul>
   </nav>

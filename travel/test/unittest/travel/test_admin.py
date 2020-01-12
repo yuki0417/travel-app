@@ -56,6 +56,8 @@ class PlaceAdminTestcase(TestCase):
             'imageUrl',
             'latitude',
             'longtitude',
+            'prefecture',
+            'city',
         )
         self.assertEqual(pa.save_as, True)
         self.assertEqual(pa.list_display, list_display)

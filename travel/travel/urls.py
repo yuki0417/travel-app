@@ -21,7 +21,7 @@ urlpatterns = [
         name='update_setting'),
     path(
         'setting_update_done/',
-        views.update_done,
+        views.setting_update_done,
         name='setting_update_done'),
     path(
         'delete_setting/<uuid:id>/',
@@ -37,4 +37,12 @@ urlpatterns = [
         'saved_place/',
         views.SavedPlaceListView.as_view(),
         name='saved_place'),
+    path(
+        'share_place/<uuid:id>/',
+        views.SharePlaceView.as_view(),
+        name='share_place'),
+    path(
+        'shared_place_list/',
+        views.SharedPlaceListView.as_view(),
+        name='shared_place_list'),
 ]

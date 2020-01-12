@@ -1,5 +1,5 @@
 from django import forms
-from .models import Setting
+from .models import Setting, Comment
 
 
 class SettingForm(forms.ModelForm):
@@ -47,3 +47,23 @@ class SettingUpdateForm(forms.ModelForm):
                 self.add_error('name', '同じ設定名が存在します。違う設定名に変更してください。')
             except Setting.DoesNotExist:
                 pass
+
+
+class CommentForm(forms.ModelForm):
+    """
+    場所のコメントを登録するフォーム
+    """
+    class Meta:
+        model = Comment
+        fields = (
+            'user',
+            'comment',
+            'pub_date'
+        )
+        widgets = {
+            'user': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pub_date'].widget.attrs['readonly'] = True

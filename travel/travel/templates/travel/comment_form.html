@@ -1,0 +1,83 @@
+{% extends './place_base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static "travel/css/comment_form.css" %}">
+  <div class="card mb-3">
+    <div class="card-header">
+        <h3>おすすめの場所作成</h3>
+    </div>
+      <div class="content-wrapper">
+        <div class="container-fluid">
+          <div class="form-row">
+            <form method="POST" action="">
+
+              {% csrf_token %}
+
+              <div class="field_wrapper">
+
+                <div class="col">
+                  <div class="place_info">
+    　              <!-- POST用のinput -->
+                    <input type="hidden"  name="place_name" value={{ place.name }}>
+                    <input type="hidden" name="linkUrl" value={{ place.linkUrl }}>
+                    <input type="hidden" name="imageUrl" value={{ place.imageUrl }}>
+                    <input type="hidden" name="extract" value={{ place.extract }}>
+                    <input type="hidden" name="latitude" value={{ place.latitude }}>
+                    <input type="hidden" name="longtitude" value={{ place.longtitude }}>
+    
+    　              <!-- 表示用 -->
+                    <h3>{{ place.name }}</h3>
+                    <a id="linkUrl" href="{{ place.linkUrl }}" target="_blank">
+                    <img src="{{ place.imageUrl }}" alt="{{ place.name }}"></a>
+                    <p id="extract">{{ place.extract }}</p>
+                    <p id="latitude" style="display: none;">{{ place.latitude }}</p>
+                    <p id="longtitude" style="display: none;">{{ place.longtitude }}</p>
+                  </div>
+                </div>
+
+                <div class="col">
+                {% if form.non_field_errors %}
+                  {{ form.non_field_errors }}
+                {% endif %}
+                </div>
+
+                <div class="col">
+                  <input type="hidden" name="user" id="id_user" value={{ user_id }}>
+                  {{ form.name }}
+                  {{ form.name.errors }}
+                </div>
+
+                <div class="col">
+                  <div class="label">
+                    <label>{{ form.comment.label }}</label>
+                  </div>
+                  {{ form.comment }}
+                  {{ form.comment.errors }}
+                  <div class="help-text">
+                      {{ form.comment.help_text }}
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="label">
+                    <label>{{ form.pub_date.label }}</label>
+                  </div>
+                  {{ form.pub_date }}
+                  {{ form.pub_date.errors }}
+                  <div class="help-text">
+                      {{ form.pub_date.help_text }}
+                  </div>
+                </div>
+
+              </div>
+              <button class="btn btn-primary " type="submit">シェアする</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+<script>
+
+</script>
+
+{% endblock content %}
