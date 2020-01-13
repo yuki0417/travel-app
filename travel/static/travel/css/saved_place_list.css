@@ -1,13 +1,26 @@
 .btn-square {
-    width: 100%;
-    display: inline-block;
-    padding: 0.5em 1em;
-    text-decoration: none;
-    background: #17a2b8;
-    color: #FFF;
-    border-bottom: solid 4px #17a3b84f;
-    border-radius: 3px;
-  }
+  width: 100%;
+  display: inline-block;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  color: #FFF;
+  border-radius: 3px;
+  margin-top: 0.5em;
+}
+
+#get_there .btn-square {
+  background: #17a2b8;
+  border-bottom: solid 4px #17a3b84f;
+}
+
+#share_comment .btn-square {
+  background: darksalmon;
+}
+
+#share_comment .btn-square:hover {
+  text-decoration: none;
+  color: white;
+}
 
 .btn-square:active {
   -webkit-transform: translateY(4px);

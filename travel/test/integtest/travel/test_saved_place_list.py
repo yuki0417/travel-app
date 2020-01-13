@@ -3,14 +3,17 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse_lazy
 
 from test.setting.selenium_setting import SELENIUM_SETTING
+from accounts.models import AppUser
 from travel.models import Place
 from test.unittest.common.test_data import (
     teardown_data,
     AppUserEncPasswordTestData1st,
 )
 from test.integtest.test_common import (
+    TESTUSER_NAME,
     saved_place_table,
     add_place_to_list,
     open_saved_place_page
@@ -172,3 +175,37 @@ class SavedPlaceListTests(StaticLiveServerTestCase):
 
         self.assertTrue(google_url in result)
         self.assertTrue(latlon in result)
+
+    def test_saved_place_list__go_to_comment_page(self):
+        """
+        「テストユーザーでログイン」し、場所を検索し、「他のひとにおすすめする」ボタンを押す
+        =コメント作成ページに移動する
+        """
+        # 場所表示し、気になるボタンを押した状態にする
+        add_place_to_list(self)
+
+        # 気になる場所リストに移動する
+        open_saved_place_page(self)
+
+        # 上から１つめのタイトルを変数に入れておく
+        place_title = self.selenium.find_element_by_xpath(
+            saved_place_table["title_first"]).text
+
+        # 「他のひとにおすすめする」ボタンをクリックする
+        self.selenium.find_element_by_xpath(
+            saved_place_table["comment_btn"]).click()
+        # ページ遷移の処理のため2秒待つ
+        sleep(2)
+
+        result = self.selenium.current_url
+
+        place_id = Place.objects.get(
+            name=place_title,
+            user=AppUser.objects.get(username=TESTUSER_NAME).pk,
+        )
+        expected = '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:share_place', args=[str(place_id.pk)])),
+        )
+
+        self.assertEqual(result, expected)

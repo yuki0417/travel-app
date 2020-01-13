@@ -7,7 +7,14 @@ from django.contrib.auth.hashers import make_password
 from accounts.models import AppUser
 from django.contrib.auth.models import User
 from django.test import TestCase
-from travel.models import Place, Setting
+from travel.models import (
+    Setting,
+    Place,
+    Comment,
+    SharedPlace,
+    PlaceComment,
+    JSONEncoder_newdefault
+)
 
 
 ####################################################################
@@ -38,6 +45,18 @@ def teardown_data():
     try:
         Place.objects.all().delete()
     except Place.DoesNotExist:
+        pass
+    try:
+        Comment.objects.all().delete()
+    except Comment.DoesNotExist:
+        pass
+    try:
+        SharedPlace.objects.all().delete()
+    except SharedPlace.DoesNotExist:
+        pass
+    try:
+        PlaceComment.objects.all().delete()
+    except PlaceComment.DoesNotExist:
         pass
 
 
@@ -155,6 +174,87 @@ PLACE_LONGTITUDE_1 = 139.48611111
 PLACE_LONGTITUDE_2 = 139.48555556
 PLACE_LONGTITUDE_3 = 139.48877778
 
+PLACE_PREFECTURE_1 = "東京都"
+PLACE_PREFECTURE_2 = "神奈川県"
+PLACE_PREFECTURE_3 = "和歌山県"
+
+PLACE_CITY_1 = "新宿区"
+PLACE_CITY_2 = "横浜市"
+PLACE_CITY_3 = "和歌山市"
+
+
+# コメントの定数
+
+COMMENT_ID_1 = 'fff11e95-d2d0-4ea9-8324-49d5187996f9'
+COMMENT_ID_2 = 'aaa11e95-d2d0-4ea9-8324-49d5187996f9'
+COMMENT_ID_3 = 'bbb11e95-d2d0-4ea9-8324-49d5187996f9'
+
+COMMENT_USER_1 = APPUSER_ID_1
+COMMENT_USER_2 = APPUSER_ID_2
+COMMENT_USER_3 = APPUSER_ID_3
+
+COMMENT_COMMENT_1 = "すばらしい"
+COMMENT_COMMENT_2 = "きれい"
+COMMENT_COMMENT_3 = "うつくしい"
+
+COMMENT_PUB_DATE_1 = TEST_DATETIME_1
+COMMENT_PUB_DATE_2 = TEST_DATETIME_1
+COMMENT_PUB_DATE_3 = TEST_DATETIME_1
+
+
+# シェアされた場所の定数
+
+SHA_PLACE_ID_1 = 'fff11e95-d2d0-4ea9-8324-121212121212'
+SHA_PLACE_ID_2 = 'aaa11e95-d2d0-4ea9-8324-222222222222'
+SHA_PLACE_ID_3 = 'bbb11e95-d2d0-4ea9-8324-333333333333'
+
+SHA_PLACE_NAME_1 = PLACE_NAME_1
+SHA_PLACE_NAME_2 = PLACE_NAME_2
+SHA_PLACE_NAME_3 = PLACE_NAME_3
+
+SHA_PLACE_LINKURL_1 = PLACE_LINKURL_1
+SHA_PLACE_LINKURL_2 = PLACE_LINKURL_2
+SHA_PLACE_LINKURL_3 = PLACE_LINKURL_3
+
+SHA_PLACE_IMGURL_1 = PLACE_IMGURL_1
+SHA_PLACE_IMGURL_2 = PLACE_IMGURL_2
+SHA_PLACE_IMGURL_3 = PLACE_IMGURL_3
+
+SHA_PLACE_EXTRACT_1 = PLACE_EXTRACT_1
+SHA_PLACE_EXTRACT_2 = PLACE_EXTRACT_2
+SHA_PLACE_EXTRACT_3 = PLACE_EXTRACT_3
+
+SHA_PLACE_LATITUDE_1 = PLACE_LATITUDE_1
+SHA_PLACE_LATITUDE_2 = PLACE_LATITUDE_2
+SHA_PLACE_LATITUDE_3 = PLACE_LATITUDE_3
+
+SHA_PLACE_LONGTITUDE_1 = PLACE_LONGTITUDE_1
+SHA_PLACE_LONGTITUDE_2 = PLACE_LONGTITUDE_2
+SHA_PLACE_LONGTITUDE_3 = PLACE_LONGTITUDE_3
+
+SHA_PLACE_PREFECTURE_1 = PLACE_PREFECTURE_1
+SHA_PLACE_PREFECTURE_2 = PLACE_PREFECTURE_2
+SHA_PLACE_PREFECTURE_3 = PLACE_PREFECTURE_3
+
+SHA_PLACE_CITY_1 = PLACE_CITY_1
+SHA_PLACE_CITY_2 = PLACE_CITY_2
+SHA_PLACE_CITY_3 = PLACE_CITY_3
+
+
+# シェアされた場所とコメントを紐づけるテーブルの定数
+
+PLC_COMMT_ID_1 = 'fff11e95-d2d0-4ea9-8324-343433434344'
+PLC_COMMT_ID_2 = 'aaa11e95-d2d0-4ea9-8324-544333343434'
+PLC_COMMT_ID_3 = 'bbb11e95-d2d0-4ea9-8324-555555555555'
+
+PLC_COMMT_SH_PLC_1 = SHA_PLACE_NAME_1
+PLC_COMMT_SH_PLC_2 = SHA_PLACE_NAME_2
+PLC_COMMT_SH_PLC_3 = SHA_PLACE_NAME_3
+
+PLC_COMMT_COMMENT_1 = COMMENT_ID_1
+PLC_COMMT_COMMENT_2 = COMMENT_ID_2
+PLC_COMMT_COMMENT_3 = COMMENT_ID_3
+
 
 ####################################################################
 
@@ -229,6 +329,8 @@ COR_PLACE_DATA_1st = {
     "extract": PLACE_EXTRACT_1,
     "latitude": PLACE_LATITUDE_1,
     "longtitude": PLACE_LONGTITUDE_1,
+    "prefecture": PLACE_PREFECTURE_1,
+    "city": PLACE_CITY_1,
 }
 
 COR_PLACE_DATA_2nd = {
@@ -241,6 +343,8 @@ COR_PLACE_DATA_2nd = {
     "extract": PLACE_EXTRACT_2,
     "latitude": PLACE_LATITUDE_2,
     "longtitude": PLACE_LONGTITUDE_2,
+    "prefecture": PLACE_PREFECTURE_2,
+    "city": PLACE_CITY_2,
 }
 
 COR_PLACE_DATA_3rd = {
@@ -252,7 +356,92 @@ COR_PLACE_DATA_3rd = {
     "imageUrl": PLACE_IMGURL_3,
     "extract": PLACE_EXTRACT_3,
     "latitude": PLACE_LATITUDE_3,
-    "longtitude": PLACE_LONGTITUDE_3,
+    "longtitude": PLACE_LONGTITUDE_2,
+    "prefecture": PLACE_PREFECTURE_3,
+    "city": PLACE_CITY_3,
+}
+
+
+# コメントの定義
+
+COR_COMMENT_DATA_1st = {
+    "id": COMMENT_ID_1,
+    "user": COMMENT_USER_1,
+    "comment": COMMENT_COMMENT_1,
+    "pub_date": COMMENT_PUB_DATE_1,
+}
+
+COR_COMMENT_DATA_2nd = {
+    "id": COMMENT_ID_2,
+    "user": COMMENT_USER_2,
+    "comment": COMMENT_COMMENT_2,
+    "pub_date": COMMENT_PUB_DATE_2,
+}
+
+COR_COMMENT_DATA_3rd = {
+    "id": COMMENT_ID_3,
+    "user": COMMENT_USER_3,
+    "comment": COMMENT_COMMENT_3,
+    "pub_date": COMMENT_PUB_DATE_3,
+}
+
+
+# シェアされた場所の定義
+
+COR_SHA_PLACE_DATA_1st = {
+    "id": SHA_PLACE_ID_1,
+    "name": SHA_PLACE_NAME_1,
+    "linkUrl": SHA_PLACE_LINKURL_1,
+    "imageUrl": SHA_PLACE_IMGURL_1,
+    "extract": SHA_PLACE_EXTRACT_1,
+    "latitude": SHA_PLACE_LATITUDE_1,
+    "longtitude": SHA_PLACE_LONGTITUDE_1,
+    "prefecture": SHA_PLACE_PREFECTURE_1,
+    "city": SHA_PLACE_CITY_1,
+}
+
+COR_SHA_PLACE_DATA_2nd = {
+    "id": SHA_PLACE_ID_2,
+    "name": SHA_PLACE_NAME_2,
+    "linkUrl": SHA_PLACE_LINKURL_2,
+    "imageUrl": SHA_PLACE_IMGURL_2,
+    "extract": SHA_PLACE_EXTRACT_2,
+    "latitude": SHA_PLACE_LATITUDE_2,
+    "longtitude": SHA_PLACE_LONGTITUDE_2,
+    "prefecture": SHA_PLACE_PREFECTURE_2,
+    "city": SHA_PLACE_CITY_2,
+}
+
+COR_SHA_PLACE_DATA_3rd = {
+    "id": SHA_PLACE_ID_3,
+    "name": SHA_PLACE_NAME_3,
+    "linkUrl": SHA_PLACE_LINKURL_3,
+    "imageUrl": SHA_PLACE_IMGURL_3,
+    "extract": SHA_PLACE_EXTRACT_3,
+    "latitude": SHA_PLACE_LATITUDE_3,
+    "longtitude": SHA_PLACE_LONGTITUDE_3,
+    "prefecture": SHA_PLACE_PREFECTURE_3,
+    "city": SHA_PLACE_CITY_3,
+}
+
+# シェアされた場所の定義
+
+COR_PLC_COMMT_1st = {
+    "id": PLC_COMMT_ID_1,
+    "share_place": PLC_COMMT_SH_PLC_1,
+    "comment": PLC_COMMT_COMMENT_1,
+}
+
+COR_PLC_COMMT_2nd = {
+    "id": PLC_COMMT_ID_2,
+    "share_place": PLC_COMMT_SH_PLC_2,
+    "comment": PLC_COMMT_COMMENT_2,
+}
+
+COR_PLC_COMMT_3rd = {
+    "id": PLC_COMMT_ID_3,
+    "share_place": PLC_COMMT_SH_PLC_3,
+    "comment": PLC_COMMT_COMMENT_3,
 }
 
 
@@ -398,6 +587,8 @@ class PlaceCorrectTestData1st(TestCase):
             extract=COR_PLACE_DATA_1st["extract"],
             latitude=COR_PLACE_DATA_1st["latitude"],
             longtitude=COR_PLACE_DATA_1st["longtitude"],
+            prefecture=COR_PLACE_DATA_1st["prefecture"],
+            city=COR_PLACE_DATA_1st["city"],
         )
 
 
@@ -420,7 +611,172 @@ class PlaceCorrectTestData2nd(TestCase):
             extract=COR_PLACE_DATA_2nd["extract"],
             latitude=COR_PLACE_DATA_2nd["latitude"],
             longtitude=COR_PLACE_DATA_2nd["longtitude"],
+            prefecture=COR_PLACE_DATA_2nd["prefecture"],
+            city=COR_PLACE_DATA_2nd["city"],
         )
+
+
+class CommentCorrectTestData1st(TestCase):
+    """
+    コメントの正常データのセットアップその１
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        Comment.objects.create(
+            id=COR_COMMENT_DATA_1st["id"],
+            user=AppUser.objects.get(
+                id=COR_COMMENT_DATA_1st["user"]),
+            comment=COR_COMMENT_DATA_1st["comment"],
+            pub_date=COR_COMMENT_DATA_1st["pub_date"],
+        )
+
+
+class CommentCorrectTestData2nd(TestCase):
+    """
+    コメントの正常データのセットアップその２
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        Comment.objects.create(
+            id=COR_COMMENT_DATA_2nd["id"],
+            user=AppUser.objects.get(
+                id=COR_COMMENT_DATA_2nd["user"]),
+            comment=COR_COMMENT_DATA_2nd["comment"],
+            pub_date=COR_COMMENT_DATA_2nd["pub_date"],
+        )
+
+
+class CommentCorrectTestData3rd(TestCase):
+    """
+    コメントの正常データのセットアップその３
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        Comment.objects.create(
+            id=COR_COMMENT_DATA_3rd["id"],
+            user=AppUser.objects.get(
+                id=COR_COMMENT_DATA_3rd["user"]),
+            comment=COR_COMMENT_DATA_3rd["comment"],
+            pub_date=COR_COMMENT_DATA_3rd["pub_date"],
+        )
+
+
+class SharedPlaceCorrectTestData1st(TestCase):
+    """
+    シェアされた場所の正常データのセットアップその１
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        SharedPlace.objects.create(
+            id=COR_SHA_PLACE_DATA_1st["id"],
+            name=COR_SHA_PLACE_DATA_1st["name"],
+            linkUrl=COR_SHA_PLACE_DATA_1st["linkUrl"],
+            imageUrl=COR_SHA_PLACE_DATA_1st["imageUrl"],
+            extract=COR_SHA_PLACE_DATA_1st["extract"],
+            latitude=COR_SHA_PLACE_DATA_1st["latitude"],
+            longtitude=COR_SHA_PLACE_DATA_1st["longtitude"],
+            prefecture=COR_SHA_PLACE_DATA_1st["prefecture"],
+            city=COR_SHA_PLACE_DATA_1st["city"],
+        )
+
+
+class SharedPlaceCorrectTestData2nd(TestCase):
+    """
+    シェアされた場所の正常データのセットアップその２
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        SharedPlace.objects.create(
+            id=COR_SHA_PLACE_DATA_2nd["id"],
+            name=COR_SHA_PLACE_DATA_2nd["name"],
+            linkUrl=COR_SHA_PLACE_DATA_2nd["linkUrl"],
+            imageUrl=COR_SHA_PLACE_DATA_2nd["imageUrl"],
+            extract=COR_SHA_PLACE_DATA_2nd["extract"],
+            latitude=COR_SHA_PLACE_DATA_2nd["latitude"],
+            longtitude=COR_SHA_PLACE_DATA_2nd["longtitude"],
+            prefecture=COR_SHA_PLACE_DATA_2nd["prefecture"],
+            city=COR_SHA_PLACE_DATA_2nd["city"],
+        )
+
+
+class SharedPlaceCorrectTestData3rd(TestCase):
+    """
+    シェアされた場所の正常データのセットアップその３
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        SharedPlace.objects.create(
+            id=COR_SHA_PLACE_DATA_3rd["id"],
+            name=COR_SHA_PLACE_DATA_3rd["name"],
+            linkUrl=COR_SHA_PLACE_DATA_3rd["linkUrl"],
+            imageUrl=COR_SHA_PLACE_DATA_3rd["imageUrl"],
+            extract=COR_SHA_PLACE_DATA_3rd["extract"],
+            latitude=COR_SHA_PLACE_DATA_3rd["latitude"],
+            longtitude=COR_SHA_PLACE_DATA_3rd["longtitude"],
+            prefecture=COR_SHA_PLACE_DATA_3rd["prefecture"],
+            city=COR_SHA_PLACE_DATA_3rd["city"],
+        )
+
+
+class PlaceCommentCorrectTestData1st(TestCase):
+    """
+    シェアされた場所とコメントを紐づけるテーブルの正常データのセットアップその１
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        PlaceComment.objects.create(
+            id=COR_PLC_COMMT_1st["id"],
+            share_place=COR_PLC_COMMT_1st["share_place"],
+            comment=Comment.objects.get(
+                id=COR_PLC_COMMT_1st["comment"]),
+        )
+
+
+class PlaceCommentCorrectTestData2nd(TestCase):
+    """
+    シェアされた場所とコメントを紐づけるテーブルの正常データのセットアップその２
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        PlaceComment.objects.create(
+            id=COR_PLC_COMMT_2nd["id"],
+            share_place=COR_PLC_COMMT_2nd["share_place"],
+            comment=Comment.objects.get(
+                id=COR_PLACE_DATA_2nd["comment"]),
+        )
+
+
+class PlaceCommentCorrectTestData3rd(TestCase):
+    """
+    シェアされた場所とコメントを紐づけるテーブルの正常データのセットアップその３
+    """
+    databases = '__all__'
+
+    @classmethod
+    def setUp(cls):
+        PlaceComment.objects.create(
+            id=COR_PLC_COMMT_3rd["id"],
+            share_place=COR_PLC_COMMT_3rd["share_place"],
+            comment=Comment.objects.get(
+                id=COR_PLC_COMMT_3rd["comment"]),
+        )
+
 
 #######################################################################
 # modeladmin用のテストデータ

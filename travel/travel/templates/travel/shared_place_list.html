@@ -1,12 +1,12 @@
 {% extends './place_base.html' %}
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="{% static "travel/css/saved_place_list.css" %}">
+<link rel="stylesheet" href="{% static "travel/css/shared_place_list.css" %}">
 
 <!--ページタイトル-->
 <div class="card mb-3">
   <div class="card-header">
-    <h3><b>気になった場所リスト</b></h3>
+    <h3><b>みんなのおすすめの場所</b></h3>
   </div>
 </div>
 <div><p>ここにいくボタンで目的地まで道案内します。</p></div>
@@ -39,9 +39,13 @@
               <div id="get_there">
                 <button class="btn-square">ここにいく</button>
               </div>
-              <div id="share_comment">
-                <a class="btn-square" href="{% url 'travel:share_place' item.pk %}">他の人におすすめする</a>
+            　<!-- コメント欄-->
+              {% for obj in item.comment %}
+              <div id="comment">
+                <p class="comment">{{ obj.comment.comment }}</p>
+                <p class="username">by {{ obj.comment.user }} さん</p>
               </div>
+              {% endfor %}
             </td>
             <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
             <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>

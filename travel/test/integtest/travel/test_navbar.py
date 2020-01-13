@@ -97,6 +97,23 @@ class NavBarTests(StaticLiveServerTestCase):
 
         self.assertEqual(result, expect)
 
+    def test_open_shared_place_list_page(self):
+        """
+        「テストユーザーでログイン」し、
+        ナビゲーションバーのおすすめの場所のリンクを開く
+        """
+        open_hamb_menu(self)
+
+        self.selenium.find_element_by_xpath(
+            nav_bar["shared_place"]).click()
+        expect = '{}{}'.format(
+                self.live_server_url,
+                str(reverse_lazy('travel:shared_place_list'))
+            )
+        result = self.selenium.current_url
+
+        self.assertEqual(result, expect)
+
     def test_open_logout_page(self):
         """
         「テストユーザーでログイン」し、

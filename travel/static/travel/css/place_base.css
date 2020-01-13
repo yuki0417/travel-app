@@ -1,4 +1,9 @@
 #welcome {
   border-style: none;
-  padding-top: 0.5em;
+  padding-top: 1em;
+}
+
+#welcome p {
+  border-color: black;
+  padding-left: 1em;
 }
