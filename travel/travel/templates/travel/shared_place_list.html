@@ -34,7 +34,11 @@
                   <p id="extract">{{ item.extract }}</p>
             </div>
               <div id="changestate">
-                <button class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">取り消す</button>
+            {% if item.saved %}
+            <button type="button" class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">追加済み</button>
+            {% else %}
+            <button type="button" class="btn btn-warning btn-block" data-toggle="tooltip" data-placement="right" data-html="true">気になる</button>
+            {% endif %}
               </div>
               <div id="get_there">
                 <button class="btn-square">ここにいく</button>
@@ -96,27 +100,26 @@ jQuery(function ($) {
             name = currentRow.find('#name h3').text(),
             saveStatus = currentRow.find('.btn').text();
 
-      if (saveStatus === "取り消す") {
+      if (String(saveStatus) === "追加済み") {
         $(this).toggleClass('btn-secondary btn-warning');
-
         ($.post("{% url 'travel:place_delete' %}",
         {
           'name': name,
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
-        function(){
-          currentRow.find('.btn').text("追加する");
+        function () {
+          currentRow.find('.btn').text("気になる");
         },
         ));
       }
-      if (saveStatus === "追加する") {
+
+      if (saveStatus === "気になる") {
+        $(this).toggleClass('btn-warning btn-secondary');
         const linkUrl = currentRow.find('a').attr('href'),
               imageUrl = currentRow.find('img').attr('src'),
               extract = currentRow.find('#extract').text(),
               latitude = currentRow.find('#latitude').text(),
               longtitude = currentRow.find('#longtitude').text();
-
-        $(this).toggleClass('btn-warning btn-secondary');
 
         ($.post("{% url 'travel:place_save' %}",
           {
@@ -128,8 +131,8 @@ jQuery(function ($) {
             'longtitude': longtitude,
             'csrfmiddlewaretoken': '{{ csrf_token }}'
           },
-          function(){
-            currentRow.find('.btn').text("取り消す");
+          function () {
+            currentRow.find('.btn').text("追加済み");
           }
         ));
       }

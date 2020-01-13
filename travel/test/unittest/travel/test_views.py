@@ -689,6 +689,16 @@ class SharePlaceViewTestcase(CBVTestCase):
         )
 
 
+class MockSharedPlaceListView(SharedPlaceListView):
+    """
+    ユーザー１のセッションを再現するために、
+    WSGIのモックを含めたSharedPlaceListViewを定義する
+    """
+    request = Mock()
+    request.session.get = MagicMock(
+        return_value=COR_APPUSER_DATA_1st['id'])
+
+
 class SharedPlaceListViewTestcase(TestCase):
     """
     気になるリストの一覧画面のテスト
@@ -706,15 +716,18 @@ class SharedPlaceListViewTestcase(TestCase):
             splv.template_name,
             'travel/shared_place_list.html')
 
-    @patch(
-        'travel.views.SharedPlaceListView.get_place_comment_list',
-        MagicMock(return_value='anything'))
-    def test_get_queryset(self):
-        splv = SharedPlaceListView()
-        result = splv.queryset()
+    def test_queryset(self):
+        mock_wsgi_session_context()
+        splv = MockSharedPlaceListView()
+        # モックにする
         expect = 'anything'
+        splv.get_place_comment_list = MagicMock(return_value=expect)
+        result = splv.queryset()
         self.assertEqual(result, expect)
 
+    @patch(
+        'travel.views.SharedPlaceListView.mark_saved_place',
+        MagicMock(return_value=True))
     def test_get_place_comment_list(self):
         PlaceCommentCorrectTestData1st.setUp()
         splv = SharedPlaceListView()
@@ -729,11 +742,12 @@ class SharedPlaceListViewTestcase(TestCase):
                 'latitude': obj.latitude,
                 'longtitude': obj.longtitude,
             }
+            place_comment["saved"] = True
             comment = PlaceComment.objects.filter(share_place=obj.name)
             place_comment['comment'] = comment
             place_comment_list.append(place_comment)
         expect = place_comment_list
-        result = splv.get_place_comment_list()
+        result = splv.get_place_comment_list('anything')
         for exp_obj, res_obj in zip(expect, result):
             for (k, v), (k2, v2) in zip(exp_obj.items(), res_obj.items()):
                 self.assertEqual(k, k2)
@@ -741,3 +755,22 @@ class SharedPlaceListViewTestcase(TestCase):
                     self.assertQuerysetEqual(v, v2, transform=lambda x: x)
                 else:
                     self.assertEqual(v, v2)
+
+    def test_get_mark_saved_place__when_place_exist(self):
+        PlaceCorrectTestData1st.setUp()
+        splv = SharedPlaceListView()
+
+        result = splv.mark_saved_place(
+            COR_PLACE_DATA_1st["name"],
+            COR_PLACE_DATA_1st["user"]
+        )
+        self.assertEqual(result, True)
+
+    def test_get_mark_saved_place__when_place_not_exist(self):
+        splv = SharedPlaceListView()
+
+        result = splv.mark_saved_place(
+            COR_PLACE_DATA_1st["name"],
+            COR_PLACE_DATA_1st["user"]
+        )
+        self.assertEqual(result, False)

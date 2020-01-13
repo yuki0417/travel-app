@@ -3,7 +3,6 @@ from django.views.generic import (
     ListView,
     UpdateView,
     DeleteView,
-    View,
     FormView
 )
 from django.shortcuts import render
@@ -259,10 +258,19 @@ class SharedPlaceListView(ListView):
     template_name = 'travel/shared_place_list.html'
 
     def queryset(self):
-        place_list = self.get_place_comment_list()
+        user_id = self.request.session.get('user_id', False)
+        place_list = self.get_place_comment_list(user_id)
         return place_list
 
-    def get_place_comment_list(self):
+    def mark_saved_place(self, place, user_id):
+        # 保存済みの場所であればフラグを追加する
+        try:
+            if Place.objects.get(name=place, user=user_id):
+                return True
+        except Place.DoesNotExist:
+            return False
+
+    def get_place_comment_list(self, user_id):
         place_comment_list = []
         for obj in SharedPlace.objects.all():
             place_comment = {
@@ -273,6 +281,8 @@ class SharedPlaceListView(ListView):
                 'latitude': obj.latitude,
                 'longtitude': obj.longtitude,
             }
+            place_comment["saved"] = self.mark_saved_place(
+                place_comment['name'], user_id)
             comment = PlaceComment.objects.filter(share_place=obj.name)
             place_comment['comment'] = comment
             place_comment_list.append(place_comment)
