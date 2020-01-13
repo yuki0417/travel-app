@@ -12,6 +12,9 @@ from test.unittest.common.test_data import (
 )
 
 
+# テストユーザー名
+TESTUSER_NAME = 'テストユーザー'
+
 # ログイン画面
 login_form_path = '/html/body/div/div/div/'
 login_form = {
@@ -88,11 +91,18 @@ saved_place_table = {
     "title_second": saved_pl_tbl_path + 'tr[2]/td[1]/h3',
     # １番目の画像
     "img_first": saved_pl_tbl_path + 'tr[1]/td[1]/div[1]/a/img',
+    # １番目のおすすめするボタン
+    "comment_btn": saved_pl_tbl_path + 'tr[1]/td[1]/div[4]/a',
 }
 
 # 設定作成画面
 setting_create_form = {
     "create_btn": '/html/body/div[3]/div[2]/div/div/form/div/div/button',
+}
+
+# 設定編集
+setting_update_form = {
+    "update_btn": setting_create_form["create_btn"],
 }
 
 # 設定一覧画面
@@ -106,9 +116,9 @@ setting_edit = {
     "edit_btn": setting_tbl_path + 'tr[1]/td[4]/a[1]',
 }
 
-# 設定編集
-setting_update_form = {
-    "update_btn": setting_create_form["create_btn"],
+# おすすめの場所作成画面
+comment_form = {
+    "share_btn": '/html/body/div[3]/div[2]/div/div/form/button',
 }
 
 
@@ -135,6 +145,42 @@ def open_signup_page(self):
         '{}{}'.format(
             self.live_server_url,
             str(reverse_lazy('accounts:signup'))
+        )
+    )
+
+
+def open_saved_place_page(self):
+    self.selenium.get(
+        '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:saved_place'))
+        )
+    )
+
+
+def open_create_setting_page(self):
+    self.selenium.get(
+        '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:create_setting'))
+        )
+    )
+
+
+def open_setting_list_page(self):
+    self.selenium.get(
+        '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('travel:setting_list'))
+        )
+    )
+
+
+def open_logout_page(self):
+    self.selenium.get(
+        '{}{}'.format(
+            self.live_server_url,
+            str(reverse_lazy('accounts:logged_out'))
         )
     )
 
@@ -196,37 +242,15 @@ def add_place_to_list(self):
     sleep(3)
 
 
-def open_saved_place_page(self):
-    self.selenium.get(
-        '{}{}'.format(
-            self.live_server_url,
-            str(reverse_lazy('travel:saved_place'))
-        )
-    )
-
-
-def open_create_setting_page(self):
-    self.selenium.get(
-        '{}{}'.format(
-            self.live_server_url,
-            str(reverse_lazy('travel:create_setting'))
-        )
-    )
-
-
-def open_setting_list_page(self):
-    self.selenium.get(
-        '{}{}'.format(
-            self.live_server_url,
-            str(reverse_lazy('travel:setting_list'))
-        )
-    )
-
-
-def open_logout_page(self):
-    self.selenium.get(
-        '{}{}'.format(
-            self.live_server_url,
-            str(reverse_lazy('accounts:logged_out'))
-        )
-    )
+def move_to_share_place_page(self):
+    """
+    「テストユーザーでログイン」し、場所を検索し、気になるリスト追加した後、
+    「他のひとにおすすめする」をクリックする
+    """
+    add_place_to_list(self)
+    open_saved_place_page(self)
+    # 「他のひとにおすすめする」ボタンをクリックする
+    self.selenium.find_element_by_xpath(
+        saved_place_table["comment_btn"]).click()
+    # ページ遷移の処理のため2秒待つ
+    sleep(2)

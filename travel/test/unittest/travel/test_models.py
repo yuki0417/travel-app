@@ -6,18 +6,31 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.db.utils import DataError
 from accounts.models import AppUser
-from travel.models import Setting, Place, JSONEncoder_newdefault
+from travel.models import (
+    Setting,
+    Place,
+    Comment,
+    SharedPlace,
+    PlaceComment,
+    JSONEncoder_newdefault
+)
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
     COR_SETTING_DATA_1st,
     COR_SETTING_DATA_2nd,
     COR_PLACE_DATA_1st,
+    COR_COMMENT_DATA_1st,
+    COR_SHA_PLACE_DATA_1st,
+    COR_PLC_COMMT_1st,
     AppUserCorrectTestData1st,
     AppUserCorrectTestData2nd,
     SettingCorrectTestData1st,
     SettingCorrectTestData2nd,
     PlaceCorrectTestData1st,
+    CommentCorrectTestData1st,
+    SharedPlaceCorrectTestData1st,
+    PlaceCommentCorrectTestData1st,
 )
 
 
@@ -214,6 +227,12 @@ class PlaceCorrectTestcase(TransactionTestCase):
         self.assertEqual(
             test_place_1.longtitude,
             COR_PLACE_DATA_1st["longtitude"])
+        self.assertEqual(
+            test_place_1.prefecture,
+            COR_PLACE_DATA_1st["prefecture"])
+        self.assertEqual(
+            test_place_1.city,
+            COR_PLACE_DATA_1st["city"])
 
 
 class PlaceExceptionTestcase(TransactionTestCase):
@@ -234,6 +253,12 @@ class PlaceExceptionTestcase(TransactionTestCase):
             test_place_1.save()
         with self.assertRaises(DataError):
             test_place_1.name = '{}'.format('a' * 257)
+            test_place_1.save()
+        with self.assertRaises(DataError):
+            test_place_1.prefecture = '{}'.format('a' * 5)
+            test_place_1.save()
+        with self.assertRaises(DataError):
+            test_place_1.city = '{}'.format('a' * 10)
             test_place_1.save()
 
     def test_place__null_false_is_working(self):
@@ -270,7 +295,7 @@ class PlaceForeignKeyTestcase(TransactionTestCase):
 
 class PlaceStrTestcase(TransactionTestCase):
     """
-    気になる場所リストの__str__つのテスト
+    気になる場所リストの__str__のテスト
     """
     databases = '__all__'
 
@@ -285,3 +310,185 @@ class PlaceStrTestcase(TransactionTestCase):
         result = str(test_place_1)
         expect = COR_PLACE_DATA_1st["name"]
         self.assertEqual(expect, result)
+
+
+class CommentTestcase(TransactionTestCase):
+    """
+    コメントの正常データが登録されるかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+
+    def test_comment__is_registered_correctly(self):
+        test_comment_1 = Comment.objects.get(
+            id=COR_COMMENT_DATA_1st["id"])
+        self.assertEqual(
+            str(test_comment_1.user),
+            COR_APPUSER_DATA_1st["username"])
+        self.assertEqual(
+            test_comment_1.comment,
+            COR_COMMENT_DATA_1st["comment"])
+        self.assertEqual(
+            test_comment_1.pub_date,
+            COR_COMMENT_DATA_1st["pub_date"])
+
+
+class CommentExceptionTestcase(TransactionTestCase):
+    """
+    コメントの制約違反したデータの例外処理がされているかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+
+    def test_comment__null_false_is_working(self):
+        test_comment_1 = Comment.objects.get(
+            id=COR_COMMENT_DATA_1st["id"])
+        with self.assertRaises(IntegrityError):
+            test_comment_1.user = None
+            test_comment_1.save()
+
+
+class SharedPlaceCorrectTestcase(TransactionTestCase):
+    """
+    シェアされた場所の正常データが登録されるかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        SharedPlaceCorrectTestData1st.setUp()
+
+    def test_sha_place__is_registered_correctly(self):
+        test_sha_place_1 = SharedPlace.objects.get(
+            id=COR_SHA_PLACE_DATA_1st["id"])
+        self.assertEqual(
+            test_sha_place_1.name,
+            COR_SHA_PLACE_DATA_1st["name"])
+        self.assertEqual(
+            test_sha_place_1.linkUrl,
+            COR_SHA_PLACE_DATA_1st["linkUrl"])
+        self.assertEqual(
+            test_sha_place_1.imageUrl,
+            COR_SHA_PLACE_DATA_1st["imageUrl"])
+        self.assertEqual(
+            test_sha_place_1.extract,
+            COR_SHA_PLACE_DATA_1st["extract"])
+        self.assertEqual(
+            test_sha_place_1.latitude,
+            COR_SHA_PLACE_DATA_1st["latitude"])
+        self.assertEqual(
+            test_sha_place_1.longtitude,
+            COR_SHA_PLACE_DATA_1st["longtitude"])
+        self.assertEqual(
+            test_sha_place_1.prefecture,
+            COR_SHA_PLACE_DATA_1st["prefecture"])
+        self.assertEqual(
+            test_sha_place_1.city,
+            COR_SHA_PLACE_DATA_1st["city"])
+
+
+class SharedPlaceExceptionTestcase(TransactionTestCase):
+    """
+    シェアされた場所の制約違反したデータの例外処理がされているかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        SharedPlaceCorrectTestData1st.setUp()
+
+    def test_sha_place__max_length_limitation_is_working(self):
+        test_sha_place_1 = SharedPlace.objects.get(
+            id=COR_SHA_PLACE_DATA_1st["id"])
+        with self.assertRaises(DataError):
+            test_sha_place_1.extract = '{}'.format('a' * 257)
+            test_sha_place_1.save()
+        with self.assertRaises(DataError):
+            test_sha_place_1.name = '{}'.format('a' * 257)
+            test_sha_place_1.save()
+        with self.assertRaises(DataError):
+            test_sha_place_1.prefecture = '{}'.format('a' * 5)
+            test_sha_place_1.save()
+        with self.assertRaises(DataError):
+            test_sha_place_1.city = '{}'.format('a' * 10)
+            test_sha_place_1.save()
+
+    def test_sha_place__null_false_is_working(self):
+        test_sha_place_1 = SharedPlace.objects.get(
+            id=COR_SHA_PLACE_DATA_1st["id"])
+        with self.assertRaises(IntegrityError):
+            test_sha_place_1.name = None
+            test_sha_place_1.save()
+
+
+class PlaceCommentCorrectTestcase(TransactionTestCase):
+    """
+    気になる場所リストの正常データが登録されるかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+        PlaceCommentCorrectTestData1st.setUp()
+
+    def test_plc_commt__is_registered_correctly(self):
+        test_plc_commt_1 = PlaceComment.objects.get(
+            id=COR_PLC_COMMT_1st["id"])
+        self.assertEqual(
+            test_plc_commt_1.share_place,
+            COR_PLC_COMMT_1st["share_place"])
+        self.assertEqual(
+            str(test_plc_commt_1.comment.id),
+            COR_COMMENT_DATA_1st["id"])
+
+
+class PlaceCommentExceptionTestcase(TransactionTestCase):
+    """
+    気になる場所リストの制約違反したデータの例外処理がされているかチェック
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+        PlaceCommentCorrectTestData1st.setUp()
+
+    def test_plc_commt__max_length_limitation_is_working(self):
+        test_plc_commt_1 = PlaceComment.objects.get(
+            id=COR_PLC_COMMT_1st["id"])
+        with self.assertRaises(DataError):
+            test_plc_commt_1.share_place = '{}'.format('a' * 256)
+            test_plc_commt_1.save()
+
+    def test_plc_commt__null_false_is_working(self):
+        test_plc_commt_1 = PlaceComment.objects.get(
+            id=COR_PLC_COMMT_1st["id"])
+        with self.assertRaises(IntegrityError):
+            test_plc_commt_1.comment = None
+            test_plc_commt_1.save()
+
+
+class PlaceCommentForeignKeyTestcase(TransactionTestCase):
+    """
+    気になる場所リストの外部キー制約のテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+        PlaceCommentCorrectTestData1st.setUp()
+
+    def test_plc_commt__foreignkey_on_delete(self):
+        comment_1 = Comment.objects.get(
+            id=COR_COMMENT_DATA_1st["id"])
+        comment_1.delete()
+        with self.assertRaises(PlaceComment.DoesNotExist):
+            PlaceComment.objects.get(id=COR_PLC_COMMT_1st["id"])

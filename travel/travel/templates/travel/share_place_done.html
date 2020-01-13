@@ -1,8 +1,10 @@
 {% extends './place_base.html' %}
 {% block content %}
+<div id="result">
+<p>
 <br>
 場所とコメントがシェアされました。
-<br>
+<p>
 <a href="{% url 'travel:saved_place' %}">気になった場所リストに戻る</a>
-
+</div>
 {% endblock content %}

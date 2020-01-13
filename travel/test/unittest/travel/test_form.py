@@ -3,8 +3,12 @@ from unittest.mock import Mock
 from django.test import TestCase
 from django import forms
 
-from travel.models import Setting
-from travel.forms import SettingForm, SettingUpdateForm
+from travel.models import Setting, Comment
+from travel.forms import (
+    SettingForm,
+    SettingUpdateForm,
+    CommentForm,
+)
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_SETTING_DATA_1st,
@@ -105,3 +109,27 @@ class SettingUpdateFormTestcase(TestCase):
         result = msf.errors['name'][0]
         expect = '同じ設定名が存在します。違う設定名に変更してください。'
         self.assertEqual(result, expect)
+
+
+class CommentFormTestcase(TestCase):
+    """
+    場所のコメントを登録するフォームのテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        SettingCorrectTestData1st.setUp()
+
+    def test_class_meta_variable__is_registered_correctly(self):
+        meta = CommentForm(Comment).Meta()
+        fields = ('user', 'comment', 'pub_date')
+        self.assertEqual(meta.model, Comment)
+        self.assertEqual(meta.fields, fields)
+        self.assertIsInstance(meta.widgets['user'], forms.HiddenInput)
+
+    def test__init__(self):
+        cm = CommentForm(Comment)
+        self.assertTrue(
+            cm.fields['pub_date'].widget.attrs['readonly']
+        )

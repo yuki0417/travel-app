@@ -185,7 +185,7 @@ class SavedPlaceListView(ListView):
 
 class SharePlaceView(FormView):
     """
-    場所のシェア画面
+    シェアする場所作成の画面
     """
     model = Comment
     form_class = CommentForm

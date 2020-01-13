@@ -3,9 +3,10 @@ from unittest.mock import patch, MagicMock, Mock
 from io import StringIO
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.db.models.query import QuerySet
 
 from test_plus.test import CBVTestCase
 
@@ -20,24 +21,44 @@ from travel.views import (
     delete_done,
     place_save,
     place_delete,
-    setting_update_done
+    setting_update_done,
+    SharePlaceView,
+    SharedPlaceListView,
 )
-from travel.models import Place, Setting
-from travel.forms import SettingForm, SettingUpdateForm
+from travel.models import (
+    Place,
+    Setting,
+    Comment,
+    SharedPlace,
+    PlaceComment,
+)    
+from travel.forms import (
+    SettingForm,
+    SettingUpdateForm,
+    CommentForm
+)
 from accounts.models import AppUser
 from test.unittest.common.test_data import (
     COR_APPUSER_DATA_1st,
     COR_APPUSER_DATA_2nd,
     COR_SETTING_DATA_1st,
     COR_PLACE_DATA_1st,
+    COR_COMMENT_DATA_1st,
+    COR_SHA_PLACE_DATA_1st,
+    COR_SHA_PLACE_DATA_2nd,
+    COR_PLC_COMMT_1st,
     AppUserCorrectTestData1st,
     AppUserCorrectTestData2nd,
     SettingCorrectTestData1st,
     PlaceCorrectTestData1st,
+    CommentCorrectTestData1st,
+    SharedPlaceCorrectTestData1st,
+    SharedPlaceCorrectTestData2nd,
+    PlaceCommentCorrectTestData1st,
     WIKI_PLACE_LIST_SAVED_EXIST,
     YOUR_LOCATION,
     WIKI_PLACE_LIST,
-    PLACE_LIST_SAVED_MARKED
+    PLACE_LIST_SAVED_MARKED,
 )
 
 
@@ -492,7 +513,7 @@ class MockSavedPlaceListView(SavedPlaceListView):
 
 class SavedPlaceListViewTestcase(TestCase):
     """
-    場所取り消しのテスト
+    気になるリストの一覧画面のテスト
     """
     databases = '__all__'
 
@@ -506,8 +527,217 @@ class SavedPlaceListViewTestcase(TestCase):
             splv.template_name,
             'travel/saved_place_list.html')
 
-    def test_get_object(self):
+    def test_get_queryset(self):
         splv = MockSavedPlaceListView()
         result = splv.get_queryset()
         expect = Place.objects.filter(user=COR_APPUSER_DATA_1st['id'])
         self.assertQuerysetEqual(result, expect, transform=lambda x: x)
+
+
+class MockSharePlaceView(SharePlaceView):
+    """
+    設定１の選択状態を再現するために、
+    引数をあらかじめ追加したSettingUpdateViewを定義する
+    """
+    kwargs = {'id': COR_PLACE_DATA_1st["id"]}
+
+
+# CBVTestCaseはコンテキストデータのテストに便利（get_instanceメソッドなど）
+class SharePlaceViewTestcase(CBVTestCase):
+    """
+    場所情報表示画面のテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        PlaceCorrectTestData1st.setUp()
+        SharedPlaceCorrectTestData1st.setUp()
+
+    def test_class_variable__is_registered_correctly(self):
+        spv = SharePlaceView()
+        self.assertEqual(spv.model, Comment)
+        self.assertEqual(spv.form_class, CommentForm)
+        self.assertEqual(
+            spv.template_name,
+            'travel/comment_form.html'
+        )
+
+    def test_get_object(self):
+        spv = MockSharePlaceView()
+        self.assertEqual(
+            Place.objects.get(id=COR_PLACE_DATA_1st["id"]),
+            spv.get_object()
+        )
+
+    def test_get_context_data(self):
+        spv = SharePlaceView()
+        # モックにさしかえ
+        mock_obj = Place.objects.get(id=COR_PLACE_DATA_1st["id"])
+        spv.get_object = MagicMock(return_value=mock_obj)
+        request = RequestFactory().get('/')
+        spv.setup(request)
+        context = spv.get_context_data()
+        self.assertEqual(context['place'], mock_obj)
+
+    @patch(
+        'travel.views.SharePlaceView.save_comment',
+        MagicMock(return_value=None))
+    @patch(
+        'travel.views.SharePlaceView.add_to_sharedplace',
+        MagicMock(return_value=None))
+    @patch(
+        'travel.views.SharePlaceView.connect_comment_place',
+        MagicMock(return_value=None))
+    def test_post(self):
+        mock_wsgi_session_context()
+
+        WSGIRequest.POST = MagicMock(
+            {
+                "user": COR_COMMENT_DATA_1st["user"],
+                "comment": COR_COMMENT_DATA_1st["comment"],
+                "pub_date": COR_COMMENT_DATA_1st["pub_date"],
+                "name": COR_SHA_PLACE_DATA_1st["name"],
+                "linkUrl": COR_SHA_PLACE_DATA_1st["linkUrl"],
+                "imageUrl": COR_SHA_PLACE_DATA_1st["imageUrl"],
+                "extract": COR_SHA_PLACE_DATA_1st["extract"],
+                "latitude": COR_SHA_PLACE_DATA_1st["latitude"],
+                "longtitude": COR_SHA_PLACE_DATA_1st["longtitude"],
+            }
+        )
+        post_request = WSGIRequest({
+            'REQUEST_METHOD': 'POST',
+            'PATH_INFO': 'travel:place_list',
+            'wsgi.input': StringIO()})
+        spv = SharePlaceView()
+        result = spv.post(post_request)
+        expect = render(post_request, 'travel/share_place_done.html')
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(
+            remove_csrf(result.content.decode('utf-8')),
+            remove_csrf(expect.content.decode('utf-8'))
+        )
+
+    def test_save_comment(self):
+        spv = SharePlaceView()
+        comment = {
+            'user': COR_COMMENT_DATA_1st["user"],
+            'comment': COR_COMMENT_DATA_1st["comment"],
+            'pub_date': COR_COMMENT_DATA_1st["pub_date"],
+        }
+        # インスタンス自身は不明なので、該当するオブジェクトができているか確認する
+        spv.save_comment(comment)
+        self.assertTrue(
+            Comment.objects.get(
+                user=COR_COMMENT_DATA_1st["user"],
+                comment=COR_COMMENT_DATA_1st["comment"],
+                pub_date=COR_COMMENT_DATA_1st["pub_date"]
+            )
+        )
+
+    # すでに場所が登録されている場合
+    def test_add_to_sharedplace__if_shared_place_exists(self):
+        SharedPlaceCorrectTestData2nd.setUp()
+        place = {
+            "name": COR_SHA_PLACE_DATA_2nd["name"]
+        }
+        spv = SharePlaceView()
+        # SharedPlaceのオブジェクトが２つのままか確認
+        spv.add_to_sharedplace(place)
+        self.assertEqual(SharedPlace.objects.count(), 2)
+
+    # まだ場所が登録されていない場合
+    def test_add_to_sharedplace__if_shared_place_not_exists(self):
+        place = {
+            "name": COR_SHA_PLACE_DATA_2nd["name"],
+            "linkUrl": COR_SHA_PLACE_DATA_2nd["linkUrl"],
+            "imageUrl": COR_SHA_PLACE_DATA_2nd["imageUrl"],
+            "extract": COR_SHA_PLACE_DATA_2nd["extract"],
+            "latitude": COR_SHA_PLACE_DATA_2nd["latitude"],
+            "longtitude": COR_SHA_PLACE_DATA_2nd["longtitude"],
+        }
+        spv = SharePlaceView()
+        spv.add_to_sharedplace(place)
+
+        self.assertTrue(
+            SharedPlace.objects.get(
+                name=COR_SHA_PLACE_DATA_2nd["name"],
+                linkUrl=COR_SHA_PLACE_DATA_2nd["linkUrl"],
+                imageUrl=COR_SHA_PLACE_DATA_2nd["imageUrl"],
+                extract=COR_SHA_PLACE_DATA_2nd["extract"],
+                latitude=COR_SHA_PLACE_DATA_2nd["latitude"],
+                longtitude=COR_SHA_PLACE_DATA_2nd["longtitude"],
+            )
+        )
+
+    def test_connect_comment_place(self):
+        CommentCorrectTestData1st.setUp()
+        place = {
+            "name": COR_SHA_PLACE_DATA_1st["name"]
+        }
+        com_obj = Comment.objects.get(
+            id=COR_COMMENT_DATA_1st["id"])
+        spv = SharePlaceView()
+        spv.connect_comment_place(place, com_obj)
+
+        self.assertTrue(
+            PlaceComment.objects.get(
+                share_place=COR_PLC_COMMT_1st["share_place"],
+                comment=COR_PLC_COMMT_1st["comment"],
+            )
+        )
+
+
+class SharedPlaceListViewTestcase(TestCase):
+    """
+    気になるリストの一覧画面のテスト
+    """
+    databases = '__all__'
+
+    def setUp(self):
+        AppUserCorrectTestData1st.setUp()
+        SharedPlaceCorrectTestData1st.setUp()
+        CommentCorrectTestData1st.setUp()
+
+    def test_class_variable__is_registered_correctly(self):
+        splv = SharedPlaceListView()
+        self.assertEqual(
+            splv.template_name,
+            'travel/shared_place_list.html')
+
+    @patch(
+        'travel.views.SharedPlaceListView.get_place_comment_list',
+        MagicMock(return_value='anything'))
+    def test_get_queryset(self):
+        splv = SharedPlaceListView()
+        result = splv.queryset()
+        expect = 'anything'
+        self.assertEqual(result, expect)
+
+    def test_get_place_comment_list(self):
+        PlaceCommentCorrectTestData1st.setUp()
+        splv = SharedPlaceListView()
+
+        place_comment_list = []
+        for obj in SharedPlace.objects.all():
+            place_comment = {
+                'name': obj.name,
+                'linkUrl': obj.linkUrl,
+                'imageUrl': obj.imageUrl,
+                'extract': obj.extract,
+                'latitude': obj.latitude,
+                'longtitude': obj.longtitude,
+            }
+            comment = PlaceComment.objects.filter(share_place=obj.name)
+            place_comment['comment'] = comment
+            place_comment_list.append(place_comment)
+        expect = place_comment_list
+        result = splv.get_place_comment_list()
+        for exp_obj, res_obj in zip(expect, result):
+            for (k, v), (k2, v2) in zip(exp_obj.items(), res_obj.items()):
+                self.assertEqual(k, k2)
+                if type(v) is QuerySet:
+                    self.assertQuerysetEqual(v, v2, transform=lambda x: x)
+                else:
+                    self.assertEqual(v, v2)
