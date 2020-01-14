@@ -448,6 +448,8 @@ class PlaceSaveTestcase(TestCase):
             WIKI_PLACE_LIST[0]['extract'],
             WIKI_PLACE_LIST[0]['latitude'],
             WIKI_PLACE_LIST[0]['longtitude'],
+            COR_PLACE_DATA_1st['prefecture'],
+            COR_PLACE_DATA_1st['city'],
         ]
         WSGIRequest.POST.get = MagicMock(
             side_effect=side_effect)

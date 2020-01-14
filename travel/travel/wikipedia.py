@@ -26,7 +26,7 @@ def search_places_from_wiki(latlon, radius, max_show_num):
     params = {
         "action": "query",
         "format": "json",
-        "ggscoord": lat + "|" + lon,
+        "ggscoord": "{}|{}".format(lat, lon),
         "generator": "geosearch",
         "ggsradius": radius,
         "ggslimit": max_show_num,

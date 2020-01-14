@@ -149,6 +149,8 @@ def place_save(request):
         extract = request.POST.get('extract')
         latitude = request.POST.get('latitude')
         longtitude = request.POST.get('longtitude')
+        prefecture = request.POST.get('prefecture')
+        city = request.POST.get('city')
         Place.objects.create(
             name=name,
             user=user,
@@ -157,6 +159,8 @@ def place_save(request):
             extract=extract,
             latitude=latitude,
             longtitude=longtitude,
+            prefecture=prefecture,
+            city=city,
         )
         return render(request, 'travel/place_result.html')
 
