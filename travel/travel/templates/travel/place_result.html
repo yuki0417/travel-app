@@ -51,7 +51,7 @@ const getAddress = function (lat, lon) {
 
   return function() {
     return new Promise((resolve) => {
-      const URL = "http://www.finds.jp/ws/rgeocode.php",
+      const URL = "https://www.finds.jp/ws/rgeocode.php",
             requestUrl = URL + "?" + "json&lat=" + lat + "&lon=" + lon,
             fetchPromise = fetch(requestUrl);
 
