@@ -217,6 +217,8 @@ class SharePlaceView(FormView):
             "extract": request.POST["extract"],
             "latitude": request.POST["latitude"],
             "longtitude": request.POST["longtitude"],
+            "prefecture": request.POST["prefecture"],
+            "city": request.POST["city"],
         }
         # 場所テーブルに追記
         self.add_to_sharedplace(place)
@@ -246,6 +248,8 @@ class SharePlaceView(FormView):
                 extract=place["extract"],
                 latitude=place["latitude"],
                 longtitude=place["longtitude"],
+                prefecture=place["prefecture"],
+                city=place["city"],
             )
 
     def connect_comment_place(self, place, com_obj):

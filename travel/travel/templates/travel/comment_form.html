@@ -18,17 +18,20 @@
                 <div class="col">
                   <div class="place_info">
     　              <!-- POST用のinput -->
-                    <input type="hidden"  name="place_name" value={{ place.name }}>
+                    <input type="hidden" name="place_name" value={{ place.name }}>
                     <input type="hidden" name="linkUrl" value={{ place.linkUrl }}>
                     <input type="hidden" name="imageUrl" value={{ place.imageUrl }}>
                     <input type="hidden" name="extract" value={{ place.extract }}>
                     <input type="hidden" name="latitude" value={{ place.latitude }}>
                     <input type="hidden" name="longtitude" value={{ place.longtitude }}>
+                    <input type="hidden" name="prefecture" value={{ place.prefecture }}>
+                    <input type="hidden" name="city" value={{ place.city }}>
     
     　              <!-- 表示用 -->
                     <h3>{{ place.name }}</h3>
                     <a id="linkUrl" href="{{ place.linkUrl }}" target="_blank">
                     <img src="{{ place.imageUrl }}" alt="{{ place.name }}"></a>
+                    <h5 id="prefecture">{{ place.prefecture }} {{ place.city }} のスポット</h5>
                     <p id="extract">{{ place.extract }}</p>
                     <p id="latitude" style="display: none;">{{ place.latitude }}</p>
                     <p id="longtitude" style="display: none;">{{ place.longtitude }}</p>

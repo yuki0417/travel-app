@@ -605,6 +605,8 @@ class SharePlaceViewTestcase(CBVTestCase):
                 "extract": COR_SHA_PLACE_DATA_1st["extract"],
                 "latitude": COR_SHA_PLACE_DATA_1st["latitude"],
                 "longtitude": COR_SHA_PLACE_DATA_1st["longtitude"],
+                "prefecture": COR_SHA_PLACE_DATA_1st["prefecture"],
+                "city": COR_SHA_PLACE_DATA_1st["city"],
             }
         )
         post_request = WSGIRequest({
@@ -658,6 +660,8 @@ class SharePlaceViewTestcase(CBVTestCase):
             "extract": COR_SHA_PLACE_DATA_2nd["extract"],
             "latitude": COR_SHA_PLACE_DATA_2nd["latitude"],
             "longtitude": COR_SHA_PLACE_DATA_2nd["longtitude"],
+            "prefecture": COR_SHA_PLACE_DATA_2nd["prefecture"],
+            "city": COR_SHA_PLACE_DATA_2nd["city"],
         }
         spv = SharePlaceView()
         spv.add_to_sharedplace(place)
@@ -670,6 +674,8 @@ class SharePlaceViewTestcase(CBVTestCase):
                 extract=COR_SHA_PLACE_DATA_2nd["extract"],
                 latitude=COR_SHA_PLACE_DATA_2nd["latitude"],
                 longtitude=COR_SHA_PLACE_DATA_2nd["longtitude"],
+                prefecture=COR_SHA_PLACE_DATA_2nd["prefecture"],
+                city=COR_SHA_PLACE_DATA_2nd["city"],
             )
         )
 

@@ -39,3 +39,7 @@ button {
   padding: 10px;
   position: center;
 }
+
+.place_info h5 {
+  padding-top: 1em;
+}
