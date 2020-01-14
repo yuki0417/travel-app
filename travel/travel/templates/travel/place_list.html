@@ -40,26 +40,26 @@ jQuery(function ($) {
         return new Promise(function (resolve, reject) {
           navigator.geolocation.getCurrentPosition(resolve, reject, options);
         });
-    }
+      }
 
-    // 現在地を取得後、ViewにPOSTリクエストを送る
-    getPosition()
-      .then((position) => {
-        ($.post("{% url 'travel:place_list' %}",
-          {
-            'your_location': [
-              position.coords.latitude,
-              position.coords.longitude
-            ],
-            'setting_now': setting_now,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-          },
-          function(data){
-            $("#loading").fadeOut(500);
-            $('#current_data').html(data)
-          }
-        ));
-      });
+      // 現在地を取得後、ViewにPOSTリクエストを送る
+      getPosition()
+        .then((position) => {
+          ($.post("{% url 'travel:place_list' %}",
+            {
+              'your_location': [
+                position.coords.latitude,
+                position.coords.longitude
+              ],
+              'setting_now': setting_now,
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            function(data){
+              $("#loading").fadeOut(500);
+              $('#current_data').html(data)
+            }
+          ));
+        });
     });
   });
 });

@@ -46,28 +46,47 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <script>
-// 現在地の住所の取得
-function getAddress() {
-  const URL = "http://www.finds.jp/ws/rgeocode.php",
-        lat = "{{ your_location.0 }}",
-        lon = "{{ your_location.1 }}",
-        requestUrl = URL + "?" + "json&lat=" + lat + "&lon=" + lon;
-        fetchPromise = fetch(requestUrl);
+// 住所取得の関数
+const getAddress = function (lat, lon) {
 
-  fetchPromise
-    .then(response => {
-      return response.json()
-    }).then(data => {
-      const result = data.result,
-            prefecture = result.prefecture.pname,
-            city = result.municipality.mname,
-            street = result.local[0].section,
-            comment = " 付近のスポット"
-            target = document.getElementById("geo_location");
+  return function() {
+    return new Promise((resolve) => {
+      const URL = "http://www.finds.jp/ws/rgeocode.php",
+            requestUrl = URL + "?" + "json&lat=" + lat + "&lon=" + lon,
+            fetchPromise = fetch(requestUrl);
 
-      target.innerHTML = prefecture + city + street + comment;
-  });
+      fetchPromise
+        .then(response => {
+          return response.json()
+        }).then(data => {
+          const result = data.result,
+                prefctr = result.prefecture.pname,
+                cty = result.municipality.mname,
+                strt = result.local[0].section;
+                address = {
+                  prefecture: prefctr,
+                  city: cty,
+                  street: strt,
+                }
+          resolve(address);
+        });
+    });
+  }
+
 }
+
+function setCurrentAddress() {
+  const comment = " 付近のスポット",
+        target = document.getElementById("geo_location");
+
+  Promise.resolve()
+   .then(getAddress("{{ your_location.0 }}", "{{ your_location.1 }}"))
+   .then((address) => {
+     target.innerHTML = address.prefecture + address.city + address.street + comment;
+   });
+}
+
+setCurrentAddress();
 
 // 外部jsファイル読み込みのための関数
 function include(filename, onload) {
@@ -140,26 +159,35 @@ jQuery(function ($) {
 
       if (saveStatus === "気になる") {
         $(this).toggleClass('btn-warning btn-secondary');
+
         const linkUrl = currentRow.find('a').attr('href'),
               imageUrl = currentRow.find('img').attr('src'),
               extract = currentRow.find('#extract').text(),
               latitude = currentRow.find('#latitude').text(),
               longtitude = currentRow.find('#longtitude').text();
 
-        ($.post("{% url 'travel:place_save' %}",
-          {
-            'name': name,
-            'linkUrl': linkUrl,
-            'imageUrl': imageUrl,
-            'extract': extract,
-            'latitude': latitude,
-            'longtitude': longtitude,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-          },
-          function () {
-            currentRow.find('.btn').text("追加済み");
-          }
-        ));
+        Promise.resolve()
+          .then(getAddress(latitude, longtitude))
+          .then((address) => {
+
+            ($.post("{% url 'travel:place_save' %}",
+              {
+                'name': name,
+                'linkUrl': linkUrl,
+                'imageUrl': imageUrl,
+                'extract': extract,
+                'latitude': latitude,
+                'longtitude': longtitude,
+                'prefecture': address.prefecture,
+                'city': address.city,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              function () {
+                currentRow.find('.btn').text("追加済み");
+              }
+            ));
+          });
+
       }
     });
   });
