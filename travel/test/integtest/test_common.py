@@ -62,7 +62,7 @@ place_table = {
     # ２番目のタイトル
     "title_second": pl_tbl_path + 'tr[2]/td[1]/h3',
     # １番目の画像
-    "img_first": pl_tbl_path + 'tr[1]/td[1]/class/a/img',
+    "img_first": pl_tbl_path + 'tr[1]/td[1]/div/a/img',
 }
 
 # 位置情報取得スクリプトのモック

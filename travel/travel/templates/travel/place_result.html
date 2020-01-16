@@ -25,10 +25,10 @@
       {% for item in place_list %}
         <tr id="place" class="odd gradeX text-center">
           <td id="name" class="text-center"><h3>{{ item.name }}</h3>
-            <class id="linkUrl">
+            <div id="linkUrl">
               <a href="{{ item.linkUrl }}" target="_blank">
                   <img src="{{ item.imageUrl }}" alt="{{ item.name }}"></a><p id="extract">{{ item.extract }}</p>
-            </class>
+            </div>
             {% if item.saved %}
             <button type="button" class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="right" data-html="true">追加済み</button>
             {% else %}
@@ -47,7 +47,7 @@
 
 <script>
 // 住所取得の関数
-const getAddress = function (lat, lon) {
+function getAddress(lat, lon) {
 
   return function() {
     return new Promise((resolve) => {
