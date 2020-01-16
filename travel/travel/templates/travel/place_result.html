@@ -158,13 +158,14 @@ jQuery(function ($) {
       }
 
       if (saveStatus === "気になる") {
-        $(this).toggleClass('btn-warning btn-secondary');
 
         const linkUrl = currentRow.find('a').attr('href'),
               imageUrl = currentRow.find('img').attr('src'),
               extract = currentRow.find('#extract').text(),
               latitude = currentRow.find('#latitude').text(),
               longtitude = currentRow.find('#longtitude').text();
+
+        $(this).toggleClass('btn-warning btn-secondary');
 
         Promise.resolve()
           .then(getAddress(latitude, longtitude))
