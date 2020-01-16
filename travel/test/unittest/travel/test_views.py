@@ -749,6 +749,8 @@ class SharedPlaceListViewTestcase(TestCase):
                 'extract': obj.extract,
                 'latitude': obj.latitude,
                 'longtitude': obj.longtitude,
+                'prefecture': obj.prefecture,
+                'city': obj.city,
             }
             place_comment["saved"] = True
             comment = PlaceComment.objects.filter(share_place=obj.name)

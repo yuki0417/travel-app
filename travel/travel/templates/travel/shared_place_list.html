@@ -63,6 +63,35 @@
 <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
 
 <script>
+// 住所取得の関数
+function getAddress(lat, lon) {
+
+  return function() {
+    return new Promise((resolve) => {
+      const URL = "https://www.finds.jp/ws/rgeocode.php",
+            requestUrl = URL + "?" + "json&lat=" + lat + "&lon=" + lon,
+            fetchPromise = fetch(requestUrl);
+
+      fetchPromise
+        .then(response => {
+          return response.json()
+        }).then(data => {
+          const result = data.result,
+                prefctr = result.prefecture.pname,
+                cty = result.municipality.mname,
+                strt = result.local[0].section;
+                address = {
+                  prefecture: prefctr,
+                  city: cty,
+                  street: strt,
+                }
+          resolve(address);
+        });
+    });
+  }
+
+}
+
 // ここに行くボタンの機能
 jQuery(function ($) {
   $(function(){
@@ -114,27 +143,35 @@ jQuery(function ($) {
       }
 
       if (saveStatus === "気になる") {
-        $(this).toggleClass('btn-warning btn-secondary');
         const linkUrl = currentRow.find('a').attr('href'),
               imageUrl = currentRow.find('img').attr('src'),
               extract = currentRow.find('#extract').text(),
               latitude = currentRow.find('#latitude').text(),
               longtitude = currentRow.find('#longtitude').text();
 
-        ($.post("{% url 'travel:place_save' %}",
-          {
-            'name': name,
-            'linkUrl': linkUrl,
-            'imageUrl': imageUrl,
-            'extract': extract,
-            'latitude': latitude,
-            'longtitude': longtitude,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-          },
-          function () {
-            currentRow.find('.btn').text("追加済み");
-          }
-        ));
+        $(this).toggleClass('btn-warning btn-secondary');
+
+        Promise.resolve()
+          .then(getAddress(latitude, longtitude))
+          .then((address) => {
+
+            ($.post("{% url 'travel:place_save' %}",
+              {
+                'name': name,
+                'linkUrl': linkUrl,
+                'imageUrl': imageUrl,
+                'extract': extract,
+                'latitude': latitude,
+                'longtitude': longtitude,
+                'prefecture': address.prefecture,
+                'city': address.city,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              function () {
+                currentRow.find('.btn').text("追加済み");
+              }
+            ));
+          });
       }
     });
   });

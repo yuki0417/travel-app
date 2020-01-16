@@ -8,8 +8,9 @@
 
 ### 主な機能
 
-- wikipediaAPIの検索設定
-- wikipediaAPIを利用して位置情報をもとに周りのスポットを検索
+- MediaWiki APIの検索設定
+- MediaWiki APIを利用して位置情報をもとに周りのスポットを検索
+- 簡易逆ジオコーディングサービスを利用して緯度経度情報から住所情報を取得
 - 気になったスポットの保存
 - 気になったスポットへの経路案内
 - 保存したスポットへのコメント、シェア機能
@@ -63,6 +64,10 @@ VirtualBoxとVagrantでCentOS7の仮想マシンを構築し、そのマシン�
     - Selenium (Chromeドライバを使用)
 
 html形式のテストレポートとカバレッジレポートがCircleCI上で確認可能。
+
+## 使用しているAPIサービス
+- [MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)
+- [簡易逆ジオコーディングサービス（農研機構）](https://www.finds.jp/rgeocode/index.html)
 
 ## 心がけたこと
 - 本番環境と開発環境の差異をDockerコンテナ技術により少なくする

@@ -288,6 +288,8 @@ class SharedPlaceListView(ListView):
                 'extract': obj.extract,
                 'latitude': obj.latitude,
                 'longtitude': obj.longtitude,
+                'prefecture': obj.prefecture,
+                'city': obj.city,
             }
             place_comment["saved"] = self.mark_saved_place(
                 place_comment['name'], user_id)
