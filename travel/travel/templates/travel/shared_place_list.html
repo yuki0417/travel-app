@@ -20,6 +20,8 @@
           <th class="text-center">場所</th>
           <th class="text-center" style="display: none;">緯度</th>
           <th class="text-center" style="display: none;">経度</th>
+          <th class="text-center" style="display: none;">都道府県</th>
+          <th class="text-center" style="display: none;">市区町村</th>
         </tr>
       </thead>
     　<!-- ここまでが表の列の定義-->
@@ -53,6 +55,8 @@
             </td>
             <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
             <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>
+            <td id="prefecture" class="text-center" style="display: none;">{{ item.prefecture }}</td>
+            <td id="city" class="text-center" style="display: none;">{{ item.city }}</td>
           </tr>
       {% endfor %}
       </tbody>
@@ -63,35 +67,6 @@
 <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
 
 <script>
-// 住所取得の関数
-function getAddress(lat, lon) {
-
-  return function() {
-    return new Promise((resolve) => {
-      const URL = "https://www.finds.jp/ws/rgeocode.php",
-            requestUrl = URL + "?" + "json&lat=" + lat + "&lon=" + lon,
-            fetchPromise = fetch(requestUrl);
-
-      fetchPromise
-        .then(response => {
-          return response.json()
-        }).then(data => {
-          const result = data.result,
-                prefctr = result.prefecture.pname,
-                cty = result.municipality.mname,
-                strt = result.local[0].section;
-                address = {
-                  prefecture: prefctr,
-                  city: cty,
-                  street: strt,
-                }
-          resolve(address);
-        });
-    });
-  }
-
-}
-
 // ここに行くボタンの機能
 jQuery(function ($) {
   $(function(){
@@ -148,30 +123,27 @@ jQuery(function ($) {
               extract = currentRow.find('#extract').text(),
               latitude = currentRow.find('#latitude').text(),
               longtitude = currentRow.find('#longtitude').text();
+              prefecture = currentRow.find('#prefecture').text();
+              city = currentRow.find('#city').text();
 
         $(this).toggleClass('btn-warning btn-secondary');
 
-        Promise.resolve()
-          .then(getAddress(latitude, longtitude))
-          .then((address) => {
-
-            ($.post("{% url 'travel:place_save' %}",
-              {
-                'name': name,
-                'linkUrl': linkUrl,
-                'imageUrl': imageUrl,
-                'extract': extract,
-                'latitude': latitude,
-                'longtitude': longtitude,
-                'prefecture': address.prefecture,
-                'city': address.city,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-              },
-              function () {
-                currentRow.find('.btn').text("追加済み");
-              }
-            ));
-          });
+        ($.post("{% url 'travel:place_save' %}",
+          {
+            'name': name,
+            'linkUrl': linkUrl,
+            'imageUrl': imageUrl,
+            'extract': extract,
+            'latitude': latitude,
+            'longtitude': longtitude,
+            'prefecture': prefecture,
+            'city': city,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          function () {
+            currentRow.find('.btn').text("追加済み");
+          }
+        ));
       }
     });
   });
