@@ -20,9 +20,10 @@
           <th class="text-center">場所</th>
           <th class="text-center" style="display: none;">緯度</th>
           <th class="text-center" style="display: none;">経度</th>
+          <th class="text-center" style="display: none;">都道府県</th>
+          <th class="text-center" style="display: none;">市区町村</th>
         </tr>
       </thead>
-    　<!-- ここまでが表の列の定義-->
     　<!-- 表のデータ部分の表示-->
       <tbody>
         {% for item in object_list %}
@@ -45,6 +46,8 @@
             </td>
             <td id="latitude" class="text-center" style="display: none;">{{ item.latitude }}</td>
             <td id="longtitude" class="text-center" style="display: none;">{{ item.longtitude }}</td>
+            <td id="prefecture" class="text-center" style="display: none;">{{ item.prefecture }}</td>
+            <td id="city" class="text-center" style="display: none;">{{ item.city }}</td>
           </tr>
       {% endfor %}
       </tbody>
