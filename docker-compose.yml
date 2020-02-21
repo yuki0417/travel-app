@@ -9,11 +9,23 @@ services:
       cd travel
       && python manage.py collectstatic --noinput
       && python manage.py migrate
-      && gunicorn setting.wsgi -b 0.0.0.0:3031
-      "
+      && gunicorn setting.wsgi -b 0.0.0.0:3031"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ECS-log
+        awslogs-region: $AWS_DEFAULT_REGION
+        awslogs-stream-prefix: django
   nginx:
     image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_RESOURCE_NAME_PREFIX_NGINX:$CIRCLE_SHA1
     ports:
       - "80:80"
     command: sh -c "
       nginx -g 'daemon off;'"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ECS-log
+        awslogs-region: $AWS_DEFAULT_REGION
+        awslogs-stream-prefix: nginx
+  
