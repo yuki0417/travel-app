@@ -177,6 +177,8 @@ jobs:
             --region ap-northeast-1
             --target-group-arn "arn:aws:elasticloadbalancing:ap-northeast-1:${AWS_ACCOUNT_ID}:targetgroup/travel-app-target-group/14a59760ea30aac8"
             --container-name nginx --container-port 80
+            --force-deployment
+            --create-log-groups
 
 # EC2にSSH接続し、検証環境にデプロイを実行
   staging-deploy:
